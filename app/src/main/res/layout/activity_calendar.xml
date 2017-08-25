@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:parchment="http://schemas.android.com/apk/res"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    tools:context="com.creatio.fixer.Detalles">
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/alpha" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textView13"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtAbrirOrden"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/colorAccent"
+            android:drawableLeft="@drawable/ic_cerrar_flecha"
+            android:drawablePadding="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="left|center_vertical"
+            android:text="Orden de reparación"
+            android:textColor="#333"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="58dp"
+            android:layout_marginRight="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="Ésta es la disponibilidad de los especialistas:"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#FFF"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <Button
+                android:id="@+id/btnCalendar"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_blue"
+                android:text="Lunes 5 de Julio"
+                android:textColor="#FFF"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="Fecha de reparación"
+                android:textColor="@color/blue"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btnL"
+                android:layout_width="30dp"
+                android:layout_height="38dp"
+                android:layout_marginRight="-10dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_navegacion_l"
+                android:textColor="#FFF" />
+
+            <Button
+                android:id="@+id/btnR"
+                android:layout_width="30dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_navegacion_r"
+                android:textColor="#FFF" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/shadow"
+            android:layout_width="fill_parent"
+            android:layout_height="2.3dp"
+            android:layout_above="@+id/id_from_your_LinearLayout"
+            android:background="@drawable/shadow"></View>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/fondo"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@+id/seatLegendLayout"
+                android:background="@color/fondo_card">
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout_gridtableLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <GridView
+                            android:id="@+id/grid_calendar"
+                            android:layout_width="300dp"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="4dp"
+                            android:columnWidth="100dp"
+                            android:gravity="center"
+                            android:horizontalSpacing="1dp"
+                            android:numColumns="auto_fit"
+                            android:scrollbarAlwaysDrawHorizontalTrack="true"
+                            android:scrollbarAlwaysDrawVerticalTrack="true"
+                            android:scrollbars="horizontal"
+                            android:stretchMode="none"
+                            android:verticalSpacing="1dp">
+
+                        </GridView>
+
+
+                    </LinearLayout>
+                </FrameLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/snack_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="-138dp"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:translationZ="50dp"
+            android:visibility="gone">
+
+            <include
+                layout="@layout/snack_selecciona"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

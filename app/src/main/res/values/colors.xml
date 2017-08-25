@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#189382</color>
+    <color name="colorPrimaryAlpha">#66189382</color>
+    <color name="colorPrimaryDark">#107b6c</color>
+    <color name="dark">#04362f</color>
+    <color name="colorAccent">#fcbe58</color>
+    <color name="colorAccentDark">#e6a53b</color>
+    <color name="blue">#0090d9</color>
+    <color name="red">#da5123</color>
+    <color name="redDark">#802c10</color>
+    <color name="blueDark">#015681</color>
+    <color name="fondo_card">#eaedf2</color>
+    <color name="fondo_card_list">#d6dae1</color>
+    <color name="fondo">#fdfdfe</color>
+    <color name="white">#ffffff</color>
+    <color name="fondoAlpha">#aae4e4e4</color>
+    <color name="alpha">#8affffff</color>
+    <color name="black">#333333</color>
+
+    <color name="black_overlay">#66000000</color>
+</resources>

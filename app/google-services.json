@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "981476225204",
+    "firebase_url": "https://plomeros-167918.firebaseio.com",
+    "project_id": "plomeros-167918",
+    "storage_bucket": "plomeros-167918.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:981476225204:android:f2f58be2bb96b3a0",
+        "android_client_info": {
+          "package_name": "com.creatio.fixer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "981476225204-3kafuf0dj48ibb5ajiu3578e4bpavlc7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creatio.fixer",
+            "certificate_hash": "f88d6afab7f2e550dd88f8bec391c9272678d942"
+          }
+        },
+        {
+          "client_id": "981476225204-n1in3rrqrgh83obasa703ph1gqar51lu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creatio.fixer",
+            "certificate_hash": "285f21f188df9fce62f6949e1b37d2e20b7f74c6"
+          }
+        },
+        {
+          "client_id": "981476225204-06452134abmalqmk242ou7rm2p2h7sgt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmCTuVwOWD6tgfwnSmdLTN74IAtpMjGEU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "981476225204-06452134abmalqmk242ou7rm2p2h7sgt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

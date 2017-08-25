@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00FFFFFF"
+    android:translationZ="3dp"
+    app:elevation="0dp"
+    tools:context="com.creatio.fixer.MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:id="@+id/appBar"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:translationZ="3dp"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimary"
+            app:elevation="0dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="5dp"
+            android:translationZ="5dp">
+
+            <ImageButton
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="0.15"
+                android:background="@drawable/ic_menu_icono"
+                android:text="" />
+
+            <ImageButton
+                android:id="@+id/image_profile_button"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.2"
+                android:background="#00FFFFFF"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_usuario_icono" />
+
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="0.7"
+                android:gravity="center_vertical"
+                android:textColor="@color/dark"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnStilson"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.2"
+                android:background="#00FFFFFF"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_stilson_icon" />
+
+            <Button
+                android:id="@+id/btnBadge"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="0.13"
+                android:background="@drawable/btn_not"
+                android:fontFamily="sans-serif.light"
+                android:text="0" />
+        </LinearLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    android:elevation="0dp"
+    android:orientation="vertical"
+    app:layout_collapseParallaxMultiplier="0.9">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="#FFF"
+        android:elevation="0dp"
+        android:orientation="horizontal"
+        android:padding="6dp">
+
+        <ImageView
+            android:id="@+id/imgConcepto"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:layout_weight="0.2"
+            android:elevation="1dp"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/tuberia_dummy" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="0.4"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:text="Tubería 4"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txtDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:text="Mano de obra\n Instalación nueva"
+                android:textColor="#444" />
+
+            <TextView
+                android:id="@+id/txtPiece"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:text="Piezas: "
+                android:textColor="#333"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPrice"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.7"
+                android:background="@drawable/bg_green"
+                android:focusable="false"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="right|center_vertical"
+                android:text="01:30 hrs"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="0.25"
+                android:background="@drawable/ic_assignment"
+                android:focusable="false" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

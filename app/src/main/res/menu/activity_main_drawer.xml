@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_account"
+            android:title="Mi cuenta" />
+        <item
+            android:id="@+id/nav_ordenes"
+            android:icon="@drawable/ic_order"
+            android:title="Mis ordenes" />
+        <item
+            android:id="@+id/nav_iniciar"
+            android:icon="@drawable/ic_in"
+            android:title="Iniciar sesión" />
+        <item
+            android:id="@+id/nav_disponibilidad"
+            android:icon="@drawable/ic_disp"
+            android:title="Marcar no disponible" />
+        <item
+            android:id="@+id/nav_close"
+            android:icon="@drawable/ic_close_session"
+            android:title="Cerrar sesión" />
+
+    </group>
+
+
+
+</menu>

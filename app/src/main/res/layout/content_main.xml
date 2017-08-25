@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="-60dp"
+    android:backgroundTint="@color/fondo"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.creatio.fixer.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:backgroundTint="@color/fondo"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/list_services"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:backgroundTint="@color/fondo"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:fillViewport="true"
+            android:elevation="0dp"
+            android:focusable="true"
+            android:translationZ="1dp" />
+
+        <LinearLayout
+            android:id="@+id/snack_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:translationZ="50dp"
+            android:visibility="invisible">
+
+            <include
+                layout="@layout/snack_repair"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/fondoAlpha"
+        android:translationZ="20dp"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="mx.com.appsjs.conur.PrincipalActivity"
+        tools:showIn="@layout/app_bar_main">
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

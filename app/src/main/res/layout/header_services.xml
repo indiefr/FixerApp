@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ly_gral"
+    android:layout_width="match_parent"
+    android:layout_height="220dp"
+    android:background="@drawable/transition_image"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    app:layout_collapseParallaxMultiplier="1.0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/fondoAlpha"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnAfter"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@drawable/bg_right"
+            android:rotation="180"
+            app:srcCompat="@drawable/ic_siguiente_flecha" />
+
+        <TextSwitcher
+            android:id="@+id/txtTitleService"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_weight="0.5"
+            android:drawableBottom="@drawable/line_bottom"
+            android:text="Servicios para el baño"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imgService"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_weight="0.2"
+            android:adjustViewBounds="true"
+            android:foregroundGravity="center_vertical"
+            app:srcCompat="@drawable/ic_tuberia_icono" />
+
+        <ImageButton
+            android:id="@+id/btnBefore"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:background="@drawable/bg_right"
+            app:srcCompat="@drawable/ic_siguiente_flecha" />
+    </LinearLayout>
+
+</LinearLayout>
