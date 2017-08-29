@@ -88,7 +88,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                 AndroidNetworking.post("http://api.fixerplomeria.com/v1/SaveOrder")
                         .addBodyParameter("id_specialist", extras.getString("id_specialist"))
                         .addBodyParameter("init_date", extras.getString("init_date"))
-                        .addBodyParameter("hour_date", String.valueOf(extras.getString("hour_date")))
+                        .addBodyParameter("hour_date", String.valueOf(extras.getInt("hour_date")))
                         .addBodyParameter("id_user", id_user)
                         .addBodyParameter("services", services)
                         .addBodyParameter("subtotal", extras.getString("subtotal"))

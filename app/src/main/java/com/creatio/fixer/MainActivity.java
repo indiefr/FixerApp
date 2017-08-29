@@ -1,16 +1,12 @@
 package com.creatio.fixer;
 
-import android.app.Activity;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.TransitionDrawable;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,8 +14,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -64,9 +58,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.conekta.conektasdk.Card;
-import io.conekta.conektasdk.Conekta;
-import io.conekta.conektasdk.Token;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -104,6 +95,7 @@ public class MainActivity extends AppCompatActivity
             appBar.setOutlineProvider(null);
         }
         appBar.bringToFront();
+        CircleImageView image_profile_button = (CircleImageView) findViewById(R.id.image_profile_button);
         // --- [Cargar funciones] ---
         NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nMgr.cancelAll();
@@ -156,6 +148,9 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         int items = pref.getInt("badge", 0);
         String image = pref.getString("profile_image", "");
+        image = image.replace("\"", "");
+        image = image.replace('\\', '/');
+        image = image.replace("//", "/");
         String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
         btnBadge.setText("" + items);
         txtName.setText(name);
@@ -163,6 +158,11 @@ public class MainActivity extends AppCompatActivity
                 .load(image)
                 .error(R.drawable.no_user)
                 .into(image_profile);
+
+        Glide.with(MainActivity.this)
+                .load(image)
+                .error(R.drawable.no_user)
+                .into(image_profile_button);
     }
 
     @Override
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity
         btnBadge.setText("" + itemBadghe);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("id_service" + id_service, id_service+"|"+type);
+        editor.putString("id_service" + id_service, id_service + "|" + type);
         editor.putInt("badge", itemBadghe);
 
         editor.apply();
@@ -356,22 +356,28 @@ public class MainActivity extends AppCompatActivity
         final Map<String, ?> allEntries = pref.getAll();
 
         if (requestCode == 199 && resultCode == -1) {
-            Intent intent = new Intent(MainActivity.this,CardForm.class);
+            Intent intent = new Intent(MainActivity.this, CardForm.class);
             final Place place = PlacePicker.getPlace(data, this);
             String toastMsg = String.format("Place: %s", place.getName());
             // BuildNotification("El tecnico a revisado tu solicitud en la dirección " + place.getName());
             String latlng = place.getLatLng().latitude + "," + place.getLatLng().longitude;
-            intent.putExtra("latlng",latlng);
-            intent.putExtra("id_specialist",id_specialist);
-            intent.putExtra("init_date",init_date);
-            intent.putExtra("hour_date",hour_date);
-            intent.putExtra("subtotal",subtotal);
+            intent.putExtra("latlng", latlng);
+            intent.putExtra("id_specialist", id_specialist);
+            intent.putExtra("init_date", init_date);
+            intent.putExtra("hour_date", hour_date);
+            intent.putExtra("subtotal", subtotal);
             startActivity(intent);
             Cerrar();
         }
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        int items = pref.getInt("badge", 0);
+        btnBadge.setText("" + items);
+    }
 
     public void LeerServicios() {
         // --- [Header elements] ---
@@ -391,7 +397,7 @@ public class MainActivity extends AppCompatActivity
                         String image = object.optString("image");
                         String time_pre = object.optString("time_pre");
                         String time_new = object.optString("time");
-                        servicesGral.add(new OServices(id_service, image, name, description, time_pre, time_new,"",""));
+                        servicesGral.add(new OServices(id_service, image, name, description, time_pre, time_new, "", ""));
 
 
                     }
@@ -409,7 +415,7 @@ public class MainActivity extends AppCompatActivity
                             TextView myText = new TextView(MainActivity.this);
                             myText.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
                             myText.setTextSize(20);
-                            myText.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                            myText.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
                             myText.setTextColor(Color.DKGRAY);
                             return myText;
                         }
@@ -497,7 +503,7 @@ public class MainActivity extends AppCompatActivity
                         String description = object.optString("description");
                         String time_pre = object.optString("time_pre");
                         String time_new = object.optString("time");
-                        services.add(new OServices(id_service, image, name, description, time_pre, time_new,"",""));
+                        services.add(new OServices(id_service, image, name, description, time_pre, time_new, "", ""));
                     }
                     ADServices adapter = new ADServices(MainActivity.this, services);
 

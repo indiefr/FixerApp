@@ -186,6 +186,7 @@ public class OrdenTrabajo extends AppCompatActivity {
             list_orden.addFooterView(myFooter, null, false);
             ly_footer.setVisibility(View.VISIBLE);
         }
+
         list_orden.addHeaderView(myHeader, null, false);
 
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -525,12 +526,14 @@ public class OrdenTrabajo extends AppCompatActivity {
                     if (status.equalsIgnoreCase("1")) {
                         btnIniciar.setBackgroundResource(R.drawable.flat_danger);
                         btnIniciar.setText("Finalizar");
+                        myFooter.setVisibility(View.GONE);
 
                     }
                     if (status.equalsIgnoreCase("2")) {
                         btnIniciar.setBackgroundResource(R.drawable.flat_primary);
                         btnIniciar.setText("Finalizada");
                         btnIniciar.setEnabled(false);
+                        myFooter.setVisibility(View.GONE);
                     }
                     if (status.equalsIgnoreCase("3")) {
                         btnIniciar.setBackgroundResource(R.drawable.flat_black);
@@ -543,6 +546,9 @@ public class OrdenTrabajo extends AppCompatActivity {
                         btnIniciar.setBackgroundResource(R.drawable.flat_black);
                         btnIniciar.setText("Iniciar");
                         btnIniciar.setEnabled(false);
+                    }
+                    if (status.equalsIgnoreCase("0")){
+                        myFooter.setVisibility(View.GONE);
                     }
                     adapterList = new ADOrdenTrabajo(OrdenTrabajo.this, arrServices, type, id_sale, services, status_gral);
                     list_orden.setAdapter(adapterList);

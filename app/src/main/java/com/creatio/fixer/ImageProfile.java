@@ -55,7 +55,7 @@ public class ImageProfile extends AppCompatActivity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ImageProfile.this);
         tx.setCharacterDelay(70);
-        tx.animateText("Bienvenido " + sharedPref.getString("name","Sin nombre") + sharedPref.getString("last_name","Sin nombre"));
+        tx.animateText("Bienvenido " + sharedPref.getString("name","Sin nombre") +" "+ sharedPref.getString("last_name","Sin nombre"));
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {

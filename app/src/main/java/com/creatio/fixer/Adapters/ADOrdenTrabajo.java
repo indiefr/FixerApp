@@ -256,8 +256,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-//                        arrServices.get(position).setDesc(actv2.getText().toString());
-//                        arrServices.get(position).setTitle(actv2.getText().toString());
+//                        list.get(position).setDesc(actv2.getText().toString());
+//                        list.get(position).setTitle(actv2.getText().toString());
 //
 //                        notifyDataSetChanged();
                         final Dialog dialog = new Dialog(context);

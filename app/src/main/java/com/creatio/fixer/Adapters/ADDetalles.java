@@ -9,10 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.creatio.fixer.Detalles;
 import com.creatio.fixer.MainActivity;
+import com.creatio.fixer.Objects.OPieces;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.R;
 
@@ -22,21 +25,23 @@ import java.util.ArrayList;
  * Created by Layge on 04/07/2017.
  */
 
-public class ADDetalles extends BaseAdapter {
+public class ADDetalles extends BaseAdapter implements Filterable {
     Context context;
-    ArrayList<OServices> arrServices;
+    ArrayList<OServices> list;
+    ArrayList<OServices> filteredData;
     Detalles fragment;
     String type = "0";
-
-    public ADDetalles(Context context, ArrayList<OServices> arrServices, Detalles fragment) {
+    private ADDetalles.ItemFilter mFilter = new ADDetalles.ItemFilter();
+    public ADDetalles(Context context, ArrayList<OServices> list, ArrayList<OServices> filteredData, Detalles fragment) {
         this.context = context;
-        this.arrServices = arrServices;
+        this.list = list;
+        this.filteredData = filteredData;
         this.fragment = fragment;
     }
 
     @Override
     public int getCount() {
-        return arrServices.size();
+        return filteredData.size();
     }
 
     @Override
@@ -57,7 +62,7 @@ public class ADDetalles extends BaseAdapter {
         final TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
         final TextView txtDesc = (TextView) itemView.findViewById(R.id.txtDesc);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        String service = pref.getString("id_service" + arrServices.get(position).getId_service(), "0");
+        String service = pref.getString("id_service" + filteredData.get(position).getId_service(), "0");
         btnReparar.setVisibility(View.VISIBLE);
         if (!service.equalsIgnoreCase("0")) {
             btnReparar.setVisibility(View.INVISIBLE);
@@ -86,7 +91,7 @@ public class ADDetalles extends BaseAdapter {
                         dialog.dismiss();
                         type = "0";
                         fragment.Reparar();
-                        ((MainActivity) context).ChangeBadge(arrServices.get(position).getId_service(), type);
+                        ((MainActivity) context).ChangeBadge(filteredData.get(position).getId_service(), type);
                     }
                 });
                 btnCancelar.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +100,7 @@ public class ADDetalles extends BaseAdapter {
                         dialog.dismiss();
                         type = "1";
                         fragment.Reparar();
-                        ((MainActivity) context).ChangeBadge(arrServices.get(position).getId_service(), type);
+                        ((MainActivity) context).ChangeBadge(filteredData.get(position).getId_service(), type);
                     }
                 });
                 dialog.show();
@@ -104,9 +109,48 @@ public class ADDetalles extends BaseAdapter {
 
             }
         });
-        txtDesc.setText(arrServices.get(position).getDesc());
-        txtTitle.setText(arrServices.get(position).getTitle());
+        txtDesc.setText(filteredData.get(position).getDesc());
+        txtTitle.setText(filteredData.get(position).getTitle());
         return itemView;
     }
 
+    @Override
+    public Filter getFilter() {
+        return mFilter;
+    }
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            String filterString = constraint.toString().toLowerCase();
+
+            FilterResults results = new FilterResults();
+
+            final ArrayList<OServices> listf = list;
+
+            int count = listf.size();
+            final  ArrayList<OServices> nlist = new ArrayList<OServices>(count);
+
+            String filterableString ;
+
+            for (int i = 0; i < count; i++) {
+                filterableString = listf.get(i).getTitle();
+                if (filterableString.toLowerCase().contains(filterString)) {
+                    nlist.add(new OServices(listf.get(i).getId_service(),listf.get(i).getImage(),listf.get(i).getTitle(),listf.get(i).getDesc(),listf.get(i).getTime_pre(),listf.get(i).getTime_new(),listf.get(i).getType(),listf.get(i).getPieces()));
+                }
+            }
+
+            results.values = nlist;
+            results.count = nlist.size();
+
+            return results;
+        }
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            filteredData = (ArrayList<OServices>) results.values;
+            notifyDataSetChanged();
+        }
+
+    }
 }

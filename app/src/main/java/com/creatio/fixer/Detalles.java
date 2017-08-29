@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,6 +39,8 @@ public class Detalles extends Fragment {
     ProgressDialog dialog;
     String title_service;
     String id_service;
+    private EditText editText;
+    ADDetalles adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,11 +56,27 @@ public class Detalles extends Fragment {
         list_detalle = (ListView) v.findViewById(R.id.list_detalle);
         hiddenPanel = (ViewGroup) v.findViewById(R.id.snack_linear);
         txtTitle = (TextView) myHeader.findViewById(R.id.txtTitle);
+        editText = (EditText) myHeader.findViewById(R.id.editText);
         //--------
 
 
         //Actions
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         btnCerrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +171,7 @@ public class Detalles extends Fragment {
                         services.add(new OServices(id_service, image, name, description, time_pre, time_new, "0",""));
                     }
                     dialog.dismiss();
-                    ADDetalles adapter = new ADDetalles(getActivity(), services,  Detalles.this);
+                    adapter = new ADDetalles(getActivity(), services, services,  Detalles.this);
                     list_detalle.setAdapter(adapter);
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());

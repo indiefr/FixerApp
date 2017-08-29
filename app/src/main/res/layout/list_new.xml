@@ -31,7 +31,8 @@
                 android:gravity="center"
                 android:text="Declinar"
                 android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
@@ -161,7 +162,8 @@
                     android:layout_weight="0.5"
                     android:background="@drawable/flat_danger"
                     android:text="Declinar"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <TextView

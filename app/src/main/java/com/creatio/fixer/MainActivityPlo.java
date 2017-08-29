@@ -346,7 +346,7 @@ public class MainActivityPlo extends AppCompatActivity
             }
         });
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("status", "0");
+        editor.putString("status", status);
         editor.apply();
     }
 

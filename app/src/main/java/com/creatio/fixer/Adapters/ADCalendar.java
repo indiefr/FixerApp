@@ -66,7 +66,7 @@ public class ADCalendar extends BaseAdapter {
         txtNombre = (TextView) itemView.findViewById(R.id.txtNombre);
         if (position == 0) {
             image_profile.setVisibility(View.INVISIBLE);
-            txtNombre.setVisibility(View.INVISIBLE);
+            txtNombre.setText("Hora");
             GenerateText(0);
         } else {
             txtNombre.setText("Fecha seleccionada");

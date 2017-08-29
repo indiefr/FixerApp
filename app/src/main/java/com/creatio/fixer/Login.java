@@ -159,6 +159,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             public void onClick(View v) {
                 Intent intent = new Intent(Login.this, Register.class);
                 startActivity(intent);
+                finish();
             }
         });
         swSesion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -166,8 +167,15 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     transition.startTransition(500);
+                    btnGoogle.setVisibility(View.GONE);
+                    btnFacebook.setVisibility(View.GONE);
+                    btnRegister.setVisibility(View.GONE);
+
                 } else {
                     transition.reverseTransition(500);
+                    btnGoogle.setVisibility(View.VISIBLE);
+                    btnFacebook.setVisibility(View.VISIBLE);
+                    btnRegister.setVisibility(View.VISIBLE);
                 }
             }
         });

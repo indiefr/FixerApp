@@ -189,6 +189,13 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(Register.this, Login.class);
+        startActivity(intent);
+        finish();
+    }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
