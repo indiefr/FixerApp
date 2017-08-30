@@ -1,12 +1,9 @@
 package com.creatio.fixer;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,8 +11,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -67,22 +62,23 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivityPlo extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public LinearLayout parent;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
-    AppBarLayout appBar;
-    Button btnBadge;
-    ImageButton btnStilson;
-    int itemBadghe = 0;
-    public ListView list_new;
-    TabHost tabHost;
-    ListView list_calendar;
-    TextView txtName, txtNameH, txtMes;
-    CircleImageView image_profile;
-    ArrayList<OOrders> list = new ArrayList<>();
-    ArrayList<OCalendar> listCalendar = new ArrayList<>();
-    CalendarView calendarView;
-    String fecha_gral;
-    ImageView background;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private AppBarLayout appBar;
+    private Button btnBadge;
+    private ImageButton btnStilson;
+    private int itemBadghe = 0;
+    public ListView list_new, list_history;
+    private TabHost tabHost;
+    private ListView list_calendar;
+    private TextView txtName, txtNameH, txtMes;
+    private CircleImageView image_profile;
+    private ArrayList<OOrders> list = new ArrayList<>();
+    private ArrayList<OCalendar> listCalendar = new ArrayList<>();
+    private ArrayList<OOrders> listHistory = new ArrayList<>();
+    private CalendarView calendarView;
+    private String fecha_gral;
+    private ImageView background,imgNohistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +86,12 @@ public class MainActivityPlo extends AppCompatActivity
         setContentView(R.layout.activity_main_plo);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //Declare Elements
+        //=====[Declare Elements]======
         NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nMgr.cancelAll();
         calendarView = (CalendarView) findViewById(R.id.calendarView);
         list_new = (ListView) findViewById(R.id.list_new);
+        list_history = (ListView) findViewById(R.id.listHistory);
         list_calendar = (ListView) findViewById(R.id.list_calendar);
         ImageButton home = (ImageButton) findViewById(R.id.home);
         btnBadge = (Button) findViewById(R.id.btnBadge);
@@ -104,11 +101,12 @@ public class MainActivityPlo extends AppCompatActivity
         parent = (LinearLayout) findViewById(R.id.snack_linear);
         appBar = (AppBarLayout) findViewById(R.id.appBar);
         background = (ImageView) findViewById(R.id.background);
+        imgNohistory = (ImageView) findViewById(R.id.imgNohistory);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             appBar.setOutlineProvider(null);
         }
-        //Action of DRAWER
+        //=====[Action of DRAWER]=======
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -184,6 +182,9 @@ public class MainActivityPlo extends AppCompatActivity
                 }
                 if (tabId.equalsIgnoreCase("Nuevas")) {
                     LeerOrdenes();
+                }
+                if (tabId.equalsIgnoreCase("Historial")){
+                    LeerHistorial();
                 }
             }
         });
@@ -480,7 +481,7 @@ public class MainActivityPlo extends AppCompatActivity
                         String hour_date = object.optString("hour_date");
 
 
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date,"",""));
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", ""));
 
                     }
                     if (flag) {
@@ -504,4 +505,57 @@ public class MainActivityPlo extends AppCompatActivity
         });
     }
 
+    public void LeerHistorial() {
+        listHistory = new ArrayList<>();
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String id_user = pref.getString("id_user", "0");
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadOrdersHistory")
+                .addBodyParameter("id_user", id_user)
+                .addBodyParameter("type", "specialist")
+                .setPriority(Priority.MEDIUM)
+                .build().getAsJSONArray(new JSONArrayRequestListener() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+                        String id_order = object.optString("id_sale");
+                        String create_on = object.optString("create_on");
+                        String total = object.optString("total");
+                        String subtotal = object.optString("subtotal");
+                        String lat_lng = object.optString("lat_lng");
+                        String init_date = object.optString("init_date");
+                        String id_specialist = object.optString("id_specialist");
+                        String name = object.optString("name");
+                        String name_user = object.optString("name_user");
+                        String last_name = object.optString("last_name");
+                        String last_name_user = object.optString("last_name_user");
+                        String id_calendary = object.optString("id_calendary");
+                        String status_sc = object.optString("status_sc");
+                        String status_so = object.optString("status_so");
+                        String id_user = object.optString("id_user");
+                        String hour_date = object.optString("hour_date");
+
+
+                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", ""));
+                        list_history.setVisibility(View.VISIBLE);
+                        imgNohistory.setVisibility(View.GONE);
+                        ADNew adapter = new ADNew(MainActivityPlo.this, listHistory);
+                        list_history.setAdapter(adapter);
+                    }
+
+                } catch (JSONException e) {
+                    Log.e("Login error", e.toString());
+                }
+
+            }
+
+            @Override
+            public void onError(ANError error) {
+                // handle error
+                Log.e("Login error", error.toString());
+            }
+        });
+    }
 }

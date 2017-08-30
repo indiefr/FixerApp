@@ -125,6 +125,9 @@ public class ADNew extends BaseSwipeAdapter {
         expandable.setDuration(500);
         ImageButton btnExpand = (ImageButton) itemView.findViewById(R.id.btnExpand);
         ObjectAnimator.ofFloat(btnExpand, "rotation", 0, 180).start();
+        if (list.get(position).getStatus_sc().equalsIgnoreCase("1")){
+            btnExpand.setVisibility(View.GONE);
+        }
         btnExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

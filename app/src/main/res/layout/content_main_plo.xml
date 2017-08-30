@@ -157,10 +157,16 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/imageView6"
+                            android:id="@+id/imgNohistory"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             agendaCalendar:srcCompat="@drawable/disable_alarm" />
+
+                        <ListView
+                            android:id="@+id/listHistory"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="gone" />
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>

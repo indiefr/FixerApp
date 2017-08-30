@@ -35,6 +35,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.creatio.fixer.Adapters.ADFechas;
 import com.creatio.fixer.Adapters.ADHoras;
 import com.creatio.fixer.Adapters.ADOrdenTrabajo;
@@ -206,7 +207,25 @@ public class OrdenTrabajo extends AppCompatActivity {
                     NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     nMgr.cancelAll();
                     Helper.InitOrder(id_sale, "2");
-                    Helper.SendNotification(id_user, "Orden finalizada", "El técnico acaba de finalziar la orden " + id_sale, "1");
+                    Helper.SendNotification(id_user, "Orden finalizada", "El técnico acaba de finalziar la orden " + id_sale + "\nEl cobro ha sido efectuado.", "1");
+                    AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
+                            .addBodyParameter("id_user", id_user)
+                            .addBodyParameter("id_sale", id_sale)
+                            .setPriority(Priority.IMMEDIATE)
+                            .build().getAsString(new StringRequestListener() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.e("Order desc", response);
+
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+
+                        }
+                    });
+
+
                 } else {
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(OrdenTrabajo.this)
@@ -547,7 +566,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                         btnIniciar.setText("Iniciar");
                         btnIniciar.setEnabled(false);
                     }
-                    if (status.equalsIgnoreCase("0")){
+                    if (status.equalsIgnoreCase("0")) {
                         myFooter.setVisibility(View.GONE);
                     }
                     adapterList = new ADOrdenTrabajo(OrdenTrabajo.this, arrServices, type, id_sale, services, status_gral);

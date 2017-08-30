@@ -1,6 +1,7 @@
 package com.creatio.fixer;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,12 +17,11 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.SupportedCardTypesView;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,12 +42,15 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     private SupportedCardTypesView mSupportedCardTypesView;
     private Button btnPagar;
     protected com.braintreepayments.cardform.view.CardForm mCardForm;
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_form);
-        btnPagar = (Button)findViewById(R.id.btnPagar);
+        pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
+
+        btnPagar = (Button) findViewById(R.id.btnPagar);
         mSupportedCardTypesView = (SupportedCardTypesView) findViewById(R.id.supported_card_types);
         mSupportedCardTypesView.setSupportedCardTypes(SUPPORTED_CARD_TYPES);
         extras = getIntent().getExtras();
@@ -62,98 +65,125 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                 .setup(this);
         mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnCardTypeChangedListener(this);
+        if (pref.getBoolean("conekta", false)) {
+            mCardForm.setVisibility(View.GONE);
+            SaveOrder();
 
+        }
         // Warning: this is for development purposes only and should never be done outside of this example app.
         // Failure to set FLAG_SECURE exposes your app to screenshots allowing other apps to steal card information.
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         btnPagar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Helper.InitOrder(extras.getString("id_sale","0"),"0");
-                // Helper.SendNotification(extras.getString("id_sepecialist","0"),"Orden autorizada","Solicitud de servicio autorizada","0");
-                // finish();
                 final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
-                final Map<String, ?> allEntries = pref.getAll();
-                String services = "";
-                for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-                    if (entry.getKey().contains("id_service")) {
-                        services += entry.getValue().toString() + ",";
-                    }
+
+                if (mCardForm.isValid()) {
+                    Activity activity = CardForm.this;
+
+                    Conekta.setPublicKey("key_BA9Y55Dxqy5UEzvyLz63cxw");
+                    Conekta.setApiVersion("1.0.0");
+                    Conekta.collectDevice(activity);
+
+                    Card card = new Card(
+                            pref.getString("name", "No registro") + " " + pref.getString("last_name", "Sin registro"),
+                            mCardForm.getCardNumber(), mCardForm.getCvv(),
+                            mCardForm.getExpirationMonth(),
+                            mCardForm.getExpirationYear());
+                    Token token = new Token(activity);
+
+                    token.onCreateTokenListener(new Token.CreateToken() {
+                        @Override
+                        public void onCreateTokenReady(JSONObject data) {
+                            try {
+                                //Send the id to the webservice.
+                                //SaverOrder();
+
+                            } catch (Exception err) {
+                                //Do something on error
+                            }
+                        }
+                    });
+
+                    token.create(card);
+                } else {
+                    mCardForm.validate();
+                    Toast.makeText(CardForm.this, "Invalido", Toast.LENGTH_SHORT).show();
+
                 }
-                services = services.replaceFirst(".$", "");
-                final String id_user = pref.getString("id_user", "0");
-                double total = Float.parseFloat(extras.getString("subtotal")) * 1.16;
-                //process Intent......
-
-                AndroidNetworking.post("http://api.fixerplomeria.com/v1/SaveOrder")
-                        .addBodyParameter("id_specialist", extras.getString("id_specialist"))
-                        .addBodyParameter("init_date", extras.getString("init_date"))
-                        .addBodyParameter("hour_date", String.valueOf(extras.getInt("hour_date")))
-                        .addBodyParameter("id_user", id_user)
-                        .addBodyParameter("services", services)
-                        .addBodyParameter("subtotal", extras.getString("subtotal"))
-                        .addBodyParameter("total", String.valueOf(total))
-                        .addBodyParameter("lat_lng", extras.getString("latlng"))
-                        .setPriority(Priority.MEDIUM)
-                        .build().getAsJSONArray(new JSONArrayRequestListener() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
-                        String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
-                        Helper.SendNotification(extras.getString("id_specialist"),"Solicitud de servicio", "El usuario " + name + " esta solicitado un servicio.","0");
-                        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-                            if (entry.getKey().contains("id_service")) {
-                                SharedPreferences.Editor edit = pref.edit();
-                                edit.remove(entry.getKey());
-                                edit.putInt("badge", 0);
-                                edit.apply();
-                            }
-                        }
-                        try {
-                            for (int i = 0; i < response.length(); i++) {
-                                JSONObject object = response.getJSONObject(i);
-                                final String id_sale = object.optString("id_sale");
-                                Helper.WriteLog(CardForm.this, "Solicitó servicio con número de orden: " + id_sale);
-                                Helper.ShowAlert(CardForm.this, "¡Gracias por usar nuestro servicio!", "Tu solicitud ha sido guardada con el número de orden: " + id_sale, 0);
-                                finish();
-//                                Activity activity = CardForm.this;
-//
-//                                Conekta.setPublicKey("key_BA9Y55Dxqy5UEzvyLz63cxw");
-//                                Conekta.collectDevice(activity);
-//
-//                                Card card = new Card("Fulanito Pérez", "4242424242424242", "332", "11", "2020");
-//                                Token token = new Token(activity);
-//
-//                                token.onCreateTokenListener(new Token.CreateToken() {
-//                                    @Override
-//                                    public void onCreateTokenReady(JSONObject data) {
-//                                        try {
-//                                            String token_card = data.optString("id");
-//                                            //Send the id to the webservice.
-//
-//                                        } catch (Exception err) {
-//                                            //Do something on error
-//                                        }
-//                                    }
-//                                });
-//
-//                                token.create(card);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onError(ANError error) {
-                        // handle error
-                        Log.e("Login error", error.toString());
-                    }
-                });
             }
         });
+    }
+
+    public void SaveOrder() {
+        final ProgressDialog dialog = new ProgressDialog(CardForm.this);
+        dialog.setMessage("Guardando información");
+        dialog.show();
+        final Map<String, ?> allEntries = pref.getAll();
+        String services = "";
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            if (entry.getKey().contains("id_service")) {
+                services += entry.getValue().toString() + ",";
+            }
+        }
+        services = services.replaceFirst(".$", "");
+        final String id_user = pref.getString("id_user", "0");
+        double total = Float.parseFloat(extras.getString("subtotal")) * 1.16;
+        //process Intent......
+
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/SaveOrder")
+                .addBodyParameter("id_specialist", extras.getString("id_specialist"))
+                .addBodyParameter("init_date", extras.getString("init_date"))
+                .addBodyParameter("hour_date", String.valueOf(extras.getInt("hour_date")))
+                .addBodyParameter("id_user", id_user)
+                .addBodyParameter("services", services)
+                .addBodyParameter("subtotal", extras.getString("subtotal"))
+                .addBodyParameter("total", String.valueOf(total))
+                .addBodyParameter("lat_lng", extras.getString("latlng"))
+                .setPriority(Priority.MEDIUM)
+                .build().getAsJSONArray(new JSONArrayRequestListener() {
+            @Override
+            public void onResponse(JSONArray response) {
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
+                String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
+                Helper.SendNotification(extras.getString("id_specialist"), "Solicitud de servicio", "El usuario " + name + " esta solicitado un servicio.", "0");
+                for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                    if (entry.getKey().contains("id_service")) {
+                        SharedPreferences.Editor edit = pref.edit();
+                        edit.remove(entry.getKey());
+                        edit.putInt("badge", 0);
+                        edit.apply();
+                    }
+                }
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+                        final String id_sale = object.optString("id_sale");
+                        Helper.WriteLog(CardForm.this, "Solicitó servicio con número de orden: " + id_sale);
+                        finish();
+                        dialog.dismiss();
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onError(ANError error) {
+                // handle error
+                Log.e("Login error", error.toString());
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Helper.ShowAlert(CardForm.this, "¡Gracias por usar nuestro servicio!", "Tu solicitud ha sido guardada exitosamente", 0);
+
     }
 
     @Override
@@ -168,14 +198,79 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     @Override
     public void onCardFormSubmit() {
         if (mCardForm.isValid()) {
-            Toast.makeText(this, "Pago autorizado", Toast.LENGTH_SHORT).show();
-            Helper.ShowAlert(CardForm.this,"Finalizado","El pago autorizado y el especialista ha recibido la orden",0);
-            finish();
+            Activity activity = CardForm.this;
+
+            Conekta.setPublicKey("key_BA9Y55Dxqy5UEzvyLz63cxw");
+            Conekta.setApiVersion("1.0.0");
+            Conekta.collectDevice(activity);
+
+            Card card = new Card(
+                    pref.getString("name", "No registro") + " " + pref.getString("last_name", "Sin registro"),
+                    mCardForm.getCardNumber(), mCardForm.getCvv(),
+                    mCardForm.getExpirationMonth(),
+                    mCardForm.getExpirationYear());
+            Token token = new Token(activity);
+
+            token.onCreateTokenListener(new Token.CreateToken() {
+                @Override
+                public void onCreateTokenReady(JSONObject data) {
+                    try {
+                        //Send the id to the webservice.
+                        //SaverOrder();
+                        Log.e("Dta", data.toString());
+                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaCustumer")
+                                .addBodyParameter("id_user", pref.getString("id_user", "0"))
+                                .addBodyParameter("token_id", data.getString("id"))
+                                .addBodyParameter("phone", mCardForm.getMobileNumber())
+                                .setPriority(Priority.IMMEDIATE)
+                                .build().getAsString(new StringRequestListener() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.e("Dta desc", response);
+                                if (response.contains("id")) {
+                                    SharedPreferences.Editor editor = pref.edit();
+                                    editor.putBoolean("conekta", true);
+                                    editor.apply();
+                                    SaveOrder();
+
+                                }
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+
+                            }
+                        });
+                    } catch (Exception err) {
+                        //Do something on error
+                    }
+                }
+            });
+
+            token.create(card);
         } else {
             mCardForm.validate();
             Toast.makeText(this, "Invalido", Toast.LENGTH_SHORT).show();
 
         }
+    }
+
+    public void ConektaOrder() {
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
+                .addBodyParameter("id_user", pref.getString("id_user", "0"))
+                .setPriority(Priority.IMMEDIATE)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("Order desc", response);
+
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
     }
 
     @Override
