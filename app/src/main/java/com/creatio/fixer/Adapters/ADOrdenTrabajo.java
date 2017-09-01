@@ -90,8 +90,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
             txtDesc.setText(arrServices.get(position).getDesc() + "\nInstalación nueva");
             btnPrice.setText(arrServices.get(position).getTime_new() + " MINS");
         } else {
-            //Preinstalación
-            txtDesc.setText(arrServices.get(position).getDesc() + "\nPreinstalación");
+            //Reinstalación
+            txtDesc.setText(arrServices.get(position).getDesc() + "\nReinstalación");
             btnPrice.setText(arrServices.get(position).getTime_pre() + " MINS");
         }
 
@@ -271,7 +271,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                         Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
                         btnAceptar.setText("Nueva");
                         Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
-                        btnCancelar.setText("Preinstalación");
+                        btnCancelar.setText("Reinstalación");
                         // if button is clicked, close the custom dialog
                         btnAceptar.setOnClickListener(new View.OnClickListener() {
                             @Override

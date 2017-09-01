@@ -67,9 +67,9 @@ public class ADOrden extends BaseAdapter {
                 total = Double.parseDouble(arrServices.get(position).getTime_new())* 1.59;
                 txtDesc.setText(arrServices.get(position).getDesc() + "\nInstalación nueva");
             }else{
-                //Preinstalación
+                //Reinstalación
                 total = Double.parseDouble(arrServices.get(position).getTime_pre())* 1.59;
-                txtDesc.setText(arrServices.get(position).getDesc() + "\nPreinstalación");
+                txtDesc.setText(arrServices.get(position).getDesc() + "\nReinstalación");
             }
 
             btnPrice.setText(Helper.formatDecimal(total));

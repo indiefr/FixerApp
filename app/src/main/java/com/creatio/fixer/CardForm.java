@@ -55,14 +55,17 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
         mSupportedCardTypesView.setSupportedCardTypes(SUPPORTED_CARD_TYPES);
         extras = getIntent().getExtras();
         mCardForm = (com.braintreepayments.cardform.view.CardForm) findViewById(R.id.card_form);
+        mCardForm.isCardScanningAvailable();
         mCardForm.cardRequired(true)
                 .expirationRequired(true)
+                .postalCodeRequired(false)
                 .cvvRequired(true)
                 .postalCodeRequired(true)
                 .mobileNumberRequired(true)
-                .mobileNumberExplanation("La tarjeta quedará guardada para futuras compras.")
-                .actionLabel("ENVAR")
+                .mobileNumberExplanation("")
+                .actionLabel("ENVIAR")
                 .setup(this);
+
         mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnCardTypeChangedListener(this);
         if (pref.getBoolean("conekta", false)) {

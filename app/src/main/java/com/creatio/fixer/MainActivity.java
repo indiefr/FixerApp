@@ -346,7 +346,6 @@ public class MainActivity extends AppCompatActivity
         } catch (GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override

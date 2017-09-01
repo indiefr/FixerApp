@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -103,6 +104,18 @@
             android:layout_above="@+id/id_from_your_LinearLayout"
             android:background="@drawable/shadow"></View>
 
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:drawableLeft="@drawable/ic_action_name"
+            android:drawablePadding="8dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="Selecciona fecha y hora" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -110,43 +123,24 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <HorizontalScrollView
+
+            <GridView
+                android:id="@+id/grid_calendar"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
-                android:layout_below="@+id/seatLegendLayout"
-                android:background="@color/fondo_card">
+                android:background="@color/white"
+                android:columnWidth="170dp"
+                android:gravity="center"
+                android:numColumns="2"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbars="horizontal"
+                android:stretchMode="spacingWidthUniform"
+                android:verticalSpacing="1dp">
 
-                <FrameLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent">
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout_gridtableLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <GridView
-                            android:id="@+id/grid_calendar"
-                            android:layout_width="300dp"
-                            android:layout_height="fill_parent"
-                            android:layout_margin="4dp"
-                            android:columnWidth="100dp"
-                            android:gravity="center"
-                            android:horizontalSpacing="50dp"
-                            android:numColumns="auto_fit"
-                            android:scrollbarAlwaysDrawHorizontalTrack="true"
-                            android:scrollbarAlwaysDrawVerticalTrack="true"
-                            android:scrollbars="horizontal"
-                            android:stretchMode="none"
-                            android:verticalSpacing="1dp">
-
-                        </GridView>
+            </GridView>
 
 
-                    </LinearLayout>
-                </FrameLayout>
-            </HorizontalScrollView>
         </LinearLayout>
 
         <LinearLayout

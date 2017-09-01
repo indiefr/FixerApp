@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,12 +66,14 @@ public class ADCalendar extends BaseAdapter {
         image_profile = (CircleImageView) itemView.findViewById(R.id.image_profile);
         txtNombre = (TextView) itemView.findViewById(R.id.txtNombre);
         if (position == 0) {
-            image_profile.setVisibility(View.INVISIBLE);
-            txtNombre.setText("Hora");
+            image_profile.setVisibility(View.GONE);
+            txtNombre.setVisibility(View.GONE);
+            txtNombre.setText("Hora ");
             GenerateText(0);
         } else {
             txtNombre.setText("Fecha seleccionada");
-
+            image_profile.setVisibility(View.GONE);
+            txtNombre.setVisibility(View.GONE);
             Glide.with(context)
                     .load("https://www.shareicon.net/data/2015/08/29/92889_calendar_2133x2133.png")
                     .into(image_profile);
@@ -88,9 +91,9 @@ public class ADCalendar extends BaseAdapter {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(5, 5, 5, 5);
-            int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, context.getResources().getDisplayMetrics());
+            int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, context.getResources().getDisplayMetrics());
             params.height = height;
-            params.gravity = Gravity.CENTER;
+            params.gravity = Gravity.RIGHT;
 
             final Button btn = new Button(context);
             String statusc = list.get(c).getStatus();
@@ -132,22 +135,34 @@ public class ADCalendar extends BaseAdapter {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
-            params.setMargins(5, 5, 5, 5);
+            params.setMargins(16, 5, 5, 5);
+
             int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, context.getResources().getDisplayMetrics());
             params.height = height;
-            params.gravity = Gravity.CENTER;
+            params.gravity = Gravity.LEFT;
 
             TextView txt = new TextView(context);
-            txt.setGravity(Gravity.CENTER);
+            txt.setGravity(Gravity.LEFT);
+            txt.setGravity(Gravity.CENTER_VERTICAL);
+
             txt.setTextColor(context.getResources().getColor(R.color.dark));
             if (i < 8 || i > 20) {
                 txt.setVisibility(View.GONE);
             }
-            txt.setText("" + (0 + i) + ":00");
+            txt.setText("" + (0 + i) + ":00 Hrs.");
 
             txt.setTextSize(15);
-
             linear_calendar.addView(txt, params);
+
+            ImageView divider = new ImageView(context);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2);
+            lp.setMargins(5, 5, 5, 5);
+            divider.setLayoutParams(lp);
+            divider.setBackgroundResource(R.color.fondo_card_list);
+            if (i < 8 || i > 20) {
+                divider.setVisibility(View.GONE);
+            }
+            linear_calendar.addView(divider);
 
         }
     }

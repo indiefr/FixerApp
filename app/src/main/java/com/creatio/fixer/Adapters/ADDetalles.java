@@ -82,7 +82,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
                 Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
                 btnAceptar.setText("Nueva");
                 Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
-                btnCancelar.setText("Preinstalación");
+                btnCancelar.setText("Reinstalación");
 
                 // if button is clicked, close the custom dialog
                 btnAceptar.setOnClickListener(new View.OnClickListener() {
