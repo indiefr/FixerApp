@@ -22,9 +22,11 @@ public class OOrders {
     String hour_date;
     String hour_date_service;
     String service_date;
+    String rate;
+    String reference;
 
 
-    public OOrders(String id_order, String create_on, String total, String subtotal, String lat_lng, String init_date, String id_specialist, String name, String id_calendary, String name_user, String last_name_user, String status_sc, String status_so,String id_user, String hour_date, String hour_date_service, String service_date) {
+    public OOrders(String id_order, String create_on, String total, String subtotal, String lat_lng, String init_date, String id_specialist, String name, String id_calendary, String name_user, String last_name_user, String status_sc, String status_so, String id_user, String hour_date, String hour_date_service, String service_date, String rate, String reference) {
         this.id_order = id_order;
         this.create_on = create_on;
         this.total = total;
@@ -42,6 +44,24 @@ public class OOrders {
         this.hour_date = hour_date;
         this.hour_date_service = hour_date_service;
         this.service_date = service_date;
+        this.rate = rate;
+        this.reference = reference;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
     }
 
     public String getHour_date_service() {

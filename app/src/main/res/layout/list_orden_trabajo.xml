@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/imgConcepto"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:layout_weight="0.2"
             android:elevation="1dp"
@@ -74,12 +74,13 @@
                 android:layout_height="30dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="0.7"
-                android:background="@drawable/bg_green"
+                android:background="@drawable/btn_white"
                 android:focusable="false"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="right|center_vertical"
                 android:text="01:30 hrs"
-                android:textColor="#fff" />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15sp" />
 
             <Button
                 android:id="@+id/btnEdit"

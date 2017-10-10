@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
@@ -32,7 +33,8 @@ import java.util.Locale;
 
 public class Calendario extends Fragment {
     public GridView grid_calendar;
-    public Button btnCalendar, btnL, btnR;
+    public Button btnCalendar;
+    ImageButton  btnL, btnR;
     public TextView txtAbrirOrden;
     java.util.Calendar myCalendar;
     DatePickerDialog.OnDateSetListener date;
@@ -47,14 +49,14 @@ public class Calendario extends Fragment {
         grid_calendar = (GridView) v.findViewById(R.id.grid_calendar);
 
         btnCalendar = (Button) v.findViewById(R.id.btnCalendar);
-        btnL = (Button) v.findViewById(R.id.btnL);
-        btnR = (Button) v.findViewById(R.id.btnR);
+        btnL = (ImageButton) v.findViewById(R.id.btnL);
+        btnR = (ImageButton) v.findViewById(R.id.btnR);
         txtAbrirOrden = (TextView) v.findViewById(R.id.txtAbrirOrden);
 
 
         //Actions
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM", Locale.ROOT);
-        SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM", new Locale("es","MX"));
+        SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","MX"));
         today = sdf.format(new Date());
         todaySend = sdfSend.format(new Date());
         btnCalendar.setText(today);
@@ -72,9 +74,9 @@ public class Calendario extends Fragment {
                 myCalendar.set(java.util.Calendar.MONTH, month);
                 myCalendar.set(java.util.Calendar.DAY_OF_MONTH, dayOfMonth);
                 String myFormat = "EEE dd MMM"; //In which you need put here
-                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ROOT);
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("es","MX"));
                 btnCalendar.setText(sdf.format(myCalendar.getTime()));
-                SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+                SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd", new Locale("es","MX"));
                 todaySend = sdfSend.format(myCalendar.getTime());
                 GetCalendar(todaySend);
 
@@ -100,7 +102,7 @@ public class Calendario extends Fragment {
                     c.add(Calendar.DATE, 1);  // number of days to add
                     todaySend = sdf.format(c.getTime());
                     String myFormat = "EEE dd MMM"; //In which you need put here
-                    SimpleDateFormat sdf2 = new SimpleDateFormat(myFormat, Locale.ROOT);
+                    SimpleDateFormat sdf2 = new SimpleDateFormat(myFormat, new Locale("es","MX"));
                     btnCalendar.setText(sdf2.format(c.getTime()));
                     GetCalendar(todaySend);
                 } catch (ParseException e) {
@@ -118,7 +120,7 @@ public class Calendario extends Fragment {
                     c.add(Calendar.DATE, -1);  // number of days to add
                     todaySend = sdf.format(c.getTime());
                     String myFormat = "EEE dd MMM"; //In which you need put here
-                    SimpleDateFormat sdf2 = new SimpleDateFormat(myFormat, Locale.ROOT);
+                    SimpleDateFormat sdf2 = new SimpleDateFormat(myFormat, new Locale("es","MX"));
                     btnCalendar.setText(sdf2.format(c.getTime()));
                     GetCalendar(todaySend);
                 } catch (ParseException e) {

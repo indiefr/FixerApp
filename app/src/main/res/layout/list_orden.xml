@@ -69,6 +69,16 @@
                 android:text="$ 200.00"
                 android:textColor="#fff" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/deleteItem"
+            android:layout_width="0dp"
+            android:layout_height="26dp"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="0.1"
+            android:background="@drawable/btn_dangert"
+            app:srcCompat="@drawable/ic_close" />
+
     </LinearLayout>
 
 </LinearLayout>

@@ -44,24 +44,24 @@ public class Pieces extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.list_pieces);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new  View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        edt_pieces = (EditText)toolbar.findViewById(R.id.edt_pieces);
-        txtPieces = (TextView)findViewById(R.id.txtPieces);
+        edt_pieces = (EditText) toolbar.findViewById(R.id.edt_pieces);
+        txtPieces = (TextView) findViewById(R.id.txtPieces);
         TextView txtNameService = (TextView) findViewById(R.id.txtNameService);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new ADPieces(Pieces.this,list,id_service,id_sale);
+        adapter = new ADPieces(Pieces.this, list, id_service, id_sale);
         txtNameService.setText("Piezas de " + extras.getString("name_service"));
         recyclerView.setAdapter(adapter);
         edt_pieces.addTextChangedListener(new TextWatcher() {
@@ -82,11 +82,19 @@ public class Pieces extends AppCompatActivity {
         });
         PiecesOfservice();
         ReadPieces();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-    public void ReadPieces(){
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    public void ReadPieces() {
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadPiecesOrder")
-                .addBodyParameter("id_order",id_sale)
-                .addBodyParameter("id_service",id_service)
+                .addBodyParameter("id_order", id_sale)
+                .addBodyParameter("id_service", id_service)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
@@ -110,14 +118,15 @@ public class Pieces extends AppCompatActivity {
             }
         });
     }
-    public void PiecesOfservice(){
+
+    public void PiecesOfservice() {
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/Pieces")
                 .addBodyParameter("id_service", id_service)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.e("TAG",response.toString());
+                Log.e("TAG", response.toString());
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -128,11 +137,11 @@ public class Pieces extends AppCompatActivity {
                         String id_store = object.optString("id_store");
                         String status = object.optString("status");
                         String name_store = object.optString("nameStore");
-                        list.add(new OPieces(id_piece,name,description,id_store,status,price,name_store ));
+                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store));
 
 
                     }
-                    adapter = new ADPieces(Pieces.this,list,id_service,id_sale);
+                    adapter = new ADPieces(Pieces.this, list, id_service, id_sale);
                     recyclerView.setAdapter(adapter);
                 } catch (JSONException e) {
                     Log.e("piece try error", e.toString());
@@ -147,14 +156,17 @@ public class Pieces extends AppCompatActivity {
             }
         });
     }
-    public void ChangeText(String name){
-        if (list.contains(name)){
+
+    public void ChangeText(String name) {
+        if (list.contains(name)) {
 
 
         }
     }
-    public void Cerrar(){
+
+    public void Cerrar() {
+
         finish();
-        Helper.ShowAlert(Pieces.this,"Buen trabajo", "Se han agregado las peizas correctamente",0);
+        Helper.ShowAlert(Pieces.this, "Buen trabajo", "Se han agregado las peizas correctamente", 0);
     }
 }

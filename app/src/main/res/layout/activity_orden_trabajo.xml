@@ -50,7 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.1"
             android:background="@android:color/transparent"
-            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+            android:tint="@color/red"
+            app:srcCompat="@drawable/ic_close" />
 
     </LinearLayout>
 
@@ -82,6 +83,7 @@
             android:id="@+id/btnComo"
             android:layout_width="wrap_content"
             android:layout_height="55dp"
+            android:layout_marginRight="2dp"
             android:layout_weight="1"
             android:background="@drawable/flat_primary"
             android:drawableRight="@drawable/ic_place"
@@ -104,16 +106,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
+        android:background="@color/fondo_card"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <ListView
-            android:id="@+id/list_orden"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFF"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:layout_height="match_parent"
+            android:elevation="1dp">
+
+            <ListView
+                android:id="@+id/list_orden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFF"
+                android:dividerHeight="1dp" />
+        </android.support.v7.widget.CardView>
 
     </LinearLayout>
 

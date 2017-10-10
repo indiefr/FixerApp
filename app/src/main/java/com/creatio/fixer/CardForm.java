@@ -1,6 +1,7 @@
 package com.creatio.fixer;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -43,17 +45,29 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     private Button btnPagar;
     protected com.braintreepayments.cardform.view.CardForm mCardForm;
     private SharedPreferences pref;
-
+    private boolean oxxo = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_form);
+
         pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
 
         btnPagar = (Button) findViewById(R.id.btnPagar);
         mSupportedCardTypesView = (SupportedCardTypesView) findViewById(R.id.supported_card_types);
         mSupportedCardTypesView.setSupportedCardTypes(SUPPORTED_CARD_TYPES);
         extras = getIntent().getExtras();
+        oxxo = extras.getBoolean("oxxo");
+
+        if (oxxo){
+            SaveOrder();
+        }else{
+            if (pref.getBoolean("conekta", false)) {
+                mCardForm.setVisibility(View.GONE);
+                SaveOrder();
+
+            }
+        }
         mCardForm = (com.braintreepayments.cardform.view.CardForm) findViewById(R.id.card_form);
         mCardForm.isCardScanningAvailable();
         mCardForm.cardRequired(true)
@@ -68,11 +82,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
 
         mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnCardTypeChangedListener(this);
-        if (pref.getBoolean("conekta", false)) {
-            mCardForm.setVisibility(View.GONE);
-            SaveOrder();
 
-        }
         // Warning: this is for development purposes only and should never be done outside of this example app.
         // Failure to set FLAG_SECURE exposes your app to screenshots allowing other apps to steal card information.
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -100,7 +110,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                         public void onCreateTokenReady(JSONObject data) {
                             try {
                                 //Send the id to the webservice.
-                                //SaverOrder();
+                                SaveOrder();
 
                             } catch (Exception err) {
                                 //Do something on error
@@ -163,9 +173,42 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                         JSONObject object = response.getJSONObject(i);
                         final String id_sale = object.optString("id_sale");
                         Helper.WriteLog(CardForm.this, "Solicitó servicio con número de orden: " + id_sale);
-                        finish();
-                        dialog.dismiss();
+                        if (oxxo){
+                            ConektaOrderOxxo(id_sale);
+                        }else{
+                            ConektaOrder(id_sale);
+                        }
 
+                        dialog.dismiss();
+                        // custom dialog
+                        final Dialog dialog = new Dialog(CardForm.this);
+                        dialog.setContentView(R.layout.alert_fixer);
+                        // set the custom dialog components - text, image and button
+                        TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
+                        TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
+                        txtTitle.setText("¡Gracias por usar nuestro servicio!");
+                        txtMsj.setText("Tu solicitud ha sido guardada exitosamente No. " + id_sale);
+
+
+                        Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
+                        Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
+                        btnCancelar.setVisibility(View.INVISIBLE);
+                        // if button is clicked, close the custom dialog
+                        btnAceptar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        });
+                        btnCancelar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        dialog.show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -185,7 +228,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Helper.ShowAlert(CardForm.this, "¡Gracias por usar nuestro servicio!", "Tu solicitud ha sido guardada exitosamente", 0);
+//        Helper.ShowAlert(CardForm.this, "¡Gracias por usar nuestro servicio!", "Tu solicitud ha sido guardada exitosamente", 0);
 
     }
 
@@ -230,7 +273,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                             @Override
                             public void onResponse(String response) {
                                 Log.e("Dta desc", response);
-                                if (response.contains("id")) {
+                                if (response.contains("id") || response.contains("creado")) {
                                     SharedPreferences.Editor editor = pref.edit();
                                     editor.putBoolean("conekta", true);
                                     editor.apply();
@@ -258,9 +301,10 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
         }
     }
 
-    public void ConektaOrder() {
+    public void ConektaOrder(String id_sale) {
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
                 .addBodyParameter("id_user", pref.getString("id_user", "0"))
+                .addBodyParameter("id_sale",id_sale)
                 .setPriority(Priority.IMMEDIATE)
                 .build().getAsString(new StringRequestListener() {
             @Override
@@ -275,7 +319,25 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
             }
         });
     }
+    public void ConektaOrderOxxo(String id_sale) {
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrderOxxo")
+                .addBodyParameter("id_user", pref.getString("id_user", "0"))
+                .addBodyParameter("id_sale",id_sale)
+                .setPriority(Priority.IMMEDIATE)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("Order reference", response);
 
+
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);

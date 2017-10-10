@@ -1,9 +1,12 @@
 package com.creatio.fixer;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Rating;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +42,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
 import com.creatio.fixer.Adapters.ADEvent;
 import com.creatio.fixer.Adapters.ADNew;
@@ -79,7 +84,7 @@ public class MainActivityPlo extends AppCompatActivity
     private CalendarView calendarView;
     private String fecha_gral;
     private ImageView background,imgNohistory;
-
+    private RatingBar rtBarSpe;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +117,7 @@ public class MainActivityPlo extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
+        appBar.bringToFront();
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_iniciar).setVisible(false);
@@ -120,7 +125,8 @@ public class MainActivityPlo extends AppCompatActivity
         View hView = navigationView.getHeaderView(0);
         txtNameH = (TextView) hView.findViewById(R.id.txtNameUser);
         image_profile = (CircleImageView) hView.findViewById(R.id.image_profile);
-
+        rtBarSpe = (RatingBar) hView.findViewById(R.id.rtBarSpe);
+        rtBarSpe.setVisibility(View.VISIBLE);
         navigationView.setNavigationItemSelectedListener(this);
         //Actions of elements
 
@@ -248,6 +254,7 @@ public class MainActivityPlo extends AppCompatActivity
                 }
             }
         });
+        GetRate();
     }
 
     @Override
@@ -285,7 +292,7 @@ public class MainActivityPlo extends AppCompatActivity
         int id = item.getItemId();
 
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivityPlo.this);
-        SharedPreferences.Editor edit = pref.edit();
+        final SharedPreferences.Editor edit = pref.edit();
         edit.clear();
         if (id == R.id.action_settings) {
             return true;
@@ -294,18 +301,33 @@ public class MainActivityPlo extends AppCompatActivity
             Intent i = new Intent(MainActivityPlo.this, Login.class);
             startActivity(i);
         } else if (id == R.id.nav_close) {
-            // Handle the camera action
-            Map<String, ?> allEntries = pref.getAll();
-            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-                edit.remove(entry.getKey());
-                edit.putBoolean("login_spe", false);
+            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivityPlo.this);
+            alert.setTitle("¿Estás seguro de cerrar la sesión?");
+            alert.setMessage("Al cerrar la sesión, se borraran todos tus datos.");
+            alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Map<String, ?> allEntries = pref.getAll();
+                    for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                        edit.remove(entry.getKey());
+                        edit.putBoolean("login_spe", false);
 
 
-            }
-            edit.apply();
-            finish();
-            Intent i = new Intent(MainActivityPlo.this, Login.class);
-            startActivity(i);
+                    }
+                    edit.apply();
+                    finish();
+                    Intent i = new Intent(MainActivityPlo.this, Login.class);
+                    startActivity(i);
+                }
+            });
+            alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alert.show();
+
         } else if (id == R.id.nav_disponibilidad) {
             int items = pref.getInt("badge", 0);
 
@@ -479,9 +501,10 @@ public class MainActivityPlo extends AppCompatActivity
                         String status_so = object.optString("status_so");
                         String id_user = object.optString("id_user");
                         String hour_date = object.optString("hour_date");
+                        String reference = object.optString("reference");
 
 
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", ""));
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference));
 
                     }
                     if (flag) {
@@ -536,9 +559,10 @@ public class MainActivityPlo extends AppCompatActivity
                         String status_so = object.optString("status_so");
                         String id_user = object.optString("id_user");
                         String hour_date = object.optString("hour_date");
+                        String reference = object.optString("reference");
 
 
-                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", ""));
+                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference));
                         list_history.setVisibility(View.VISIBLE);
                         imgNohistory.setVisibility(View.GONE);
                         ADNew adapter = new ADNew(MainActivityPlo.this, listHistory);
@@ -555,6 +579,32 @@ public class MainActivityPlo extends AppCompatActivity
             public void onError(ANError error) {
                 // handle error
                 Log.e("Login error", error.toString());
+            }
+        });
+    }
+    public void GetRate(){
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String id_user = pref.getString("id_user", "0");
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetRate")
+                .addBodyParameter("id_specialist",id_user )
+                .build().getAsJSONArray(new JSONArrayRequestListener() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+                        String rate = object.optString("rate");
+                        rtBarSpe.setRating(Float.parseFloat(rate));
+                    }
+
+                } catch (JSONException e) {
+                    Log.e("Login error", e.toString());
+                }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
             }
         });
     }

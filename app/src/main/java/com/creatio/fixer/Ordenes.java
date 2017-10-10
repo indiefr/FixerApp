@@ -1,5 +1,6 @@
 package com.creatio.fixer;
 
+import android.app.ActionBar;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -36,8 +37,14 @@ public class Ordenes extends AppCompatActivity {
         NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nMgr.cancelAll();
         ReadOrders();
-    }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+    }
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
+    }
     @Override
     protected void onResume() {
         ReadOrders();
@@ -64,7 +71,7 @@ public class Ordenes extends AppCompatActivity {
                         String subtotal = object.optString("subtotal");
                         String lat_lng = object.optString("lat_lng");
                         String init_date = object.optString("init_date");
-                        String id_specialist = object.optString("id_specialist");
+                        String id_specialist = object.optString("id_spe");
                         String name = object.optString("name");
                         String name_user = object.optString("name_user");
                         String last_name = object.optString("last_name");
@@ -76,7 +83,9 @@ public class Ordenes extends AppCompatActivity {
                         String hour_date = object.optString("hour_date");
                         String hour_date_service = object.optString("hour_date_service");
                         String service_date = object.optString("service_date");
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service,service_date));
+                        String rate = object.optString("ratef");
+                        String reference = object.optString("reference");
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service,service_date,rate,reference));
 
                     }
                     ADListOrden adapter = new ADListOrden(Ordenes.this, list, "1");

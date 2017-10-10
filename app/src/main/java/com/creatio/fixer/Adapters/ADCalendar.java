@@ -19,7 +19,11 @@ import com.creatio.fixer.Calendario;
 import com.creatio.fixer.Objects.OCalendarAll;
 import com.creatio.fixer.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -101,11 +105,23 @@ public class ADCalendar extends BaseAdapter {
             if (statusc.equalsIgnoreCase("0")) {
                 btn.setText("Libre");
                 btn.setId(i);
-                btn.setBackgroundResource(R.drawable.bg_green);
+                Calendar rightNow = Calendar.getInstance();
+                SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","MX"));
+                String today = sdfSend.format(new Date());
+                int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+                if (currentHour >  btn.getId() && today.equalsIgnoreCase(todaySend)){
+                    btn.setEnabled(false);
+                    btn.setBackgroundResource(R.drawable.bg_disabled);
+                    btn.setText("Deshabilitado");
+                }else{
+                    btn.setEnabled(true);
+                    btn.setBackgroundResource(R.drawable.bg_green);
+                }
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         fragment.Seleccionar(list.get(c).getId_specialis(), todaySend, btn.getId());
+
                     }
                 });
             } else {

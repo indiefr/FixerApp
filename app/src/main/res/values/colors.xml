@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#189382</color>
     <color name="colorPrimaryAlpha">#66189382</color>
-    <color name="colorPrimaryDark">#107b6c</color>
+    <color name="colorPrimaryDark">#0e6357</color>
     <color name="dark">#04362f</color>
     <color name="colorAccent">#fcbe58</color>
     <color name="colorAccentDark">#e6a53b</color>
@@ -19,4 +19,5 @@
     <color name="black">#333333</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="letters">#535353</color>
 </resources>

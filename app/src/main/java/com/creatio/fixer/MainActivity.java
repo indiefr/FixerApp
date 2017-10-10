@@ -1,7 +1,9 @@
 package com.creatio.fixer;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.IdRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -34,6 +37,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity
     int hour_date;
     TextView txtName;
     CircleImageView image_profile;
-
+    boolean oxxo = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_disponibilidad).setVisible(false);
+        nav_Menu.findItem(R.id.nav_iniciar).setVisible(false);
         View hView = navigationView.getHeaderView(0);
         txtName = (TextView) hView.findViewById(R.id.txtNameUser);
         image_profile = (CircleImageView) hView.findViewById(R.id.image_profile);
@@ -203,21 +208,37 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        SharedPreferences.Editor edit = pref.edit();
+        final SharedPreferences.Editor edit = pref.edit();
         edit.clear();
         if (id == R.id.nav_close) {
             // Handle the camera action
-            Map<String, ?> allEntries = pref.getAll();
-            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+            alert.setTitle("¿Estás seguro de cerrar la sesión?");
+            alert.setMessage("Al cerrar la sesión, se borraran todos tus datos.");
+            alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Map<String, ?> allEntries = pref.getAll();
+                    for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
 
-                edit.remove(entry.getKey());
-                edit.putBoolean("login", false);
+                        edit.remove(entry.getKey());
+                        edit.putBoolean("login", false);
 
-            }
-            edit.apply();
-            finish();
-            Intent i = new Intent(MainActivity.this, Login.class);
-            startActivity(i);
+                    }
+                    edit.apply();
+                    finish();
+                    Intent i = new Intent(MainActivity.this, Login.class);
+                    startActivity(i);
+                }
+            });
+            alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alert.show();
+
         } else if (id == R.id.nav_ordenes) {
 
             Intent i = new Intent(MainActivity.this, Ordenes.class);
@@ -349,24 +370,58 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode,final  Intent data) {
+        Log.e("Entro places", "Entro");
         super.onActivityResult(requestCode, resultCode, data);
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final Map<String, ?> allEntries = pref.getAll();
 
         if (requestCode == 199 && resultCode == -1) {
-            Intent intent = new Intent(MainActivity.this, CardForm.class);
+            //Lanzar alerta metodo de pago
             final Place place = PlacePicker.getPlace(data, this);
-            String toastMsg = String.format("Place: %s", place.getName());
-            // BuildNotification("El tecnico a revisado tu solicitud en la dirección " + place.getName());
-            String latlng = place.getLatLng().latitude + "," + place.getLatLng().longitude;
-            intent.putExtra("latlng", latlng);
-            intent.putExtra("id_specialist", id_specialist);
-            intent.putExtra("init_date", init_date);
-            intent.putExtra("hour_date", hour_date);
-            intent.putExtra("subtotal", subtotal);
-            startActivity(intent);
-            Cerrar();
+            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+            alert.setTitle("Atención");
+
+            LayoutInflater inflater = getLayoutInflater();
+            View views = inflater.inflate(R.layout.alert_metodo, null);
+            RadioGroup rdgGrupo = (RadioGroup)views.findViewById(R.id.rdgGrupo);
+            rdgGrupo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                    if (checkedId == R.id.radioButton){
+                        oxxo = false;
+                    }else{
+                        oxxo = true;
+                    }
+                }
+            });
+            alert.setView(views);
+            alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(MainActivity.this, CardForm.class);
+
+                    String toastMsg = String.format("Place: %s", place.getName());
+                    // BuildNotification("El tecnico a revisado tu solicitud en la dirección " + place.getName());
+                    String latlng = place.getLatLng().latitude + "," + place.getLatLng().longitude;
+                    intent.putExtra("latlng", latlng);
+                    intent.putExtra("id_specialist", id_specialist);
+                    intent.putExtra("init_date", init_date);
+                    intent.putExtra("hour_date", hour_date);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("oxxo", oxxo);
+                    startActivity(intent);
+                    Cerrar();
+                }
+            });
+            alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alert.show();
+
         }
     }
 

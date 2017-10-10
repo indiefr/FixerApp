@@ -1,11 +1,17 @@
 package com.creatio.fixer;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -66,11 +72,42 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     String refreshedToken = "sin token";
     Button btnFacebook;
     CallbackManager callbackManager;
-
+    private boolean checkIfAlreadyhavePermission() {
+        int result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private void requestForSpecificPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+    }
     @Override
-
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 101:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //granted
+                } else {
+                    //not granted
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Permission request
+        int MyVersion = Build.VERSION.SDK_INT;
+        if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (!checkIfAlreadyhavePermission()) {
+                requestForSpecificPermission();
+            }
+        }
+        //------------------
         setContentView(R.layout.activity_login);
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -384,6 +421,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             String email = object.optString("email");
                             String profile_image = object.optString("profile_img");
                             String status = object.optString("status");
+                            String client_id_conekta = object.optString("client_id_conekta");
+                            if (client_id_conekta.equalsIgnoreCase("0")){
+
+                            }
                             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
                             SharedPreferences.Editor editor = sharedPref.edit();
                             editor.putString("id_user", id_user);
@@ -394,6 +435,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             editor.putString("profile_image", profile_image);
                             editor.putString("status", status);
                             editor.putBoolean("login", true);
+                            if (client_id_conekta.equalsIgnoreCase("0")){
+                                editor.putBoolean("conekta", false);
+                            }else{
+                                editor.putBoolean("conekta", true);
+                            }
                             editor.apply();
                             Helper.WriteLog(Login.this, "Usuario ha iniciado sesión .");
                             finish();

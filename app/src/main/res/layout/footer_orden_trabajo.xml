@@ -67,7 +67,7 @@
     <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
         android:id="@+id/btnAutorizar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:background="@color/colorPrimary"
         android:drawablePadding="16dp"
         android:drawableRight="@drawable/ic_check"

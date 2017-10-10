@@ -74,10 +74,20 @@
             android:textColor="#555" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnEvidence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/button_info"
+        android:text="Tomar evidencia"
+        android:textColor="@color/white" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_green"
         android:gravity="center"
         android:orientation="horizontal"
@@ -87,7 +97,7 @@
             android:id="@+id/textView16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.82"
             android:fontFamily="sans-serif-medium"
             android:text="Total estimado de la orden"
             android:textColor="#FFF"

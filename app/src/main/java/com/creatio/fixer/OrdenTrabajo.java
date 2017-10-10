@@ -92,6 +92,15 @@ public class OrdenTrabajo extends AppCompatActivity {
         txtNombre = (TextView) myHeader.findViewById(R.id.txtNombre);
         txtOrden = (TextView) myHeader.findViewById(R.id.txtOrden);
         txtSum = (TextView) myHeader.findViewById(R.id.txtSum);
+        Button btnEvidence = (Button) myHeader.findViewById(R.id.btnEvidence);
+        btnEvidence.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(OrdenTrabajo.this,Evidence.class);
+                i.putExtra("id_sale", id_sale);
+                startActivity(i);
+            }
+        });
         ly_espera = (LinearLayout) findViewById(R.id.ly_espera);
         spFecha = (Spinner) myFooter.findViewById(R.id.spFecha);
         spHora = (Spinner) myFooter.findViewById(R.id.spHora);
@@ -167,7 +176,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                     }
                 }.start();
                 Helper.SendNotification(id_user, "Autorización", "Pido autorización para iniciar la orden: "
-                        + id_sale + "\nCon fehca de reparación: "
+                        + id_sale + "\nCon fecha de reparación: "
                         + service_date
                         + " a las " + hour_date_service, "1");
                 Helper.InitOrder(id_sale, "3");
