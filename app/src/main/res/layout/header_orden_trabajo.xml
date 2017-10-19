@@ -72,6 +72,63 @@
             android:gravity="right"
             android:text="000985"
             android:textColor="#555" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ly_address"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView33"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:fontFamily="sans-serif-light"
+                android:text="DIRECCIÓN"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="2dp"
+            android:layout_weight="0.7"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="left"
+            android:text="Dirección"
+            android:textColor="@color/letters"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtDateh"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="0.7"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="right"
+                android:text="Fecha"
+                android:textColor="@color/grey_500"
+                android:textSize="12sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <Button
@@ -82,7 +139,8 @@
         android:layout_marginTop="4dp"
         android:background="@drawable/button_info"
         android:text="Tomar evidencia"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"

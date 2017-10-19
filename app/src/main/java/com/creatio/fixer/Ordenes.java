@@ -1,12 +1,12 @@
 package com.creatio.fixer;
 
-import android.app.ActionBar;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,23 +28,32 @@ import java.util.ArrayList;
 
 public class Ordenes extends AppCompatActivity {
     private ListView list_orders;
-
+    private SwipeRefreshLayout swipe;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordenes);
         list_orders = (ListView) findViewById(R.id.list_orders);
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nMgr.cancelAll();
         ReadOrders();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ReadOrders();
+            }
+        });
 
     }
+
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
+
     @Override
     protected void onResume() {
         ReadOrders();
@@ -61,7 +70,7 @@ public class Ordenes extends AppCompatActivity {
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-
+                swipe.setRefreshing(false);
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -85,7 +94,7 @@ public class Ordenes extends AppCompatActivity {
                         String service_date = object.optString("service_date");
                         String rate = object.optString("ratef");
                         String reference = object.optString("reference");
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service,service_date,rate,reference));
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service, service_date, rate, reference));
 
                     }
                     ADListOrden adapter = new ADListOrden(Ordenes.this, list, "1");
@@ -93,9 +102,14 @@ public class Ordenes extends AppCompatActivity {
                     list_orders.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String[] date = list.get(position).getInit_date().split(" ");
+
                             Intent i = new Intent(Ordenes.this, OrdenTrabajo.class);
                             i.putExtra("type", "0");
                             i.putExtra("id_sale", list.get(position).getId_order());
+                            i.putExtra("latlng", list.get(position).getLat_lng());
+                            i.putExtra("date", date[0] + " a las " + list.get(position).getHour_date() + " hrs.");
+                            i.putExtra("hour", list.get(position).getHour_date_service());
                             startActivity(i);
                         }
                     });
@@ -108,6 +122,7 @@ public class Ordenes extends AppCompatActivity {
             @Override
             public void onError(ANError error) {
                 // handle error
+                swipe.setRefreshing(false);
                 Log.e("Login error", error.toString());
             }
         });

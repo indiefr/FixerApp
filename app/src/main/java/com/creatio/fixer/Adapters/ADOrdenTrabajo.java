@@ -79,20 +79,22 @@ public class ADOrdenTrabajo extends BaseAdapter {
         txtPieces = (TextView) itemView.findViewById(R.id.txtPiece);
         btnEdit.setVisibility(View.GONE);
 
-        if (type.equalsIgnoreCase("1") && statusGral.equalsIgnoreCase("5")){
+        if (type.equalsIgnoreCase("1")  && statusGral.equalsIgnoreCase("0")){
             btnEdit.setVisibility(View.VISIBLE);
         }
         TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
         TextView txtDesc = (TextView) itemView.findViewById(R.id.txtDesc);
         txtTitle.setText(arrServices.get(position).getTitle());
+        int t = Integer.parseInt(arrServices.get(position).getTime_new());
+        String time = formatHoursAndMinutes(t);
         if (arrServices.get(position).getType().equalsIgnoreCase("0")) {
             //Nuevo
             txtDesc.setText(arrServices.get(position).getDesc() + "\nInstalación nueva");
-            btnPrice.setText(arrServices.get(position).getTime_new() + " MINS");
+            btnPrice.setText(time);
         } else {
             //Reinstalación
             txtDesc.setText(arrServices.get(position).getDesc() + "\nReinstalación");
-            btnPrice.setText(arrServices.get(position).getTime_pre() + " MINS");
+            btnPrice.setText(time);
         }
 
         btnEdit.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +120,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             }
                             case R.id.delete: {
                                 Toast.makeText(context, "Se ha eliminado el servicio" + " : " + arrServices.get(v.getId()).getTitle(), Toast.LENGTH_LONG).show();
-                                arrServices.remove((int) v.getTag());
+                                arrServices.remove((int) v.getId());
+                                UpdateServices("delete");
                                 notifyDataSetChanged();
                                 break;
                             }
@@ -153,7 +156,11 @@ public class ADOrdenTrabajo extends BaseAdapter {
         return itemView;
     }
 
-
+    public static String formatHoursAndMinutes(int totalMinutes) {
+        String minutes = Integer.toString(totalMinutes % 60);
+        minutes = minutes.length() == 1 ? "0" + minutes : minutes;
+        return (totalMinutes / 60) + ":" + minutes;
+    }
     String id_service;
     String type_new = "";
     public void LoadCatServ(String t) {
@@ -278,7 +285,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 type_new = "0";
-                                UpdateServices();
+                                UpdateServices("edit");
                                 ((OrdenTrabajo)context).LeerServicios();
                             }
                         });
@@ -287,7 +294,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 type_new = "1";
-                                UpdateServices();
+                                UpdateServices("edit");
                                 ((OrdenTrabajo)context).LeerServicios();
                             }
                         });
@@ -311,8 +318,13 @@ public class ADOrdenTrabajo extends BaseAdapter {
             }
         });
     }
-    public void UpdateServices() {
-        services = services.replace(id_service_old + "|" + type_old, id_service + "|"+ type_new);
+    public void UpdateServices(String type) {
+        if (type.equalsIgnoreCase("delete")){
+            services = services.replace(id_service_old + "|" + type_old, "");
+        }else{
+            services = services.replace(id_service_old + "|" + type_old, id_service + "|"+ type_new);
+        }
+
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateServices")
                 .setPriority(Priority.MEDIUM)
                 .addBodyParameter("services",services)

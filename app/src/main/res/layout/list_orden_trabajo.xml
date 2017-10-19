@@ -30,67 +30,89 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_weight="0.4"
-            android:gravity="center_vertical"
+            android:layout_weight="0.8"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/txtTitle"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="Tubería 4"
-                android:textColor="#333333"
-                android:textSize="16sp" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="0.4"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Tubería 4"
+                        android:textColor="#333333"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_weight="0.4"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnPrice"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="0.7"
+                        android:background="@drawable/btn_white"
+                        android:focusable="false"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="right|center_vertical"
+                        android:text="01:30 hrs"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="15sp" />
+
+                    <Button
+                        android:id="@+id/btnEdit"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="0.25"
+                        android:background="@drawable/ic_assignment"
+                        android:focusable="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="0.4"
                 android:fontFamily="sans-serif-light"
-                android:text="Mano de obra\n Instalación nueva"
+                android:text="Mano de obra\nInstalación nueva"
                 android:textColor="#444" />
 
             <TextView
                 android:id="@+id/txtPiece"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="0.4"
+                android:fontFamily="sans-serif-medium"
                 android:text="Piezas: "
                 android:textColor="#333"
                 android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.4"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnPrice"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="0.7"
-                android:background="@drawable/btn_white"
-                android:focusable="false"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="right|center_vertical"
-                android:text="01:30 hrs"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="15sp" />
-
-            <Button
-                android:id="@+id/btnEdit"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="0.25"
-                android:background="@drawable/ic_assignment"
-                android:focusable="false" />
 
         </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

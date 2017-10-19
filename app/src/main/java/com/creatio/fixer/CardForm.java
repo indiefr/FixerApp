@@ -3,6 +3,7 @@ package com.creatio.fixer;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -60,16 +61,21 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
         oxxo = extras.getBoolean("oxxo");
 
         if (oxxo){
-            SaveOrder();
+            if (pref.getBoolean("conekta", false)) {
+                SaveOrder();
+            }else{
+                Helper.ShowAlert(CardForm.this,"Atención", "Para continuar, es necesario agregar una targeta como metodo de pago.",0);
+            }
         }else{
             if (pref.getBoolean("conekta", false)) {
-                mCardForm.setVisibility(View.GONE);
+//                mCardForm.setVisibility(View.GONE);
                 SaveOrder();
 
             }
         }
         mCardForm = (com.braintreepayments.cardform.view.CardForm) findViewById(R.id.card_form);
         mCardForm.isCardScanningAvailable();
+        mCardForm.getCountryCodeEditText().setText("52");
         mCardForm.cardRequired(true)
                 .expirationRequired(true)
                 .postalCodeRequired(false)
@@ -199,6 +205,15 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 finish();
+                                String[] date = extras.getString("init_date").split(" ");
+
+                                Intent i = new Intent(CardForm.this, OrdenTrabajo.class);
+                                i.putExtra("type", "0");
+                                i.putExtra("id_sale", id_sale);
+                                i.putExtra("latlng", extras.getString("latlng"));
+                                i.putExtra("date", date[0] + " a las " + String.valueOf(extras.getInt("hour_date")) + " hrs.");
+                                i.putExtra("hour", String.valueOf(extras.getInt("hour_date")));
+                                startActivity(i);
                             }
                         });
                         btnCancelar.setOnClickListener(new View.OnClickListener() {

@@ -83,11 +83,11 @@ public class ADNew extends BaseSwipeAdapter {
         txtFechaDet = (TextView) itemView.findViewById(R.id.txtFechaDet);
 
         txtService.setText("Orden: " + list.get(position).getId_order());
-        txtName.setText(list.get(position).getName());
+        txtName.setText("Cliente: " + list.get(position).getName());
         final SwipeLayout swipeLayout = (SwipeLayout) itemView.findViewById(R.id.item);
         swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Right, itemView.findViewById(R.id.bottom_wrapper));
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, itemView.findViewById(R.id.bottom_wrapper2));
+        //swipeLayout.addDrag(SwipeLayout.DragEdge.Right, itemView.findViewById(R.id.bottom_wrapper));
+        //swipeLayout.addDrag(SwipeLayout.DragEdge.Left, itemView.findViewById(R.id.bottom_wrapper2));
         final LinearLayout row = (LinearLayout) itemView.findViewById(R.id.row);
         swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
             @Override
@@ -172,6 +172,7 @@ public class ADNew extends BaseSwipeAdapter {
         btnProgramar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Helper.InitOrder(list.get(position).getId_order(), "0");
                 UpdateCalendary(list.get(position).getId_calendary(), "1",list.get(position).getId_user());
                 Snackbar.make(v, "Añadiste una reparación a tu agenda", Snackbar.LENGTH_LONG)
                         //.setActionTextColor(Color.CYAN)

@@ -70,7 +70,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="3dp"
-            android:text="En espera de autorización" />
+            android:text="En espera de autorización"
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -109,6 +110,41 @@
         android:background="@color/fondo_card"
         android:orientation="vertical"
         android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/lyEstatus"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_green"
+            android:elevation="1dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/txtEstatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_assignment_white"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/white"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_vertical"
+                android:text="Cargando"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtPago"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_yellow"
+            android:padding="4dp"
+            android:text="Cargando"
+            android:textColor="@color/white" />
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"

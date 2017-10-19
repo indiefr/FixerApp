@@ -41,7 +41,7 @@
                 android:id="@+id/home"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
-                android:layout_weight="0.15"
+                android:layout_weight="0.12"
                 android:background="@drawable/ic_menu_icono"
                 android:text="" />
 
@@ -52,6 +52,7 @@
                 android:layout_weight="0.2"
                 android:background="#00FFFFFF"
                 android:scaleType="fitCenter"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_usuario_icono" />
 
             <TextView

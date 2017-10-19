@@ -23,6 +23,7 @@ import com.creatio.fixer.Helper;
 import com.creatio.fixer.Objects.OOrders;
 import com.creatio.fixer.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -61,7 +62,7 @@ public class ADListOrden extends BaseAdapter {
         final View itemView = inflater.inflate(R.layout.list_order_list, parent, false);
         Button btnPrice, btnPagar;
         ImageView imgType = (ImageView) itemView.findViewById(R.id.imgType);
-        TextView txtNumber, txtFecha, txtEspecialist, txtStatus, txtReference;
+        TextView txtNumber, txtFecha, txtEspecialist, txtStatus, txtReference, txtRate;
         final RatingBar rtBar;
         LinearLayout lyOptions = (LinearLayout) itemView.findViewById(R.id.ly_options);
         LinearLayout lyRate = (LinearLayout) itemView.findViewById(R.id.lyRate);
@@ -69,13 +70,16 @@ public class ADListOrden extends BaseAdapter {
         btnPrice = (Button) itemView.findViewById(R.id.btnPrice);
         txtNumber = (TextView) itemView.findViewById(R.id.txtNumber);
         txtReference = (TextView) itemView.findViewById(R.id.txtReference);
+        txtRate = (TextView) itemView.findViewById(R.id.txtRate);
         txtFecha = (TextView) itemView.findViewById(R.id.txtFecha);
         txtEspecialist = (TextView) itemView.findViewById(R.id.txtEspecialist);
         txtStatus = (TextView) itemView.findViewById(R.id.txtStatus);
         rtBar = (RatingBar) itemView.findViewById(R.id.rtBar);
         rtBar.setEnabled(true);
-        if (!list.get(position).getRate().equalsIgnoreCase("")) {
+        Log.e("Rate",list.get(position).getRate());
+        if (!list.get(position).getRate().equalsIgnoreCase("") && !list.get(position).getRate().equalsIgnoreCase("0")) {
             rtBar.setRating(Float.parseFloat(list.get(position).getRate()));
+            txtRate.setText("" + roundTwoDecimals(Double.parseDouble(list.get(position).getRate()) * 2));
             rtBar.setEnabled(false);
         }
         if (!list.get(position).getReference().equalsIgnoreCase("0")) {
@@ -113,23 +117,29 @@ public class ADListOrden extends BaseAdapter {
         }
         switch (list.get(position).getStatus_so()) {
             case "3":
+                //Solicitar autorizacion
                 lyOptions.setVisibility(View.VISIBLE);
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.red));
                 break;
             case "1":
+                //Iniciada
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.blue));
                 break;
             case "5":
+                //Orden creada
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.fondo_card));
                 break;
             case "2":
+                //Finalizada
                 lyRate.setVisibility(View.VISIBLE);
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.black));
                 break;
             case "4":
+                //Autorizada
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
                 break;
             case "0":
+                //Agendada
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
                 break;
             default:
@@ -139,8 +149,10 @@ public class ADListOrden extends BaseAdapter {
         btnPagar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Helper.InitOrder(list.get(position).getId_order(), "0");
+                Helper.InitOrder(list.get(position).getId_order(), "4");
                 Helper.SendNotification(list.get(position).getId_specialist(), "Orden confirmada", "Solicitud de servicio confirmada", "0");
+                list.get(position).setStatus_so("4");
+                notifyDataSetChanged();
             }
         });
         rtBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -167,6 +179,8 @@ public class ADListOrden extends BaseAdapter {
                             @Override
                             public void onResponse(String response) {
                                 Log.e("TAG RATE", response);
+                                list.get(position).setRate(String.valueOf(rating));
+                                notifyDataSetChanged();
                             }
 
                             @Override
@@ -189,5 +203,10 @@ public class ADListOrden extends BaseAdapter {
             }
         });
         return itemView;
+    }
+    double roundTwoDecimals(double d)
+    {
+        DecimalFormat twoDForm = new DecimalFormat("#.##");
+        return Double.valueOf(twoDForm.format(d));
     }
 }

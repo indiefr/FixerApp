@@ -1,7 +1,10 @@
 package com.creatio.fixer;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     ImageButton btnStilson;
     int item = 0;
     int itemBadghe = 0;
-    TextSwitcher txtTitleService;
+    TextView txtTitleService;
     ArrayList<OServices> servicesGral;
     String id_specialist, init_date, subtotal;
     int hour_date;
@@ -159,15 +162,7 @@ public class MainActivity extends AppCompatActivity
         String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
         btnBadge.setText("" + items);
         txtName.setText(name);
-        Glide.with(MainActivity.this)
-                .load(image)
-                .error(R.drawable.no_user)
-                .into(image_profile);
 
-        Glide.with(MainActivity.this)
-                .load(image)
-                .error(R.drawable.no_user)
-                .into(image_profile_button);
     }
 
     @Override
@@ -434,7 +429,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void LeerServicios() {
+        final ProgressDialog dialog = ProgressDialog.show(MainActivity.this, null, "Cargando servicio");
         // --- [Header elements] ---
+        dialog.show();
         servicesGral = new ArrayList<>();
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/Services")
                 .setPriority(Priority.IMMEDIATE)
@@ -458,22 +455,8 @@ public class MainActivity extends AppCompatActivity
                     LayoutInflater myinflater = getLayoutInflater();
                     final ViewGroup myHeader = (ViewGroup) myinflater.inflate(R.layout.header_services, list_services, false);
                     list_services.removeHeaderView(myHeader);
-                    txtTitleService = (TextSwitcher) myHeader.findViewById(R.id.txtTitleService);
-                    txtTitleService.setInAnimation(MainActivity.this, R.anim.left_right);
-                    txtTitleService.setOutAnimation(MainActivity.this, R.anim.right_left);
-                    txtTitleService.setFactory(new ViewSwitcher.ViewFactory() {
+                    txtTitleService = (TextView) myHeader.findViewById(R.id.txtTitleService);
 
-                        public View makeView() {
-                            // TODO Auto-generated method stub
-                            // create new textView and set the properties like clolr, size etc
-                            TextView myText = new TextView(MainActivity.this);
-                            myText.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-                            myText.setTextSize(20);
-                            myText.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                            myText.setTextColor(Color.DKGRAY);
-                            return myText;
-                        }
-                    });
 
                     txtTitleService.setText(servicesGral.get(0).getTitle());
                     ImageButton btnAfter = (ImageButton) myHeader.findViewById(R.id.btnAfter);
@@ -493,9 +476,30 @@ public class MainActivity extends AppCompatActivity
                             if (item < 0) {
                                 item = (servicesGral.size() - 1);
                             }
-
-
                             ListarServicios(servicesGral.get(item).getId_service());
+                            list_services.animate()
+                                    .translationX(-list_services.getWidth())
+                                    .alpha(1.0f)
+                                    .setDuration(200)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            list_services.setVisibility(View.GONE);
+                                            list_services.animate()
+                                                    .translationX(0)
+                                                    .alpha(1.0f)
+                                                    .setDuration(100)
+                                                    .setListener(new AnimatorListenerAdapter() {
+                                                        @Override
+                                                        public void onAnimationEnd(Animator animation) {
+                                                            super.onAnimationEnd(animation);
+                                                            list_services.setVisibility(View.VISIBLE);
+                                                        }
+                                                    });
+                                        }
+                                    });
+
 
 
                         }
@@ -508,7 +512,7 @@ public class MainActivity extends AppCompatActivity
 //                            list_services.setAdapter(adapter);
                             LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
                             final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
-                            transition.reverseTransition(200);
+                            transition.startTransition(200);
                             item = item + 1;
                             if (item > (servicesGral.size() - 1)) {
                                 item = 0;
@@ -517,12 +521,36 @@ public class MainActivity extends AppCompatActivity
                                 item = (servicesGral.size() - 1);
                             }
                             ListarServicios(servicesGral.get(item).getId_service());
+                            list_services.animate()
+                                    .translationX(list_services.getWidth())
+                                    .alpha(1.0f)
+                                    .setDuration(200)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            list_services.setVisibility(View.GONE);
+                                            list_services.animate()
+                                                    .translationX(0)
+                                                    .alpha(1.0f)
+                                                    .setDuration(100)
+                                                    .setListener(new AnimatorListenerAdapter() {
+                                                        @Override
+                                                        public void onAnimationEnd(Animator animation) {
+                                                            super.onAnimationEnd(animation);
+                                                            list_services.setVisibility(View.VISIBLE);
+                                                        }
+                                                    });
+                                        }
+                                    });
+
 
 
                         }
                     });
                     list_services.addHeaderView(myHeader, null, false);
                     ListarServicios(servicesGral.get(0).getId_service());
+                    dialog.dismiss();
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());
                 }

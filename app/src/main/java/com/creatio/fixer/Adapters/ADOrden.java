@@ -87,6 +87,7 @@ public class ADOrden extends BaseAdapter {
             btnPrice.setText(Helper.formatDecimal(total));
             btnDelete.setEnabled(true);
         } else {
+            btnDelete.setBackgroundResource(R.drawable.ic_place);
             btnDelete.setEnabled(false);
             txtTitle.setText("Tarifa de trayecto");
             imgConcepto.setImageResource(R.drawable.ruta);

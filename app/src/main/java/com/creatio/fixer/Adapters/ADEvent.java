@@ -2,6 +2,7 @@ package com.creatio.fixer.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +69,7 @@ public class ADEvent extends BaseAdapter {
         }
         txtReparacion.setText(list.get(position).getDescription());
 
-        txtClient.setText(list.get(position).getName());
+        txtClient.setText("Cliente: " + list.get(position).getName());
         TextView txtHora = (TextView) itemView.findViewById(R.id.txtHora);
 
         if (position < 12) {
@@ -76,13 +77,20 @@ public class ADEvent extends BaseAdapter {
         } else {
             txtHora.setText((position) + " PM");
         }
-
-        if (list.get(position).getLast_name().equalsIgnoreCase("Fecha de servicio")){
+        if (list.get(position).getLast_name().equalsIgnoreCase("Fecha de servicio")) {
             ly_gral.setBackgroundResource(R.color.colorPrimary);
             txtReparacion.append(" Reparación");
-        }else{
-            ly_gral.setBackgroundResource(R.color.colorAccent);
-            txtReparacion.append(" Primera visita");
+        } else {
+            if (list.get(position).getStatus().equalsIgnoreCase("1")) {
+                ly_gral.setBackgroundResource(R.color.blue);
+               // txtReparacion.append(" Iniciada");
+            } else if (list.get(position).getStatus().equalsIgnoreCase("2")) {
+                ly_gral.setBackgroundResource(R.color.red);
+              // txtReparacion.append(" Finalizada");
+            } else {
+                ly_gral.setBackgroundResource(R.color.colorAccent);
+                txtReparacion.append(" Primera visita");
+            }
         }
 
         return itemView;

@@ -36,6 +36,7 @@
                 android:layout_margin="4dp"
                 android:layout_weight="0.99"
                 android:background="@color/colorAccent"
+                android:elevation="1dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:padding="8dp">

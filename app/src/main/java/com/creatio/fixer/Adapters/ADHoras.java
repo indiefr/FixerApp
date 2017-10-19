@@ -53,10 +53,13 @@ public class ADHoras extends BaseAdapter {
         } else {
             txtHora.setText((position) + " PM");
         }
+
+        txtHora.setTextColor(context.getResources().getColor(R.color.white));
         if (list.get(position).getStatus().equalsIgnoreCase("0")) {
-            ly_gral.setBackgroundResource(R.color.colorPrimary);
+            ly_gral.setBackgroundResource(R.drawable.bg_green);
+
         } else {
-            ly_gral.setBackgroundResource(R.color.red);
+            ly_gral.setBackgroundResource(R.drawable.bg_red);
         }
         return itemView;
     }

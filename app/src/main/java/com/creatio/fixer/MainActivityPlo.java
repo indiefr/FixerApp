@@ -56,6 +56,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ public class MainActivityPlo extends AppCompatActivity
     private String fecha_gral;
     private ImageView background,imgNohistory;
     private RatingBar rtBarSpe;
+    private TextView txtRate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +129,8 @@ public class MainActivityPlo extends AppCompatActivity
         image_profile = (CircleImageView) hView.findViewById(R.id.image_profile);
         rtBarSpe = (RatingBar) hView.findViewById(R.id.rtBarSpe);
         rtBarSpe.setVisibility(View.VISIBLE);
+        txtRate = (TextView) hView.findViewById(R.id.txtRate);
+        txtRate.setVisibility(View.VISIBLE);
         navigationView.setNavigationItemSelectedListener(this);
         //Actions of elements
 
@@ -207,10 +211,7 @@ public class MainActivityPlo extends AppCompatActivity
         btnBadge.setText("" + items);
         txtName.setText(name);
         txtNameH.setText(name);
-        Glide.with(MainActivityPlo.this)
-                .load(image)
-                .error(R.drawable.no_user)
-                .into(image_profile);
+
         final ExpandableLayout expandable = (ExpandableLayout) findViewById(R.id.expandable_layout);
         ImageButton btnExpand = (ImageButton) findViewById(R.id.btnExpand);
         btnExpand.setOnClickListener(new View.OnClickListener() {
@@ -594,7 +595,9 @@ public class MainActivityPlo extends AppCompatActivity
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
                         String rate = object.optString("rate");
+                        double rated = roundTwoDecimals(Double.parseDouble(rate) * 2);
                         rtBarSpe.setRating(Float.parseFloat(rate));
+                        txtRate.setText("" + rated);
                     }
 
                 } catch (JSONException e) {
@@ -607,5 +610,10 @@ public class MainActivityPlo extends AppCompatActivity
 
             }
         });
+    }
+    double roundTwoDecimals(double d)
+    {
+        DecimalFormat twoDForm = new DecimalFormat("#.##");
+        return Double.valueOf(twoDForm.format(d));
     }
 }

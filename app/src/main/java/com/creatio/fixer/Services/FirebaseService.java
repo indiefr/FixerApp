@@ -37,6 +37,7 @@ public class FirebaseService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification_build))
                         .setSmallIcon(R.drawable.ic_notification_build)
+                        .setColor(getResources().getColor(R.color.colorPrimary))
                         .setContentTitle("Fixer")
                         .setContentText(remoteMessage.getNotification().getBody())
                         .setContentInfo("Ahora");

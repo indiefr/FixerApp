@@ -46,7 +46,7 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
     private GoogleApiClient mGoogleApiClient;
     EditText edtEmail, edtPass, edtLast, edtName, edtPhone;
     ScrollView layout;
-    Button btnLogin;
+    Button btnLogin,btnYa;
     String refreshedToken = "sin token";
 
     @Override
@@ -64,10 +64,18 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
         edtLast = (EditText) findViewById(R.id.edtLast);
         edtPhone = (EditText) findViewById(R.id.edtPhone);
         btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnYa = (Button) findViewById(R.id.btnYa);
         final TransitionDrawable transition = (TransitionDrawable) layout.getBackground();
 
         //Acciones elementos
-
+        btnYa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Register.this,Login.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         //Configuracion FIREBASE
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

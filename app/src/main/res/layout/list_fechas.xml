@@ -11,6 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -18,14 +19,15 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="0.9"
+            android:background="@color/colorPrimary"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/ly_gral"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.99"
-                android:background="@color/colorAccent"
+                android:background="@color/cardview_light_background"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:padding="8dp">
@@ -36,7 +38,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:text="Reparación de baño"
-                    android:textColor="#FFF"
+                    android:textColor="@color/letters"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -45,8 +47,6 @@
                 android:id="@+id/textView31"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"
                 android:layout_weight="0.01"
                 android:background="@color/fondo_card" />
         </LinearLayout>

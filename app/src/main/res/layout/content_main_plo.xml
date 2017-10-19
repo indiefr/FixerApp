@@ -117,7 +117,8 @@
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
                                     android:background="@android:color/transparent"
-                                    agendaCalendar:srcCompat="@drawable/ic_date_range" />
+                                    agendaCalendar:srcCompat="@drawable/ic_date_gre"
+                                    />
 
                             </LinearLayout>
 
