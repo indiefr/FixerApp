@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="@color/fondo"
+    android:background="@color/fondo_card"
+    android:orientation="vertical"
     tools:context="com.creatio.fixer.Detalles">
 
     <ListView
@@ -14,23 +15,11 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:divider="@drawable/list_divider"
-        android:dividerHeight="1dp"
-        android:padding="8dp" />
+        android:layout_margin="8dp"
+        android:background="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:divider="@null"
+        android:headerDividersEnabled="false"
+        android:scrollbars="none" />
 
-    <LinearLayout
-        android:id="@+id/snack_linear"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:translationZ="50dp"
-        android:visibility="invisible">
-
-        <include
-            layout="@layout/snack_repair"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

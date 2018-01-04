@@ -8,13 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OServices;
@@ -30,10 +33,12 @@ import java.util.ArrayList;
 public class ADServices extends BaseAdapter {
     Context context;
     ArrayList<OServices> arrServices;
+    boolean flagAfter = false;
 
-    public ADServices(Context context, ArrayList<OServices> arrServices) {
+    public ADServices(Context context, ArrayList<OServices> arrServices, boolean flagAfter) {
         this.context = context;
         this.arrServices = arrServices;
+        this.flagAfter = flagAfter;
     }
 
     @Override
@@ -57,6 +62,7 @@ public class ADServices extends BaseAdapter {
         final View itemView = inflater.inflate(R.layout.list_services, parent, false);
         TextView txtTitle = (TextView)itemView.findViewById(R.id.txtTitle);
         TextView txtDesc = (TextView)itemView.findViewById(R.id.txtDescription);
+        final ImageView image_profile = (ImageView)itemView.findViewById(R.id.image_profile);
         txtDesc.setText(arrServices.get(position).getDesc());
         txtTitle.setText(arrServices.get(position).getTitle());
         Button btnReparar = (Button)itemView.findViewById(R.id.btnReparar);
@@ -71,9 +77,22 @@ public class ADServices extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
-                ((MainActivity)context).Detalles(arrServices.get(position).getId_service(),arrServices.get(position).getTitle());
+                ((MainActivity)context).Detalles(arrServices.get(position).getId_service(),arrServices.get(position).getTitle(),arrServices.get(position).getDesc(),arrServices.get(position).getImage());
             }
         });
+        Glide.with(context)
+                .load(arrServices.get(position).getImage())
+                .error(R.drawable.tuberia_dummy)
+                .into(image_profile);
+        if (flagAfter){
+            Animation animation = AnimationUtils
+                    .loadAnimation(context, R.anim.right_left);
+            itemView.startAnimation(animation);
+        }else {
+            Animation animation = AnimationUtils
+                    .loadAnimation(context, R.anim.left_right);
+            itemView.startAnimation(animation);
+        }
         return itemView;
     }
 }

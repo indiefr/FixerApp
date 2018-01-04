@@ -17,11 +17,17 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.creatio.fixer.Helper;
 import com.creatio.fixer.Objects.OOrders;
 import com.creatio.fixer.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -153,6 +159,15 @@ public class ADListOrden extends BaseAdapter {
                 Helper.SendNotification(list.get(position).getId_specialist(), "Orden confirmada", "Solicitud de servicio confirmada", "0");
                 list.get(position).setStatus_so("4");
                 notifyDataSetChanged();
+                //PAGAR
+                if (list.get(position).getReference().equalsIgnoreCase("0")){
+                    //tarjeta
+                    ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user());
+                }else{
+                    //oxxo
+                    ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
+                }
+
             }
         });
         rtBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -209,4 +224,43 @@ public class ADListOrden extends BaseAdapter {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return Double.valueOf(twoDForm.format(d));
     }
+    public void ConektaOrder(String id_sale, String id_user) {
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
+                .addBodyParameter("id_user", id_user)
+                .addBodyParameter("id_sale", id_sale)
+                .setPriority(Priority.IMMEDIATE)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("Order desc", response);
+
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
+
+    public void ConektaOrderOxxo(String id_sale, String id_user) {
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrderOxxo")
+                .addBodyParameter("id_user", id_user)
+                .addBodyParameter("id_sale", id_sale)
+                .setPriority(Priority.IMMEDIATE)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("Order reference", response);
+
+
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
+
 }

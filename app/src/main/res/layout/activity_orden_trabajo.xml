@@ -157,6 +157,17 @@
                 android:layout_height="wrap_content"
                 android:background="#FFF"
                 android:dividerHeight="1dp" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floatingActionButton2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="16dp"
+                android:clickable="true"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_refresh" />
+
         </android.support.v7.widget.CardView>
 
     </LinearLayout>

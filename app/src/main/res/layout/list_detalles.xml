@@ -3,17 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/fondo_card"
     android:elevation="0dp"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/fondo_card"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/cardview_light_background"
         android:elevation="0dp"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:paddingBottom="8dp"
+        android:paddingRight="4dp"
+        android:paddingStart="4dp"
+        android:paddingTop="8dp">
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/image_profile"
@@ -51,15 +59,16 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
+            android:layout_weight="0.4"
             android:orientation="vertical">
 
             <Button
                 android:id="@+id/btnReparar"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:backgroundTint="@color/colorAccent"
+                android:background="@drawable/button_warning"
                 android:drawableLeft="@drawable/ic_stilson_fixer"
+                android:focusable="false"
                 android:fontFamily="sans-serif-medium"
                 android:onClick="BtnReparar"
                 android:text="Reparar"
@@ -67,5 +76,13 @@
                 android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/cardview_shadow_start_color" />
 
 </LinearLayout>

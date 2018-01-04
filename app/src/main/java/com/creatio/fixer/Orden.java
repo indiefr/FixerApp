@@ -33,11 +33,12 @@ import java.util.Map;
 
 public class Orden extends Fragment {
     public ListView list_orden;
-    public TextView txtAlgoMas,txtTotal,txtNombre;
+    public TextView txtAlgoMas,txtTotal,txtNombre,txtTotalTime;
     ArrayList<OServices> arrServices = new ArrayList<>();
     ProgressDialog dialog;
     String ids = "", types = "";
-    float total;
+    double total;
+    int tiempo = 0;
     SharedPreferences sharedPref;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,6 +52,7 @@ public class Orden extends Fragment {
         txtAlgoMas = (TextView) v.findViewById(R.id.txtAlgoMas);
         list_orden = (ListView) v.findViewById(R.id.list_orden);
         txtTotal = (TextView) myHeader.findViewById(R.id.txtTotal);
+        txtTotalTime = (TextView) myHeader.findViewById(R.id.txtTotalTime);
         txtNombre = (TextView) myHeader.findViewById(R.id.txtNombre);
         //-----------------
         txtNombre.setText(sharedPref.getString("name","No user") + " " + sharedPref.getString("last_name","No user"));
@@ -100,7 +102,7 @@ public class Orden extends Fragment {
     }
 
     public void GetOrden() {
-
+        ids = "";
         Map<String, ?> allEntries = sharedPref.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
@@ -116,7 +118,9 @@ public class Orden extends Fragment {
 
     public void GetDataService(String id_service) {
         arrServices = new ArrayList<>();
-        total = 0 + 35;//Se le suma la tarifa de trayecto
+        arrServices.clear();
+        tiempo = 0;
+        total = 0;//Se le suma la tarifa de trayecto
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetDataService")
                 .addBodyParameter("id_service", id_service)
                 .setPriority(Priority.MEDIUM)
@@ -134,18 +138,23 @@ public class Orden extends Fragment {
                         String time_pre = object.optString("time_pre");
                         String time_new = object.optString("time_new");
                         String type = object.optString("type");
+
                         if (type.equalsIgnoreCase("0")){
-                            total += Float.parseFloat(time_new) * 1.59;
+                            total += Float.parseFloat(time_new) * 2.23;
+                            tiempo += Integer.parseInt(time_new);
                         }else{
-                            total += Float.parseFloat(time_pre) * 1.59;
+                            total += Float.parseFloat(time_pre) * 2.23;
+                            tiempo += Integer.parseInt(time_pre);
                         }
 
                         arrServices.add(new OServices(id_service, image, name, description, time_pre, time_new,type,""));
 
                     }
                     dialog.dismiss();
-                    txtTotal.setText(Helper.formatDecimal(total));
-                    ADOrden adapter = new ADOrden(getActivity(), arrServices, "0");
+                    String totali = Helper.formatDecimal(total * 1.16);
+                    txtTotal.setText(totali);
+                    txtTotalTime.setText("" + formatHoursAndMinutes(tiempo));
+                    ADOrden adapter = new ADOrden(getActivity(), arrServices, "0", Orden.this);
                     list_orden.setAdapter(adapter);
                 } catch (JSONException e) {
                     Log.e("Orden error", e.toString());
@@ -161,5 +170,9 @@ public class Orden extends Fragment {
         });
 
     }
-
+    public static String formatHoursAndMinutes(int totalMinutes) {
+        String minutes = Integer.toString(totalMinutes % 60);
+        minutes = minutes.length() == 1 ? "0" + minutes : minutes;
+        return (totalMinutes / 60) + ":" + minutes;
+    }
 }

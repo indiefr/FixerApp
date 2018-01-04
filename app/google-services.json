@@ -15,6 +15,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "981476225204-ae0tp3tqb67hp3o2hjocng83vm7k9o0i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creatio.fixer",
+            "certificate_hash": "30395257fa50429ba177c11958c5729e50d65f83"
+          }
+        },
+        {
+          "client_id": "981476225204-7ov7t5dgpof19s7po5009tgfinq7t3f4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creatio.fixer",
+            "certificate_hash": "723dc1ba381a5a6882ff54817d56f84209e63186"
+          }
+        },
+        {
+          "client_id": "981476225204-1mhbf5sffudvrquvt3drf6g302gib0bl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creatio.fixer",
+            "certificate_hash": "30f53a8b980752b45dd979b79acab111c621ade4"
+          }
+        },
+        {
+          "client_id": "981476225204-kc8vvors4ss3m8d11ffh8aalnvoom88r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creatio.fixer",
+            "certificate_hash": "32ebc638dde1395106d69e575eb8472c1d9f6bce"
+          }
+        },
+        {
           "client_id": "981476225204-3kafuf0dj48ibb5ajiu3578e4bpavlc7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -137,7 +137,8 @@ public class Pieces extends AppCompatActivity {
                         String id_store = object.optString("id_store");
                         String status = object.optString("status");
                         String name_store = object.optString("nameStore");
-                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store));
+                        String image = object.optString("image");
+                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store,image));
 
 
                     }

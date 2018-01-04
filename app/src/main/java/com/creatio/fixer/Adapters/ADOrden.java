@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.Image;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +18,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.creatio.fixer.CardForm;
 import com.creatio.fixer.Helper;
 import com.creatio.fixer.Objects.OServices;
+import com.creatio.fixer.Orden;
 import com.creatio.fixer.R;
 
 import java.util.ArrayList;
@@ -33,16 +36,18 @@ public class ADOrden extends BaseAdapter {
     Context context;
     ArrayList<OServices> arrServices;
     String type;
+    Orden fragment;
 
-    public ADOrden(Context context, ArrayList<OServices> arrServices, String type) {
+    public ADOrden(Context context, ArrayList<OServices> arrServices, String type, Orden fragment) {
         this.context = context;
         this.arrServices = arrServices;
         this.type = type;
+        this.fragment = fragment;
     }
 
     @Override
     public int getCount() {
-        return arrServices.size() + 1;
+        return arrServices.size();
     }
 
     @Override
@@ -70,29 +75,32 @@ public class ADOrden extends BaseAdapter {
         btnDelete = (ImageButton) itemView.findViewById(R.id.deleteItem);
 
         if (position < arrServices.size()) {
-
+            Glide.with(context)
+                    .load(arrServices.get(position).getImage())
+                    .error(R.drawable.tuberia_dummy)
+                    .into(imgConcepto);
             txtTitle.setText(arrServices.get(position).getTitle());
 
             double total = 0;
             if (arrServices.get(position).getType().equalsIgnoreCase("0")) {
                 //Nuevo
-                total = Double.parseDouble(arrServices.get(position).getTime_new()) * 1.59;
+                total = Double.parseDouble(arrServices.get(position).getTime_new()) * 2.23;
                 txtDesc.setText(arrServices.get(position).getDesc() + "\nInstalación nueva");
             } else {
                 //Reinstalación
-                total = Double.parseDouble(arrServices.get(position).getTime_pre()) * 1.59;
+                total = Double.parseDouble(arrServices.get(position).getTime_pre()) * 2.23;
                 txtDesc.setText(arrServices.get(position).getDesc() + "\nReinstalación");
             }
 
             btnPrice.setText(Helper.formatDecimal(total));
             btnDelete.setEnabled(true);
         } else {
-            btnDelete.setBackgroundResource(R.drawable.ic_place);
-            btnDelete.setEnabled(false);
-            txtTitle.setText("Tarifa de trayecto");
-            imgConcepto.setImageResource(R.drawable.ruta);
-            txtDesc.setText("Cargos por trayecto");
-            btnPrice.setText("$ 35,00");
+//            btnDelete.setBackgroundResource(R.drawable.ic_place);
+//            btnDelete.setEnabled(false);
+//            txtTitle.setText("Tarifa de trayecto");
+//            imgConcepto.setImageResource(R.drawable.ruta);
+//            txtDesc.setText("Cargos por trayecto");
+//            btnPrice.setText("$ 35,00");
         }
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +125,7 @@ public class ADOrden extends BaseAdapter {
                                     edit.apply();
                                     int totalbadge = pref.getInt("badge", 0);
                                     arrServices.remove(position);
+                                    fragment.GetOrden();
                                     notifyDataSetChanged();
                                     if (totalbadge == 0){
                                         Toast.makeText(context, "No hay más elementos", Toast.LENGTH_SHORT).show();
@@ -124,7 +133,9 @@ public class ADOrden extends BaseAdapter {
                                     }
                                 }
                             }
+
                         }
+
                     }
                 });
                 alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {

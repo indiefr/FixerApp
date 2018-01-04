@@ -162,8 +162,7 @@
                     android:layout_weight="0.5"
                     android:background="@drawable/flat_danger"
                     android:text="Declinar"
-                    android:textColor="@color/white"
-                    android:visibility="gone" />
+                    android:textColor="@color/white" />
             </LinearLayout>
 
             <TextView
@@ -226,7 +225,7 @@
                 android:id="@+id/img_mapa"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="fitXY" />
+                android:scaleType="fitCenter" />
 
 
         </LinearLayout>

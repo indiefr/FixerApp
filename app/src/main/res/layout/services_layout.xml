@@ -6,6 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
         android:orientation="horizontal"
         android:paddingLeft="32dp"
         android:paddingRight="32dp">
@@ -13,7 +14,7 @@
         <TextView
             android:id="@+id/txtService"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:drawableLeft="@drawable/ic_stilson_fixer_list"
             android:gravity="left|center_vertical"
@@ -24,7 +25,7 @@
         <TextView
             android:id="@+id/txtTime"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:drawableLeft="@drawable/ic_clock"
             android:gravity="left|center_vertical"

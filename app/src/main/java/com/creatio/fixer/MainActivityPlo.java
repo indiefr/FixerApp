@@ -133,7 +133,7 @@ public class MainActivityPlo extends AppCompatActivity
         txtRate.setVisibility(View.VISIBLE);
         navigationView.setNavigationItemSelectedListener(this);
         //Actions of elements
-
+        GetOrdersCount();
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -451,7 +451,6 @@ public class MainActivityPlo extends AppCompatActivity
                     }
                     ADEvent adapterEvent = new ADEvent(MainActivityPlo.this, listCalendar);
                     list_calendar.setAdapter(adapterEvent);
-
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());
                 }
@@ -615,5 +614,31 @@ public class MainActivityPlo extends AppCompatActivity
     {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return Double.valueOf(twoDForm.format(d));
+    }
+    public void GetOrdersCount(){
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String id_user = pref.getString("id_user", "0");
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetOrdersCount")
+                .addBodyParameter("id_specialist",id_user )
+                .build().getAsJSONArray(new JSONArrayRequestListener() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+                        String count = object.optString("count");
+                        btnBadge.setText("" + count);
+                    }
+
+                } catch (JSONException e) {
+                    Log.e("Login error", e.toString());
+                }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
     }
 }

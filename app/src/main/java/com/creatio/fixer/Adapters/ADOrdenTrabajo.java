@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.bumptech.glide.Glide;
 import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.OrdenTrabajo;
@@ -78,8 +80,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
         Button btnPrice = (Button) itemView.findViewById(R.id.btnPrice);
         txtPieces = (TextView) itemView.findViewById(R.id.txtPiece);
         btnEdit.setVisibility(View.GONE);
-
-        if (type.equalsIgnoreCase("1")  && statusGral.equalsIgnoreCase("0")){
+        ImageView imgConcepto = (ImageView) itemView.findViewById(R.id.imgConcepto);
+        if (type.equalsIgnoreCase("1")){
             btnEdit.setVisibility(View.VISIBLE);
         }
         TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
@@ -96,7 +98,11 @@ public class ADOrdenTrabajo extends BaseAdapter {
             txtDesc.setText(arrServices.get(position).getDesc() + "\nReinstalación");
             btnPrice.setText(time);
         }
-
+        Glide.with(context)
+                .load(arrServices.get(position).getImage())
+                .error(R.drawable.tuberia_dummy)
+                .into(imgConcepto);
+        txtTitle.setText(arrServices.get(position).getTitle());
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {

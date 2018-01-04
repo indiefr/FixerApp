@@ -68,7 +68,7 @@
             android:gravity="right|center_vertical"
             android:padding="16dp"
             android:text="Cancelar"
-            android:textColor="@color/red" />
+            android:textColor="@color/letters" />
 
         <Button
             android:id="@+id/btnAceptar"

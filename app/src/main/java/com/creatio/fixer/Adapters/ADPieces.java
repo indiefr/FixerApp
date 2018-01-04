@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.bumptech.glide.Glide;
 import com.creatio.fixer.Objects.OPieces;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.Pieces;
@@ -55,7 +57,8 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
             for (int i = 0; i < count; i++) {
                 filterableString = listf.get(i).getName();
                 if (filterableString.toLowerCase().contains(filterString)) {
-                    nlist.add(new OPieces(listf.get(i).getId_piece(),listf.get(i).getName(),listf.get(i).getDescription(),listf.get(i).getId_store(),listf.get(i).getStatus(),listf.get(i).getPrice(),listf.get(i).getName_store()));
+                    nlist.add(new OPieces(listf.get(i).getId_piece(),listf.get(i).getName(),listf.get(i).getDescription(),listf.get(i).getId_store(),listf.get(i).getStatus(),listf.get(i).getPrice(),listf.get(i).getName_store(), listf.get(i
+                    ).getImage()));
                 }
             }
 
@@ -81,6 +84,7 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
         public TextView txtFerr;
         public TextView txtPrice;
         public CardView card;
+        public ImageView imgPiece;
 
         public MyViewHolder(View view) {
             super(view);
@@ -88,6 +92,7 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
             txtPrice = (TextView) view.findViewById(R.id.txtPrice);
             txtFerr = (TextView) view.findViewById(R.id.txtFerr);
             card = (CardView) view.findViewById(R.id.card);
+            imgPiece = (ImageView) view.findViewById(R.id.imgPiece);
         }
     }
 
@@ -126,6 +131,10 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
         holder.txtPrice.setText("$ " + filteredData.get(position).getPrice());
         holder.txtName.setText(filteredData.get(position).getName());
         holder.txtFerr.setText(filteredData.get(position).getName_store());
+        Glide.with(context)
+                .load(list.get(position).getImage())
+                .error(R.drawable.tuberia_dummy)
+                .into(holder.imgPiece);
     }
 
     @Override

@@ -5,9 +5,9 @@ package com.creatio.fixer.Objects;
  */
 
 public class OPieces {
-    String id_piece,name,description,id_store, status, price, name_store;
+    String id_piece,name,description,id_store, status, price, name_store, image;
 
-    public OPieces(String id_piece, String name, String description, String id_store, String status, String price, String name_store) {
+    public OPieces(String id_piece, String name, String description, String id_store, String status, String price, String name_store, String image) {
         this.id_piece = id_piece;
         this.name = name;
         this.description = description;
@@ -15,6 +15,15 @@ public class OPieces {
         this.status = status;
         this.price = price;
         this.name_store = name_store;
+        this.image = image;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getName_store() {

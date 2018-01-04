@@ -40,9 +40,9 @@
             <ImageButton
                 android:id="@+id/home"
                 android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="0.12"
-                android:background="@drawable/ic_menu_icono"
+                android:layout_height="40dp"
+                android:layout_weight="0.15"
+                android:background="@drawable/ic_menu"
                 android:text="" />
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -78,8 +78,8 @@
             <Button
                 android:id="@+id/btnBadge"
                 android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="0.13"
+                android:layout_height="32dp"
+                android:layout_weight="0.115"
                 android:background="@drawable/btn_not"
                 android:fontFamily="sans-serif.light"
                 android:text="0" />

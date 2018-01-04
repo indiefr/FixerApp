@@ -19,6 +19,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
 import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivityPlo;
@@ -157,7 +158,8 @@ public class ADNew extends BaseSwipeAdapter {
             @Override
             public void onClick(View v) {
                 UpdateCalendary(list.get(position).getId_calendary(), "2",list.get(position).getId_user());
-                Snackbar.make(v, "Añadiste una reparación a tu agenda", Snackbar.LENGTH_LONG)
+                //Pasar a otro usuario...
+                Snackbar.make(v, "Declinaste una reparación de tu agenda", Snackbar.LENGTH_LONG)
                         //.setActionTextColor(Color.CYAN)
                         .setActionTextColor(context.getResources().getColor(R.color.colorPrimary))
                         .setAction("Deshacer", new View.OnClickListener() {
@@ -292,23 +294,18 @@ public class ADNew extends BaseSwipeAdapter {
                 .addBodyParameter("id_calendary", id_calendary)
                 .addBodyParameter("status", status)
                 .setPriority(Priority.MEDIUM)
-                .build().getAsJSONArray(new JSONArrayRequestListener() {
+                .build().getAsString(new StringRequestListener() {
             @Override
-            public void onResponse(JSONArray response) {
-                Helper.WriteLog(context, "Se actualizó el la solicitud a estatus: " + status);
-                Helper.ShowAlert(context, "¡Gracias por usar nuestro servicio!", "Haz actualizado la solicitud", 0);
-                Helper.SendNotification(id_user,"Solicitud aceptada por ","El técnico ha recibido tu solicitud y ha sido aceptada","1");
+            public void onResponse(String response) {
+                    Log.e("Data",response);
+                if (status.contains("1")){
+                    Helper.WriteLog(context, "Se actualizó el la solicitud a estatus: " + status);
+                    Helper.ShowAlert(context, "¡Gracias por usar nuestro servicio!", "Haz actualizado la solicitud", 0);
+                    Helper.SendNotification(id_user,"Solicitud aceptada por ","El técnico ha recibido tu solicitud y ha sido aceptada","1");
+                }
 
                 ((MainActivityPlo)context).LeerOrdenes();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject object = response.getJSONObject(i);
 
-
-                    }
-                } catch (JSONException e) {
-                    Log.e("UpdateCalendary error", e.toString());
-                }
 
             }
 

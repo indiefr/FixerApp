@@ -11,8 +11,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.creatio.fixer.Detalles;
 import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OPieces;
@@ -59,8 +61,10 @@ public class ADDetalles extends BaseAdapter implements Filterable {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View itemView = inflater.inflate(R.layout.list_detalles, parent, false);
         final Button btnReparar = (Button) itemView.findViewById(R.id.btnReparar);
+
         final TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
         final TextView txtDesc = (TextView) itemView.findViewById(R.id.txtDesc);
+        final ImageView image_profile = (ImageView)itemView.findViewById(R.id.image_profile);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String service = pref.getString("id_service" + filteredData.get(position).getId_service(), "0");
         btnReparar.setVisibility(View.VISIBLE);
@@ -68,6 +72,37 @@ public class ADDetalles extends BaseAdapter implements Filterable {
             btnReparar.setVisibility(View.INVISIBLE);
         }
 
+        Glide.with(context)
+                .load(list.get(position).getImage())
+                .error(R.drawable.tuberia_dummy)
+                .into(image_profile);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.alert_detail);
+                // set the custom dialog components - text, image and button
+                TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
+                TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
+                txtTitle.setText(list.get(position).getTitle());
+                txtMsj.setText(list.get(position).getDesc());
+
+                Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
+                ImageView profile_image = (ImageView) dialog.findViewById(R.id.image_profile);
+                profile_image.setImageDrawable(image_profile.getDrawable());
+
+                        // if button is clicked, close the custom dialog
+                        btnAceptar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+
+                            }
+                        });
+
+                dialog.show();
+            }
+        });
         btnReparar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

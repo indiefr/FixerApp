@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
@@ -70,6 +71,7 @@ public class OrdenTrabajo extends AppCompatActivity {
     ADOrdenTrabajo adapterList;
     String type;
     String id_sale;
+    String oxxo = "0";
     TextView txtTitle, txtDate, txtNombre, txtOrden, txtSum;
     SharedPreferences sharedPref;
     Button btnComo;
@@ -93,6 +95,7 @@ public class OrdenTrabajo extends AppCompatActivity {
     String fecha_servicio, hora_servicio;
     Double latitude, longitude;
     TextView txtPago;
+    FloatingActionButton updatebtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,13 @@ public class OrdenTrabajo extends AppCompatActivity {
         txtSum = (TextView) myHeader.findViewById(R.id.txtSum);
         btnEvidence = (Button) myHeader.findViewById(R.id.btnEvidence);
         txtPago = (TextView) findViewById(R.id.txtPago);
+        updatebtn = (FloatingActionButton) findViewById(R.id.floatingActionButton2);
+        updatebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LeerServicios();
+            }
+        });
         btnEvidence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,6 +165,8 @@ public class OrdenTrabajo extends AppCompatActivity {
         btnIniciar = (Button) findViewById(R.id.btnIniciar);
         type = extras.getString("type");
         id_sale = extras.getString("id_sale");
+        oxxo = extras.getString("oxxo");
+//        IsOxxo(id_sale);
         txtDate = (TextView) findViewById(R.id.txtDate);
         txtTitle = (TextView) findViewById(R.id.txtTitle);
         //-----------------------[Actions]----------------------
@@ -167,6 +179,7 @@ public class OrdenTrabajo extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         service_date = currentDateandTime;
 
         for (int i = 0; i < 10; i++) {
@@ -290,24 +303,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                     nMgr.cancelAll();
                     Helper.InitOrder(id_sale, "2");
                     Helper.SendNotification(id_user, "Orden finalizada", "El técnico acaba de finalziar la orden " + id_sale + "\nEl cobro ha sido efectuado.", "1");
-                    AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
-                            .addBodyParameter("id_user", id_user)
-                            .addBodyParameter("id_sale", id_sale)
-                            .setPriority(Priority.IMMEDIATE)
-                            .build().getAsString(new StringRequestListener() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.e("Order desc", response);
-                            LeerServicios();
-                            status_gral = "2";
-
-                        }
-
-                        @Override
-                        public void onError(ANError anError) {
-
-                        }
-                    });
+                    LeerServicios();
 
 
                 } else {

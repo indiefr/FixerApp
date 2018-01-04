@@ -1,7 +1,5 @@
 package com.creatio.fixer;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
@@ -9,9 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,7 +21,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,15 +35,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.creatio.fixer.Adapters.ADServices;
 import com.creatio.fixer.Objects.OServices;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -84,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     TextView txtName;
     CircleImageView image_profile;
     boolean oxxo = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +139,23 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
+        btnBadge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AbrirOrden();
+            }
+        });
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            }
+        });
 
         //Manejo de fragmentos
 
@@ -243,6 +255,10 @@ public class MainActivity extends AppCompatActivity
             finish();
             Intent i = new Intent(MainActivity.this, Login.class);
             startActivity(i);
+        } else if (id == R.id.nav_account) {
+            finish();
+            Intent i = new Intent(MainActivity.this, MyAccount.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -259,7 +275,7 @@ public class MainActivity extends AppCompatActivity
         hiddenPanel.setVisibility(View.INVISIBLE);
     }
 
-    public void Detalles(String id_service, String title_service) {
+    public void Detalles(String id_service, String title_service, String desc_service, String image) {
         Detalles hello = new Detalles();
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -268,7 +284,9 @@ public class MainActivity extends AppCompatActivity
         }
         Bundle bundle = new Bundle();
         bundle.putString("title_service", title_service);
+        bundle.putString("desc_service", desc_service);
         bundle.putString("id_service", id_service);
+        bundle.putString("image", image);
         hello.setArguments(bundle);
         fragmentTransaction.add(R.id.fragment_container, hello, "Detalles");
         setTitle("Detalles");
@@ -365,7 +383,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode,final  Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         Log.e("Entro places", "Entro");
         super.onActivityResult(requestCode, resultCode, data);
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -379,13 +397,13 @@ public class MainActivity extends AppCompatActivity
 
             LayoutInflater inflater = getLayoutInflater();
             View views = inflater.inflate(R.layout.alert_metodo, null);
-            RadioGroup rdgGrupo = (RadioGroup)views.findViewById(R.id.rdgGrupo);
+            RadioGroup rdgGrupo = (RadioGroup) views.findViewById(R.id.rdgGrupo);
             rdgGrupo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                    if (checkedId == R.id.radioButton){
+                    if (checkedId == R.id.radioButton) {
                         oxxo = false;
-                    }else{
+                    } else {
                         oxxo = true;
                     }
                 }
@@ -438,7 +456,7 @@ public class MainActivity extends AppCompatActivity
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-
+                Log.e("res ", response.toString());
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -458,6 +476,18 @@ public class MainActivity extends AppCompatActivity
                     txtTitleService = (TextView) myHeader.findViewById(R.id.txtTitleService);
 
 
+                    final LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
+
+                    Glide.with(MainActivity.this)
+                            .load(servicesGral.get(0).getImage())
+                            .error(R.drawable.transition_image)
+                            .placeholder(R.drawable.placeholder)
+                            .into(new SimpleTarget<GlideDrawable>() {
+                                @Override
+                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                                    ly_gral.setBackground(resource);
+                                }
+                            });
                     txtTitleService.setText(servicesGral.get(0).getTitle());
                     ImageButton btnAfter = (ImageButton) myHeader.findViewById(R.id.btnAfter);
                     btnAfter.setOnClickListener(new View.OnClickListener() {
@@ -465,10 +495,11 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(View v) {
 //                            ADServices adapter = new ADServices(MainActivity.this, services, services.get(item).getTitle());
 //                            list_services.setAdapter(adapter);
-                            LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
-                            final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
-                            transition.reverseTransition(200);
+//                            LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
+//                            final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
+//                            transition.reverseTransition(200);
                             item = item - 1;
+
                             if (item > (servicesGral.size() - 1)) {
                                 item = 0;
 
@@ -476,30 +507,43 @@ public class MainActivity extends AppCompatActivity
                             if (item < 0) {
                                 item = (servicesGral.size() - 1);
                             }
-                            ListarServicios(servicesGral.get(item).getId_service());
-                            list_services.animate()
-                                    .translationX(-list_services.getWidth())
-                                    .alpha(1.0f)
-                                    .setDuration(200)
-                                    .setListener(new AnimatorListenerAdapter() {
+                            Glide.with(MainActivity.this)
+                                    .load(servicesGral.get(item).getImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
+                                    .into(new SimpleTarget<GlideDrawable>() {
                                         @Override
-                                        public void onAnimationEnd(Animator animation) {
-                                            super.onAnimationEnd(animation);
-                                            list_services.setVisibility(View.GONE);
-                                            list_services.animate()
-                                                    .translationX(0)
-                                                    .alpha(1.0f)
-                                                    .setDuration(100)
-                                                    .setListener(new AnimatorListenerAdapter() {
-                                                        @Override
-                                                        public void onAnimationEnd(Animator animation) {
-                                                            super.onAnimationEnd(animation);
-                                                            list_services.setVisibility(View.VISIBLE);
-                                                        }
-                                                    });
+                                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                                            ly_gral.setBackground(resource);
                                         }
                                     });
+                            ListarServicios(servicesGral.get(item).getId_service(), true);
+//                            LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
+//                            final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
+//                            transition.reverseTransition(200);
 
+//                            list_services.animate()
+//                                    .translationX(-list_services.getWidth())
+//                                    .alpha(1.0f)
+//                                    .setDuration(200)
+//                                    .setListener(new AnimatorListenerAdapter() {
+//                                        @Override
+//                                        public void onAnimationEnd(Animator animation) {
+//                                            super.onAnimationEnd(animation);
+//                                            list_services.setVisibility(View.GONE);
+//                                            list_services.animate()
+//                                                    .translationX(0)
+//                                                    .alpha(1.0f)
+//                                                    .setDuration(100)
+//                                                    .setListener(new AnimatorListenerAdapter() {
+//                                                        @Override
+//                                                        public void onAnimationEnd(Animator animation) {
+//                                                            super.onAnimationEnd(animation);
+//                                                            list_services.setVisibility(View.VISIBLE);
+//                                                        }
+//                                                    });
+//                                        }
+//                                    });
 
 
                         }
@@ -510,9 +554,9 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(View v) {
 //                            ADServices adapter = new ADServices(MainActivity.this, services, services.get(item).getTitle());
 //                            list_services.setAdapter(adapter);
-                            LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
-                            final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
-                            transition.startTransition(200);
+//                            LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
+//                            final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
+//                            transition.startTransition(200);
                             item = item + 1;
                             if (item > (servicesGral.size() - 1)) {
                                 item = 0;
@@ -520,36 +564,49 @@ public class MainActivity extends AppCompatActivity
                             if (item < 0) {
                                 item = (servicesGral.size() - 1);
                             }
-                            ListarServicios(servicesGral.get(item).getId_service());
-                            list_services.animate()
-                                    .translationX(list_services.getWidth())
-                                    .alpha(1.0f)
-                                    .setDuration(200)
-                                    .setListener(new AnimatorListenerAdapter() {
+                            Glide.with(MainActivity.this)
+                                    .load(servicesGral.get(item).getImage())
+                                    .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
+                                    .into(new SimpleTarget<GlideDrawable>() {
                                         @Override
-                                        public void onAnimationEnd(Animator animation) {
-                                            super.onAnimationEnd(animation);
-                                            list_services.setVisibility(View.GONE);
-                                            list_services.animate()
-                                                    .translationX(0)
-                                                    .alpha(1.0f)
-                                                    .setDuration(100)
-                                                    .setListener(new AnimatorListenerAdapter() {
-                                                        @Override
-                                                        public void onAnimationEnd(Animator animation) {
-                                                            super.onAnimationEnd(animation);
-                                                            list_services.setVisibility(View.VISIBLE);
-                                                        }
-                                                    });
+                                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                                            ly_gral.setBackground(resource);
                                         }
                                     });
-
+                            ListarServicios(servicesGral.get(item).getId_service(), false);
+//                            LinearLayout ly_gral = (LinearLayout) myHeader.findViewById(R.id.ly_gral);
+//
+//                            final TransitionDrawable transition = (TransitionDrawable) ly_gral.getBackground();
+//                            transition.startTransition(200);
+//                            list_services.animate()
+//                                    .translationX(list_services.getWidth())
+//                                    .alpha(1.0f)
+//                                    .setDuration(200)
+//                                    .setListener(new AnimatorListenerAdapter() {
+//                                        @Override
+//                                        public void onAnimationEnd(Animator animation) {
+//                                            super.onAnimationEnd(animation);
+//                                            list_services.setVisibility(View.GONE);
+//                                            list_services.animate()
+//                                                    .translationX(0)
+//                                                    .alpha(1.0f)
+//                                                    .setDuration(100)
+//                                                    .setListener(new AnimatorListenerAdapter() {
+//                                                        @Override
+//                                                        public void onAnimationEnd(Animator animation) {
+//                                                            super.onAnimationEnd(animation);
+//                                                            list_services.setVisibility(View.VISIBLE);
+//                                                        }
+//                                                    });
+//                                        }
+//                                    });
 
 
                         }
                     });
                     list_services.addHeaderView(myHeader, null, false);
-                    ListarServicios(servicesGral.get(0).getId_service());
+                    ListarServicios(servicesGral.get(0).getId_service(), false);
                     dialog.dismiss();
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());
@@ -567,7 +624,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void ListarServicios(String id_service) {
+    public void ListarServicios(String id_service, final boolean flagAfter) {
         final ArrayList<OServices> services = new ArrayList<>();
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/ChildrenServices")
                 .addBodyParameter("id_service", id_service)
@@ -575,7 +632,7 @@ public class MainActivity extends AppCompatActivity
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-
+                Log.e("res ", response.toString());
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -587,13 +644,13 @@ public class MainActivity extends AppCompatActivity
                         String time_new = object.optString("time");
                         services.add(new OServices(id_service, image, name, description, time_pre, time_new, "", ""));
                     }
-                    ADServices adapter = new ADServices(MainActivity.this, services);
+                    ADServices adapter = new ADServices(MainActivity.this, services, flagAfter);
 
                     list_services.setAdapter(adapter);
                     list_services.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Detalles(services.get(position - 1).getId_service(), services.get(position - 1).getTitle());
+                            Detalles(services.get(position - 1).getId_service(), services.get(position - 1).getTitle(), services.get(position - 1).getDesc(),services.get(position - 1).getImage());
                         }
                     });
 
@@ -610,8 +667,7 @@ public class MainActivity extends AppCompatActivity
                 Log.e("Login error", error.toString());
             }
         });
-        ADServices adapter = new ADServices(MainActivity.this, services);
-        list_services.setAdapter(adapter);
+
 
     }
 

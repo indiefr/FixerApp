@@ -2,6 +2,7 @@ package com.creatio.fixer;
 
 import android.*;
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -81,7 +82,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         }
     }
     private void requestForSpecificPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.CAMERA}, 101);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE,Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.CAMERA}, 101);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -391,6 +392,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
     }
     public void Login(String email, String pass, String name, String media, String id, String image){
+        final ProgressDialog dialog = ProgressDialog.show(Login.this, null, "Iniciando sesión");
+        // --- [Header elements] ---
+        dialog.show();
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/Login")
                 .addBodyParameter("type", type)
                 .addBodyParameter("email", email)
@@ -473,7 +477,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             Intent intent = new Intent(Login.this, MainActivityPlo.class);
                             startActivity(intent);
                         }
-
+                        dialog.dismiss();
                     }
                 } catch (JSONException e) {
                     Log.e("Login error catch", e.toString());

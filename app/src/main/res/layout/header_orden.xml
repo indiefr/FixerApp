@@ -69,48 +69,97 @@
             android:gravity="right"
             android:text="Por asignar"
             android:textColor="#555" />
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="16dp"
+        android:layout_weight="1"
         android:background="@drawable/bg_green"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView16"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
-            android:text="Total estimado de la orden"
-            android:textColor="#FFF"
-            android:textSize="16sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <TextView
-            android:id="@+id/txtTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="right"
-            android:text="$ 1,200"
-            android:textColor="#FFF"
-            android:textSize="16sp" />
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:fontFamily="sans-serif-medium"
+                android:text="Total estimado"
+                android:textColor="#FFF"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="top|right"
-            android:text="+ IVA"
-            android:textColor="#FFF"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/txtTotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="right"
+                android:text="$ 1,200"
+                android:textColor="#FFF"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="top|right"
+                android:text="+ IVA"
+                android:textColor="#FFF"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/textView19"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:fontFamily="sans-serif-medium"
+                android:text="Tiempo estimado"
+                android:textColor="#FFF"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txtTotalTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="right"
+                android:text="$ 1,200"
+                android:textColor="#FFF"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textViewTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="top|right"
+                android:text="MINS"
+                android:textColor="#FFF"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -120,7 +169,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:fontFamily="sans-serif-light"
-        android:text="*El monto total es estimado, puede aumentar dependiendo de las piezas agregadas"
+        android:text="*El monto total es estimado, puede aumentar dependiendo de las piezas agregadas, el precio ya incluye IVA."
         android:textSize="10sp" />
 
     <LinearLayout

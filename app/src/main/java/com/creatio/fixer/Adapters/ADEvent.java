@@ -83,10 +83,10 @@ public class ADEvent extends BaseAdapter {
         } else {
             if (list.get(position).getStatus().equalsIgnoreCase("1")) {
                 ly_gral.setBackgroundResource(R.color.blue);
-               // txtReparacion.append(" Iniciada");
+                txtReparacion.append(" Programada");
             } else if (list.get(position).getStatus().equalsIgnoreCase("2")) {
                 ly_gral.setBackgroundResource(R.color.red);
-              // txtReparacion.append(" Finalizada");
+               txtReparacion.append(" Finalizada");
             } else {
                 ly_gral.setBackgroundResource(R.color.colorAccent);
                 txtReparacion.append(" Primera visita");
