@@ -25,7 +25,7 @@
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Actualmente estas como no dispoible. los usuarios no podrán citarte si estas en este estatus."
+            android:text="Actualmente estás como no disponible. Los usuarios no podrán citarte si estas en este estatus."
             android:textColor="#FFF"
             android:textSize="24sp" />
 
