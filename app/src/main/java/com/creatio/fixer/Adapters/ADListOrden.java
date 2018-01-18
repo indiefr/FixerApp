@@ -1,7 +1,9 @@
 package com.creatio.fixer.Adapters;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
@@ -21,7 +23,10 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
+import com.creatio.fixer.CardForm;
 import com.creatio.fixer.Helper;
+import com.creatio.fixer.MainActivity;
+import com.creatio.fixer.MyAccount;
 import com.creatio.fixer.Objects.OOrders;
 import com.creatio.fixer.R;
 
@@ -39,7 +44,7 @@ import java.util.ArrayList;
 public class ADListOrden extends BaseAdapter {
     Context context;
     ArrayList<OOrders> list;
-    String type;
+    String type,iscancel;
 
     public ADListOrden(Context context, ArrayList<OOrders> list, String type) {
         this.context = context;
@@ -66,13 +71,14 @@ public class ADListOrden extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View itemView = inflater.inflate(R.layout.list_order_list, parent, false);
-        Button btnPrice, btnPagar;
+        Button btnPrice, btnPagar,btnCancelar;
         ImageView imgType = (ImageView) itemView.findViewById(R.id.imgType);
         TextView txtNumber, txtFecha, txtEspecialist, txtStatus, txtReference, txtRate;
         final RatingBar rtBar;
         LinearLayout lyOptions = (LinearLayout) itemView.findViewById(R.id.ly_options);
         LinearLayout lyRate = (LinearLayout) itemView.findViewById(R.id.lyRate);
         btnPagar = (Button) itemView.findViewById(R.id.btnPagar);
+        btnCancelar = (Button) itemView.findViewById(R.id.btnCancelar);
         btnPrice = (Button) itemView.findViewById(R.id.btnPrice);
         txtNumber = (TextView) itemView.findViewById(R.id.txtNumber);
         txtReference = (TextView) itemView.findViewById(R.id.txtReference);
@@ -82,6 +88,7 @@ public class ADListOrden extends BaseAdapter {
         txtStatus = (TextView) itemView.findViewById(R.id.txtStatus);
         rtBar = (RatingBar) itemView.findViewById(R.id.rtBar);
         rtBar.setEnabled(true);
+        lyOptions.setVisibility(View.GONE);
         Log.e("Rate",list.get(position).getRate());
         if (!list.get(position).getRate().equalsIgnoreCase("") && !list.get(position).getRate().equalsIgnoreCase("0")) {
             rtBar.setRating(Float.parseFloat(list.get(position).getRate()));
@@ -131,6 +138,11 @@ public class ADListOrden extends BaseAdapter {
                 //Iniciada
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.blue));
                 break;
+            case "6":
+                //Orden canclada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.black));
+                txtFecha.append("\n" + "Cancelada por el usuario");
+                break;
             case "5":
                 //Orden creada
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.fondo_card));
@@ -155,17 +167,30 @@ public class ADListOrden extends BaseAdapter {
         btnPagar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Helper.InitOrder(list.get(position).getId_order(), "4");
-                Helper.SendNotification(list.get(position).getId_specialist(), "Orden confirmada", "Solicitud de servicio confirmada", "0");
-                list.get(position).setStatus_so("4");
-                notifyDataSetChanged();
+                iscancel = "no";
                 //PAGAR
                 if (list.get(position).getReference().equalsIgnoreCase("0")){
                     //tarjeta
-                    ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user());
+                    ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user(), position, "4");
                 }else{
                     //oxxo
-                    ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
+                   // ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
+                }
+
+
+            }
+        });
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iscancel = "si";
+                //PAGAR
+                if (list.get(position).getReference().equalsIgnoreCase("0")){
+                    //tarjeta
+                    ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user(),position, "6");
+                }else{
+                    //oxxo
+                    //ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
                 }
 
             }
@@ -224,16 +249,70 @@ public class ADListOrden extends BaseAdapter {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return Double.valueOf(twoDForm.format(d));
     }
-    public void ConektaOrder(String id_sale, String id_user) {
+    public void ConektaOrder(String id_sale, String id_user,final int position,final String status) {
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("id_sale", id_sale)
+                .addBodyParameter("cancel", iscancel)
                 .setPriority(Priority.IMMEDIATE)
                 .build().getAsString(new StringRequestListener() {
             @Override
             public void onResponse(String response) {
                 Log.e("Order desc", response);
+                if (response.contains("paid")){
+                    Helper.InitOrder(list.get(position).getId_order(), status);
+                    Helper.SendNotification(list.get(position).getId_specialist(), "Orden confirmada", "Solicitud de servicio confirmada", "0");
+                    list.get(position).setStatus_so(status);
+                    notifyDataSetChanged();
+                }else{
+                    final Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.alert_fixer);
+                    // set the custom dialog components - text, image and button
+                    TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
+                    TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
+                    txtTitle.setText("Error");
+                    txtMsj.setText("Lamentamos esto, tu tarjeta actual no tiene fondos suficientes. Intenta agregando un nuevo metodo, o añade fondos a tu tarjeta. Gracias.");
 
+                    Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
+                    btnAceptar.setText("Agregar nueva tarjeta");
+                    Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
+                    btnCancelar.setText("Despúes");
+
+                    // if button is clicked, close the custom dialog
+                    btnAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                            alert.setTitle("Nueva tarjeta");
+                            alert.setMessage("¿Realmente quieres agregar un nuevo metodo de pago?");
+                            alert.setPositiveButton("Si, agregar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(context, CardForm.class);
+                                    intent.putExtra("oxxo", false);
+                                    intent.putExtra("updateCard", true);
+                                    context.startActivity(intent);
+                                }
+                            });
+                            alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+                            alert.show();
+                        }
+                    });
+                    btnCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+
+                        }
+                    });
+                    dialog.show();
+                }
             }
 
             @Override

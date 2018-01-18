@@ -111,8 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <RatingBar
                     android:id="@+id/rtBar"
@@ -140,8 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:orientation="horizontal"
-                android:padding="6dp"
-                android:visibility="gone">
+                android:padding="6dp">
 
                 <Button
                     android:id="@+id/btnCancelar"

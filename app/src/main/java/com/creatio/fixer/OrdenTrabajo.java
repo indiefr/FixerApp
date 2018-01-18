@@ -693,6 +693,16 @@ public class OrdenTrabajo extends AppCompatActivity {
                         lyEstatus.setBackgroundResource(R.drawable.bg_disabled);
                         txtEstatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star, 0, 0, 0);
                     }
+                    if (status.equalsIgnoreCase("6")) {
+                        //finalizada
+                        btnIniciar.setBackgroundResource(R.drawable.flat_primary);
+                        btnIniciar.setText("Cancelada");
+                        btnIniciar.setEnabled(false);
+                        myFooter.setVisibility(View.GONE);
+                        txtEstatus.setText("Orden cancelada");
+                        lyEstatus.setBackgroundResource(R.drawable.bg_disabled);
+                        txtEstatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star, 0, 0, 0);
+                    }
                     if (status.equalsIgnoreCase("3")) {
                         //pedir autorización
                         btnIniciar.setBackgroundResource(R.drawable.flat_black);

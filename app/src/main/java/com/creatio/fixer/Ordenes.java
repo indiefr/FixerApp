@@ -44,7 +44,7 @@ public class Ordenes extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_CALL);
 
-                intent.setData(Uri.parse("tel:" + "6142033850"));
+                intent.setData(Uri.parse("tel:" + "+526142646110"));
                 startActivity(intent);
             }
         });

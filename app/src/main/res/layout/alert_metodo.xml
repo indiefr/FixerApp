@@ -27,7 +27,7 @@
             android:layout_weight="0.5"
             android:checked="true"
             android:drawableRight="@drawable/ic_1600"
-            android:text="**** - 5555" />
+            android:text="Tarjeta principal" />
 
         <RadioButton
             android:id="@+id/radioButton2"
