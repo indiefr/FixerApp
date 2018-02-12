@@ -48,6 +48,8 @@ import com.creatio.fixer.Adapters.ADEvent;
 import com.creatio.fixer.Adapters.ADNew;
 import com.creatio.fixer.Objects.OCalendar;
 import com.creatio.fixer.Objects.OOrders;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -87,6 +89,7 @@ public class MainActivityPlo extends AppCompatActivity
     private ImageView background,imgNohistory;
     private RatingBar rtBarSpe;
     private TextView txtRate;
+    private String refreshToken = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -515,6 +518,7 @@ public class MainActivityPlo extends AppCompatActivity
                         list_new.setVisibility(View.GONE);
                         background.setVisibility(View.VISIBLE);
                     }
+                    UpdateToken();
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());
                 }
@@ -634,6 +638,26 @@ public class MainActivityPlo extends AppCompatActivity
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());
                 }
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
+    public void UpdateToken(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivityPlo.this);
+        FirebaseApp.initializeApp(this);
+        refreshToken = FirebaseInstanceId.getInstance().getToken();
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateTokenSpecialist")
+                .addBodyParameter("id_user", pref.getString("id_user", ""))
+                .addBodyParameter("token", refreshToken)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("TAG RATE", response);
+
             }
 
             @Override

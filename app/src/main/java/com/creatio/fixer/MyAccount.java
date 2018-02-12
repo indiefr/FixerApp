@@ -26,7 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MyAccount extends AppCompatActivity {
-    private TextView lblName, lblLast, lblTel, lblEmail, lblCard;
+    private TextView lblName, lblLast, lblTel, lblEmail, lblCard, txtmetodo;
     private LinearLayout lyCards;
 
     @Override
@@ -39,6 +39,7 @@ public class MyAccount extends AppCompatActivity {
         lblTel = (TextView) findViewById(R.id.lblTel);
         lblEmail = (TextView) findViewById(R.id.lblEmail);
         lyCards = (LinearLayout) findViewById(R.id.lyCards);
+        txtmetodo = (TextView) findViewById(R.id.txtmetodo);
 
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         ChangeData(pref);
@@ -154,7 +155,30 @@ public class MyAccount extends AppCompatActivity {
             Toast.makeText(this, "Sin metodo de pago registrado", Toast.LENGTH_SHORT).show();
 
         }
+        txtmetodo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(MyAccount.this);
+                alert.setTitle("Nueva tarjeta");
+                alert.setMessage("¿Realmente quieres agregar un nuevo metodo de pago?");
+                alert.setPositiveButton("Si, agregar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(MyAccount.this, CardForm.class);
+                        intent.putExtra("oxxo", false);
+                        intent.putExtra("updateCard", true);
+                        startActivity(intent);
+                    }
+                });
+                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
+                    }
+                });
+                alert.show();
+            }
+        });
         setTitle("Mi cuenta");
     }
 
@@ -169,6 +193,7 @@ public class MyAccount extends AppCompatActivity {
         lblLast.setText(pref.getString("last_name", "Empty"));
         lblTel.setText(pref.getString("phone", "Sin teléfono registrado"));
         lblEmail.setText(pref.getString("email", "Empty"));
+
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetCards")
                 .addBodyParameter("id_user", pref.getString("id_user", "0"))
                 .setPriority(Priority.IMMEDIATE)
@@ -219,6 +244,7 @@ public class MyAccount extends AppCompatActivity {
 
                     }
                 } catch (JSONException e) {
+                    txtmetodo.setText("Agregar una nueva tarjeta");
                     e.printStackTrace();
                 }
             }

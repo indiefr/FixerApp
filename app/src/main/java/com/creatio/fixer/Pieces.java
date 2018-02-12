@@ -1,5 +1,6 @@
 package com.creatio.fixer;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,7 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -58,7 +62,19 @@ public class Pieces extends AppCompatActivity {
         txtPieces = (TextView) findViewById(R.id.txtPieces);
         TextView txtNameService = (TextView) findViewById(R.id.txtNameService);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                return false;
+            }
+        });
 
         recyclerView.setLayoutManager(layoutManager);
         adapter = new ADPieces(Pieces.this, list, id_service, id_sale);
@@ -138,7 +154,8 @@ public class Pieces extends AppCompatActivity {
                         String status = object.optString("status");
                         String name_store = object.optString("nameStore");
                         String image = object.optString("image");
-                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store,image));
+                        String code = object.optString("code");
+                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store,image, code));
 
 
                     }

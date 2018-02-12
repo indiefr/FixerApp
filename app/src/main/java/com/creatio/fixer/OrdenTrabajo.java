@@ -79,6 +79,7 @@ public class OrdenTrabajo extends AppCompatActivity {
     CircularProgressButton btnAutorizar;
     String status_gral;
     String id_user;
+    String services = "";
     LinearLayout ly_espera;
     Spinner spHora;
     ArrayList<OCalendar> listFechas = new ArrayList<>();
@@ -237,6 +238,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                         + service_date
                         + " a las " + hour_date_service, "1");
                 Helper.InitOrder(id_sale, "3");
+                Helper.WriteLog(OrdenTrabajo.this,"Se pide autorización para la orden  " + id_sale);
                 Helper.UpdateDateService(id_sale, hour_date_service, service_date);
 
             }
@@ -439,7 +441,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-
+                Log.e("Ej","Primer leer");
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -585,17 +587,18 @@ public class OrdenTrabajo extends AppCompatActivity {
         });
     }
 
-    String services;
 
     public void UpdateServices() {
+
         services = services + "," + id_service + "|" + type_new;
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateServices")
                 .setPriority(Priority.MEDIUM)
                 .addBodyParameter("services", services)
                 .addBodyParameter("id_sale", id_sale)
-                .build().getAsJSONArray(new JSONArrayRequestListener() {
+                .build().getAsString(new StringRequestListener() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(String response) {
+                Log.e("Ej","Primer update");
                 LeerServicios();
             }
 
@@ -615,6 +618,7 @@ public class OrdenTrabajo extends AppCompatActivity {
     public void LeerServicios() {
         arrServices = new ArrayList<>();
         arrServices.clear();
+        services = "";
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetServicesOrder")
                 .addBodyParameter("id_sale", id_sale)
                 .setPriority(Priority.MEDIUM)
@@ -762,7 +766,7 @@ public class OrdenTrabajo extends AppCompatActivity {
 
     }
     public void GetEstusPago(){
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetEstusPago")
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetEstatusPago")
                 .addBodyParameter("id_sale", id_sale)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsString(new StringRequestListener() {

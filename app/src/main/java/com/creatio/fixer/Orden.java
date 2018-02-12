@@ -139,11 +139,14 @@ public class Orden extends Fragment {
                         String time_new = object.optString("time_new");
                         String type = object.optString("type");
 
+                        double price = 0.0;
                         if (type.equalsIgnoreCase("0")){
-                            total += Float.parseFloat(time_new) * 2.23;
+                            price = Float.parseFloat(time_new) * 2.23;
+                            total += price;
                             tiempo += Integer.parseInt(time_new);
                         }else{
-                            total += Float.parseFloat(time_pre) * 2.23;
+                            price = Float.parseFloat(time_pre) * 2.23;
+                            total += price;
                             tiempo += Integer.parseInt(time_pre);
                         }
 
@@ -151,10 +154,16 @@ public class Orden extends Fragment {
 
                     }
                     dialog.dismiss();
-                    String totali = Helper.formatDecimal(total * 1.16);
+
+                    if (total < 100) {
+                        total = total + 40.0;
+                    }
+                    total = total * 1.16;
+                    Log.e("total",total + "");
+                    String totali = Helper.formatDecimal(total);
                     txtTotal.setText(totali);
                     txtTotalTime.setText("" + formatHoursAndMinutes(tiempo));
-                    ADOrden adapter = new ADOrden(getActivity(), arrServices, "0", Orden.this);
+                    ADOrden adapter = new ADOrden(getActivity(), arrServices, "0", Orden.this, total);
                     list_orden.setAdapter(adapter);
                 } catch (JSONException e) {
                     Log.e("Orden error", e.toString());

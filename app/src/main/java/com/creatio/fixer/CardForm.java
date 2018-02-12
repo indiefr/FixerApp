@@ -48,7 +48,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     private SharedPreferences pref;
     private boolean oxxo = false;
     private boolean updateCard = false;
-
+    String id_specialista = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +89,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                 .actionLabel("ENVIAR")
                 .setup(this);
 
-       // mCardForm.setOnCardFormSubmitListener(this);
+        // mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnCardTypeChangedListener(this);
 
         // Warning: this is for development purposes only and should never be done outside of this example app.
@@ -103,8 +103,13 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                 if (mCardForm.isValid()) {
                     Activity activity = CardForm.this;
 
-                    //Conekta.setPublicKey("key_EQr9BgTxJZTfVmmqxCnVAsQ");
-                    Conekta.setPublicKey("key_azutM8aFLNvqnxVRuU3mNww");
+                    if (Helper.debug){
+                        Conekta.setPublicKey("key_EQr9BgTxJZTfVmmqxCnVAsQ");
+                    }else{
+                        Conekta.setPublicKey("key_azutM8aFLNvqnxVRuU3mNww");
+                    }
+
+
                     Conekta.setApiVersion("1.0.0");
                     Conekta.collectDevice(activity);
 
@@ -153,23 +158,27 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                                             @Override
                                             public void onResponse(String response) {
                                                 Log.e("Dta desc", response);
-                                                if (response.contains("id") || response.contains("creado")) {
+                                                if (response.contains("creado")) {
                                                     SharedPreferences.Editor editor = pref.edit();
                                                     editor.putBoolean("conekta", true);
                                                     editor.apply();
                                                     SaveOrder();
 
+                                                } else {
+                                                    Helper.ShowAlert(CardForm.this, "Error", "La tarjeta no ha sido procesada", 0);
                                                 }
                                             }
 
                                             @Override
                                             public void onError(ANError anError) {
-
+                                                Helper.ShowAlert(CardForm.this, "Error", "La tarjeta no ha sido procesada", 0);
                                             }
                                         });
                                     }
                                 } catch (Exception err) {
                                     //Do something on error
+                                    Helper.ShowAlert(CardForm.this, "Error", "La tarjeta no ha sido procesada", 0);
+
                                 }
 
                             } catch (Exception err) {
@@ -204,8 +213,15 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
         double total = Float.parseFloat(extras.getString("subtotal")) * 1.16;
         //process Intent......
 
+        if (Helper.debug){
+            //Especialista 1
+            id_specialista = "3";
+        }else{
+            id_specialista = extras.getString("id_specialist");
+        }
+        id_specialista = extras.getString("id_specialist");
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/SaveOrder")
-                .addBodyParameter("id_specialist", extras.getString("id_specialist"))
+                .addBodyParameter("id_specialist", id_specialista)
                 .addBodyParameter("init_date", extras.getString("init_date"))
                 .addBodyParameter("hour_date", String.valueOf(extras.getInt("hour_date")))
                 .addBodyParameter("id_user", id_user)
@@ -219,7 +235,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
             public void onResponse(JSONArray response) {
                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
                 String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
-                Helper.SendNotification(extras.getString("id_specialist"), "Solicitud de servicio", "El usuario " + name + " esta solicitado un servicio.", "0");
+                Helper.SendNotification(id_specialista, "Solicitud de servicio", "El usuario " + name + " esta solicitado un servicio.", "0");
                 for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
                     if (entry.getKey().contains("id_service")) {
                         SharedPreferences.Editor edit = pref.edit();
@@ -392,7 +408,6 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
 //
 //        }
     }
-
 
 
     @Override

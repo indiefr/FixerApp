@@ -52,13 +52,14 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
             int count = listf.size();
             final  ArrayList<OPieces> nlist = new ArrayList<OPieces>(count);
 
-            String filterableString ;
+            String filterableString, secondFilterable ;
 
             for (int i = 0; i < count; i++) {
                 filterableString = listf.get(i).getName();
-                if (filterableString.toLowerCase().contains(filterString)) {
+                secondFilterable = listf.get(i).getCode();
+                if (filterableString.toLowerCase().contains(filterString) || secondFilterable.toLowerCase().contains(filterString)) {
                     nlist.add(new OPieces(listf.get(i).getId_piece(),listf.get(i).getName(),listf.get(i).getDescription(),listf.get(i).getId_store(),listf.get(i).getStatus(),listf.get(i).getPrice(),listf.get(i).getName_store(), listf.get(i
-                    ).getImage()));
+                    ).getImage(), listf.get(i).getCode()));
                 }
             }
 
@@ -83,6 +84,7 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
         public TextView txtName;
         public TextView txtFerr;
         public TextView txtPrice;
+        public TextView txtCode;
         public CardView card;
         public ImageView imgPiece;
 
@@ -90,6 +92,7 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
             super(view);
             txtName = (TextView) view.findViewById(R.id.txtName);
             txtPrice = (TextView) view.findViewById(R.id.txtPrice);
+            txtCode = (TextView) view.findViewById(R.id.txtCode);
             txtFerr = (TextView) view.findViewById(R.id.txtFerr);
             card = (CardView) view.findViewById(R.id.card);
             imgPiece = (ImageView) view.findViewById(R.id.imgPiece);
@@ -131,6 +134,7 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
         holder.txtPrice.setText("$ " + filteredData.get(position).getPrice());
         holder.txtName.setText(filteredData.get(position).getName());
         holder.txtFerr.setText(filteredData.get(position).getName_store());
+        holder.txtCode.setText(filteredData.get(position).getCode());
         Glide.with(context)
                 .load(list.get(position).getImage())
                 .error(R.drawable.tuberia_dummy)

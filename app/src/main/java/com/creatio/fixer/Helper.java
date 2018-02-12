@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
@@ -39,6 +40,7 @@ import java.util.regex.Pattern;
  */
 
 public class Helper {
+    public static boolean debug = false;
     public static void ShowAlert(Context context, String title, String msj, int type) {
         // custom dialog
         final Dialog dialog = new Dialog(context);
@@ -70,6 +72,10 @@ public class Helper {
         });
 
         dialog.show();
+    }
+    public static void ShowAlertName(Context context, String title, String msj, int type) {
+        // custom dialog
+
     }
 
     public static void ShowAlertServices(Context context) {

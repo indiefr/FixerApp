@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.creatio.fixer.Detalles;
+import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OPieces;
 import com.creatio.fixer.Objects.OServices;
@@ -64,6 +65,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
 
         final TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
         final TextView txtDesc = (TextView) itemView.findViewById(R.id.txtDesc);
+        final TextView txtPrice = (TextView) itemView.findViewById(R.id.txtPrice);
         final ImageView image_profile = (ImageView)itemView.findViewById(R.id.image_profile);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String service = pref.getString("id_service" + filteredData.get(position).getId_service(), "0");
@@ -146,6 +148,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
         });
         txtDesc.setText(filteredData.get(position).getDesc());
         txtTitle.setText(filteredData.get(position).getTitle());
+        txtPrice.setText(Helper.formatDecimal(Double.parseDouble(String.valueOf(Integer.parseInt(filteredData.get(position).getTime_new()) * 2.23))));
         return itemView;
     }
 

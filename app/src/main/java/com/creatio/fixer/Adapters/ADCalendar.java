@@ -109,7 +109,7 @@ public class ADCalendar extends BaseAdapter {
                 SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","MX"));
                 String today = sdfSend.format(new Date());
                 int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
-                if (currentHour >  btn.getId() && today.equalsIgnoreCase(todaySend)){
+                if (currentHour + 2 >  btn.getId() && today.equalsIgnoreCase(todaySend)){
                     btn.setEnabled(false);
                     btn.setBackgroundResource(R.drawable.bg_disabled);
                     btn.setText("Deshabilitado");

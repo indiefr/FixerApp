@@ -1,7 +1,7 @@
 package com.creatio.fixer;
 
-import android.*;
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,12 +21,14 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -36,7 +38,6 @@ import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -73,6 +74,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     String refreshedToken = "sin token";
     Button btnFacebook;
     CallbackManager callbackManager;
+
     private boolean checkIfAlreadyhavePermission() {
         int result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         if (result == PackageManager.PERMISSION_GRANTED) {
@@ -81,9 +83,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             return false;
         }
     }
+
     private void requestForSpecificPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE,Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.CAMERA}, 101);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA}, 101);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -98,6 +102,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,7 +149,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         btnFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginManager.getInstance().logInWithReadPermissions(Login.this, Arrays.asList( "public_profile", "email", "user_friends"));
+                LoginManager.getInstance().logInWithReadPermissions(Login.this, Arrays.asList("public_profile", "email", "user_friends"));
 
             }
         });
@@ -167,7 +172,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                     String email = object.getString("email");
                                     String name = object.getString("name");
                                     String id = object.getString("id");
-                                    Login(email,id,name,"fb",id,"");
+                                    Login(email, id, name, "fb", id, "");
                                     type = "user";
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -283,7 +288,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                     startActivity(i);
                 } else {
 
-                    Login(email,pass,"","normal","","");
+                    Login(email, pass, "", "normal", "", "");
                 }
 
             }
@@ -352,9 +357,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             type = "user";
-                            Login(email,id,name,"gg",id,image);
+                            Login(email, id, name, "gg", id, image);
                         }
                     }
                 });
@@ -391,105 +396,146 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-    public void Login(String email, String pass, String name, String media, String id, String image){
+
+    public void Login(final String email, final String pass, String name, final String media, final String id, final String image) {
         final ProgressDialog dialog = ProgressDialog.show(Login.this, null, "Iniciando sesión");
         // --- [Header elements] ---
-        dialog.show();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/Login")
-                .addBodyParameter("type", type)
-                .addBodyParameter("email", email)
-                .addBodyParameter("pass", pass)
-                .addBodyParameter("token", refreshedToken)
-                .addBodyParameter("media", media)
-                .addBodyParameter("id", id)
-                .addBodyParameter("name", name)
-                .addBodyParameter("last", "")
-                .addBodyParameter("image", image)
-                .setPriority(Priority.MEDIUM)
-                .build().getAsJSONArray(new JSONArrayRequestListener() {
-            @Override
-            public void onResponse(JSONArray response) {
-
-                try {
-                    if (response.getString(0).equalsIgnoreCase("No user")){
-                        Helper.ShowAlert(Login.this,"Atención","El usuario no existe en nuestro servicio, verifica el correo y la contraseña de nuevo.",0);
-                    }
-                    for (int i = 0; i < response.length(); i++) {
+        if ((name.length() < 9 || name.matches("\\d+(?:\\.\\d+)?")) && type == "user" ) {
+            //Pedir nombre
+            final Dialog dialogname = new Dialog(Login.this);
+            dialogname.setContentView(R.layout.alert_fixer_name);
+            // set the custom dialog components - text, image and button
+            TextView txtTitle = (TextView) dialogname.findViewById(R.id.txtTitle);
+            TextView txtMsj = (TextView) dialogname.findViewById(R.id.txtMsj);
+            final EditText edtName = (EditText) dialogname.findViewById(R.id.edtName);
+            txtTitle.setText("Atención");
+            txtMsj.setText("Para darte un mejor servicio es necesario poner tu nombre completo. Con nombre y apellidos reales, no debe de incluir caracteres especiales com @ o #, ni números.");
 
 
-                        if (type == "user") {
-                            JSONObject object = response.getJSONObject(i);
-                            String id_user = object.optString("id_user");
-                            String name = object.optString("name");
-                            String last_name = object.optString("last_name");
-                            String email = object.optString("email");
-                            String profile_image = object.optString("profile_img");
-                            String status = object.optString("status");
-                            String client_id_conekta = object.optString("client_id_conekta");
-                            if (client_id_conekta.equalsIgnoreCase("0")){
+            Button btnAceptar = (Button) dialogname.findViewById(R.id.btnAceptar);
+            Button btnCancelar = (Button) dialogname.findViewById(R.id.btnCancelar);
 
-                            }
-                            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString("id_user", id_user);
-                            editor.putString("name", name);
-                            editor.putString("last_name", last_name);
-                            editor.putString("email", email);
-                            editor.putInt("badge", 0);
-                            editor.putString("profile_image", profile_image);
-                            editor.putString("status", status);
-                            editor.putBoolean("login", true);
-                            if (client_id_conekta.equalsIgnoreCase("0")){
-                                editor.putBoolean("conekta", false);
-                            }else{
-                                editor.putBoolean("conekta", true);
-                            }
-                            editor.apply();
-                            Helper.WriteLog(Login.this, "Usuario ha iniciado sesión .");
-                            finish();
-                            Intent intent = new Intent(Login.this, MainActivity.class);
-                            startActivity(intent);
-                        } else {
-                            JSONObject object = response.getJSONObject(i);
-                            String id_specialist = object.optString("id_specialist");
-                            String name = object.optString("name");
-                            String last_name = object.optString("last_name");
-                            String email = object.optString("email");
-                            String profile_image = object.optString("photo");
-                            String status = object.optString("status");
-                            String phone = object.optString("phone");
-                            String age = object.optString("age");
-                            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString("id_user", id_specialist);
-                            editor.putString("name", name);
-                            editor.putString("last_name", last_name);
-                            editor.putString("email", email);
-                            editor.putInt("badge", 0);
-                            editor.putString("phone", phone);
-                            editor.putString("age", age);
-                            editor.putString("profile_image", profile_image);
-                            editor.putString("status", status);
-                            editor.putBoolean("login_spe", true);
-                            editor.apply();
-                            Helper.WriteLog(Login.this, "Especialista ha iniciado sesión .");
-                            finish();
-                            Intent intent = new Intent(Login.this, MainActivityPlo.class);
-                            startActivity(intent);
-                        }
+            // if button is clicked, close the custom dialog
+            btnAceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Login(email, pass, edtName.getText().toString(), media, id, image);
+                }
+            });
+            btnCancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialogname.show();
+        } else {
+            dialog.show();
+            AndroidNetworking.post("http://api.fixerplomeria.com/v1/Login")
+                    .addBodyParameter("type", type)
+                    .addBodyParameter("email", email)
+                    .addBodyParameter("pass", pass)
+                    .addBodyParameter("token", refreshedToken)
+                    .addBodyParameter("media", media)
+                    .addBodyParameter("id", id)
+                    .addBodyParameter("name", name)
+                    .addBodyParameter("last", "")
+                    .addBodyParameter("image", image)
+                    .setPriority(Priority.MEDIUM)
+                    .build().getAsJSONArray(new JSONArrayRequestListener() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    if (response.toString().equalsIgnoreCase("No user")) {
+                        Helper.ShowAlert(Login.this, "Atención", "El usuario no existe en nuestro servicio, verifica el correo y la contraseña de nuevo.", 0);
                         dialog.dismiss();
                     }
-                } catch (JSONException e) {
-                    Log.e("Login error catch", e.toString());
+                    try {
+
+                        for (int i = 0; i < response.length(); i++) {
+
+
+                            if (type == "user") {
+                                JSONObject object = response.getJSONObject(i);
+                                String id_user = object.optString("id_user");
+                                String name = object.optString("name");
+                                String last_name = object.optString("last_name");
+                                String email = object.optString("email");
+                                String profile_image = object.optString("profile_img");
+                                String status = object.optString("status");
+                                String client_id_conekta = object.optString("client_id_conekta");
+
+                                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("id_user", id_user);
+                                editor.putString("name", name);
+                                editor.putString("last_name", last_name);
+                                editor.putString("email", email);
+                                editor.putInt("badge", 0);
+                                editor.putString("profile_image", profile_image);
+                                editor.putString("status", status);
+                                editor.putBoolean("login", true);
+                                if (client_id_conekta.equalsIgnoreCase("0")) {
+                                    editor.putBoolean("conekta", false);
+                                    Log.e("conekta id  false", client_id_conekta);
+                                } else {
+                                    editor.putBoolean("conekta", true);
+                                    Log.e("conekta id", client_id_conekta);
+                                }
+                                editor.apply();
+                                Helper.WriteLog(Login.this, "Usuario ha iniciado sesión .");
+                                finish();
+                                Intent intent = new Intent(Login.this, MainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                JSONObject object = response.getJSONObject(i);
+                                String id_specialist = object.optString("id_specialist");
+                                String name = object.optString("name");
+                                String last_name = object.optString("last_name");
+                                String email = object.optString("email");
+                                String profile_image = object.optString("photo");
+                                String status = object.optString("status");
+                                String phone = object.optString("phone");
+                                String age = object.optString("age");
+                                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("id_user", id_specialist);
+                                editor.putString("name", name);
+                                editor.putString("last_name", last_name);
+                                editor.putString("email", email);
+                                editor.putInt("badge", 0);
+                                editor.putString("phone", phone);
+                                editor.putString("age", age);
+                                editor.putString("profile_image", profile_image);
+                                editor.putString("status", status);
+                                editor.putBoolean("login_spe", true);
+                                editor.apply();
+                                Helper.WriteLog(Login.this, "Especialista ha iniciado sesión .");
+                                finish();
+                                Intent intent = new Intent(Login.this, MainActivityPlo.class);
+                                startActivity(intent);
+                            }
+                            dialog.dismiss();
+                        }
+                    } catch (JSONException e) {
+                        Log.e("Login error catch", e.toString());
+                        Helper.ShowAlert(Login.this, "Atención", "El usuario no existe en nuestro servicio, verifica el correo y la contraseña de nuevo.", 0);
+
+                        dialog.dismiss();
+                    }
+
                 }
 
-            }
+                @Override
+                public void onError(ANError error) {
+                    // handle error
+                    Log.e("Login error", error.toString());
+                    Helper.ShowAlert(Login.this, "Atención", "El usuario no existe en nuestro servicio, verifica el correo y la contraseña de nuevo.", 0);
 
-            @Override
-            public void onError(ANError error) {
-                // handle error
-                Log.e("Login error", error.toString());
-            }
-        });
+                    dialog.dismiss();
+                }
+            });
+        }
     }
+
 }

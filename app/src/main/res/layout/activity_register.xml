@@ -53,6 +53,12 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/white" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Asegurate que tu nombre sea real y este completo para ofrecerte un mejor servicio."
+                android:textSize="10sp" />
+
             <EditText
                 android:id="@+id/edtEmail"
                 android:layout_width="match_parent"
@@ -95,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="@color/colorAccent"
-                android:text="Registrarme"
+                android:text="Crear cuenta"
                 android:textColor="#FFF" />
 
             <Button

@@ -2,7 +2,9 @@ package com.creatio.fixer.Adapters;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -14,7 +16,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +24,8 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
-import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.OrdenTrabajo;
 import com.creatio.fixer.Pieces;
@@ -46,7 +47,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
     String type;
     String id_sale;
     TextView txtPieces;
-    String services,id_service_old, type_old, statusGral;
+    String services, id_service_old, type_old, statusGral;
 
     public ADOrdenTrabajo(Context context, ArrayList<OServices> arrServices, String type, String id_sale, String services, String statusGral) {
         this.context = context;
@@ -81,7 +82,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
         txtPieces = (TextView) itemView.findViewById(R.id.txtPiece);
         btnEdit.setVisibility(View.GONE);
         ImageView imgConcepto = (ImageView) itemView.findViewById(R.id.imgConcepto);
-        if (type.equalsIgnoreCase("1")){
+        if (type.equalsIgnoreCase("1")) {
             btnEdit.setVisibility(View.VISIBLE);
         }
         TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
@@ -125,10 +126,26 @@ public class ADOrdenTrabajo extends BaseAdapter {
                                 break;
                             }
                             case R.id.delete: {
-                                Toast.makeText(context, "Se ha eliminado el servicio" + " : " + arrServices.get(v.getId()).getTitle(), Toast.LENGTH_LONG).show();
-                                arrServices.remove((int) v.getId());
-                                UpdateServices("delete");
-                                notifyDataSetChanged();
+                                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                                alert.setTitle("¿Estás seguro de eliminar?");
+                                alert.setMessage("Se eliminará el servicio: " + arrServices.get(v.getId()).getTitle() + " id: " + id_service_old);
+                                alert.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Toast.makeText(context, "Se ha eliminado el servicio" + " : " + arrServices.get(v.getId()).getTitle(), Toast.LENGTH_LONG).show();
+                                        arrServices.remove((int) v.getId());
+                                        UpdateServices("delete", id_service_old);
+                                        notifyDataSetChanged();
+                                    }
+                                });
+                                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+                                alert.show();
+
                                 break;
                             }
                             case R.id.pieces: {
@@ -153,8 +170,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
             for (int i = 0; i < object2.length(); i++) {
                 JSONObject object = object2.getJSONObject(i);
                 String name = object.optString("name");
-                String price = object.optString("price");
-                txtPieces.append(name + "\n");
+                String price = object.optString("code");
+                txtPieces.append(name + "\n" + price + "\n");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -167,10 +184,13 @@ public class ADOrdenTrabajo extends BaseAdapter {
         minutes = minutes.length() == 1 ? "0" + minutes : minutes;
         return (totalMinutes / 60) + ":" + minutes;
     }
+
     String id_service;
     String type_new = "";
+
     public void LoadCatServ(String t) {
         final ArrayList<OServices> list = new ArrayList<>();
+        list.clear();
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/LoadCatServ")
                 .addBodyParameter("type", t)
                 .setPriority(Priority.MEDIUM)
@@ -179,7 +199,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
             public void onResponse(JSONArray response) {
 
                 try {
-                    for (int i = 0; i < response.length(); i++){
+                    for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
                         String id_service = object.optString("id_service");
                         String name = object.optString("name");
@@ -187,7 +207,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                         String image = object.optString("image");
                         String time_pre = object.optString("time_pre");
                         String time_new = object.optString("time_new");
-                        list.add(new OServices(id_service, image, name, description, time_pre, time_new,"",""));
+                        list.add(new OServices(id_service, image, name, description, time_pre, time_new, "", ""));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -216,16 +236,17 @@ public class ADOrdenTrabajo extends BaseAdapter {
                         txtServicio.setVisibility(View.VISIBLE);
                         actv2.requestFocus();
                         final ArrayList<OServices> list2 = new ArrayList<>();
+                        list2.clear();
                         AndroidNetworking.post("http://api.fixerplomeria.com/v1/ChildrenServices")
                                 .setPriority(Priority.MEDIUM)
-                                .addBodyParameter("type","1")
+                                .addBodyParameter("type", "1")
                                 .addBodyParameter("id_service", services.getId_service())
                                 .build().getAsJSONArray(new JSONArrayRequestListener() {
                             @Override
                             public void onResponse(JSONArray response) {
                                 Log.e("Responce array", response.toString());
                                 try {
-                                    for (int i = 0; i < response.length(); i++){
+                                    for (int i = 0; i < response.length(); i++) {
                                         JSONObject object = response.getJSONObject(i);
                                         String id_service = object.optString("id_service");
                                         String name = object.optString("name") +
@@ -234,7 +255,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                                         String image = object.optString("image");
                                         String time_pre = object.optString("time_pre");
                                         String time_new = object.optString("time_new");
-                                        list2.add(new OServices(id_service, image, name, description, time_pre, time_new,"",""));
+                                        list2.add(new OServices(id_service, image, name, description, time_pre, time_new, "", ""));
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -261,7 +282,6 @@ public class ADOrdenTrabajo extends BaseAdapter {
                     }
                 });
                 actv.setThreshold(1);
-
 
 
                 // if button is clicked, close the custom dialog
@@ -291,8 +311,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 type_new = "0";
-                                UpdateServices("edit");
-                                ((OrdenTrabajo)context).LeerServicios();
+                                UpdateServices("edit","");
+                                ((OrdenTrabajo) context).LeerServicios();
                             }
                         });
                         btnCancelar.setOnClickListener(new View.OnClickListener() {
@@ -300,8 +320,8 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 type_new = "1";
-                                UpdateServices("edit");
-                                ((OrdenTrabajo)context).LeerServicios();
+                                UpdateServices("edit","");
+                                ((OrdenTrabajo) context).LeerServicios();
                             }
                         });
                         dialog.show();
@@ -324,21 +344,37 @@ public class ADOrdenTrabajo extends BaseAdapter {
             }
         });
     }
-    public void UpdateServices(String type) {
-        if (type.equalsIgnoreCase("delete")){
+
+    public void UpdateServices(String type, String id_service) {
+        if (type.equalsIgnoreCase("delete")) {
             services = services.replace(id_service_old + "|" + type_old, "");
-        }else{
-            services = services.replace(id_service_old + "|" + type_old, id_service + "|"+ type_new);
+        } else {
+            services = services.replace(id_service_old + "|" + type_old, id_service + "|" + type_new);
         }
 
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateServices")
+
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/DeletePiecesFromService")
                 .setPriority(Priority.MEDIUM)
-                .addBodyParameter("services",services)
-                .addBodyParameter("id_sale",id_sale)
-                .build().getAsJSONArray(new JSONArrayRequestListener() {
+                .addBodyParameter("id_service", id_service)
+                .addBodyParameter("id_sale", id_sale)
+                .build().getAsString(new StringRequestListener() {
             @Override
-            public void onResponse(JSONArray response) {
-                ((OrdenTrabajo)context).LeerServicios();
+            public void onResponse(String response) {
+                AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateServices")
+                        .setPriority(Priority.MEDIUM)
+                        .addBodyParameter("services", services)
+                        .addBodyParameter("id_sale", id_sale)
+                        .build().getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        ((OrdenTrabajo) context).LeerServicios();
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
             }
 
             @Override

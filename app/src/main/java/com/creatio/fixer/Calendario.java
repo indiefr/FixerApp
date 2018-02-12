@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -70,6 +71,16 @@ public class Calendario extends Fragment {
         date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date strDate = sdf.parse(todaySend);
+                    if (new Date().after(strDate)) {
+                        Toast.makeText(getActivity(), "No puedes seleccionar una fecha anterior a la actual", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 myCalendar.set(java.util.Calendar.YEAR, year);
                 myCalendar.set(java.util.Calendar.MONTH, month);
                 myCalendar.set(java.util.Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -95,6 +106,7 @@ public class Calendario extends Fragment {
         btnR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     Calendar c = Calendar.getInstance();
@@ -113,8 +125,14 @@ public class Calendario extends Fragment {
         btnL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date strDate = sdf.parse(todaySend);
+                    if (new Date().after(strDate)) {
+                        Toast.makeText(getActivity(), "No puedes seleccionar una fecha anterior a la actual", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     Calendar c = Calendar.getInstance();
                     c.setTime(sdf.parse(todaySend));
                     c.add(Calendar.DATE, -1);  // number of days to add

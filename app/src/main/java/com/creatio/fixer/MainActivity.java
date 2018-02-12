@@ -41,6 +41,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -51,6 +52,8 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -655,6 +658,7 @@ public class MainActivity extends AppCompatActivity
                     });
 
                     txtTitleService.setText(servicesGral.get(item).getTitle());
+                    UpdateToken();
                 } catch (JSONException e) {
                     Log.e("Login error", e.toString());
                 }
@@ -670,5 +674,24 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+    public void UpdateToken(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        FirebaseApp.initializeApp(this);
+        String refreshToken = FirebaseInstanceId.getInstance().getToken();
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateToken")
+                .addBodyParameter("id_user", pref.getString("id_user", ""))
+                .addBodyParameter("token", refreshToken)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("TAG RATE", response);
 
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
 }

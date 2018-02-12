@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.creatio.fixer.CardForm;
 import com.creatio.fixer.Helper;
+import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.Orden;
 import com.creatio.fixer.R;
@@ -37,17 +38,26 @@ public class ADOrden extends BaseAdapter {
     ArrayList<OServices> arrServices;
     String type;
     Orden fragment;
+    double total = 0;
 
-    public ADOrden(Context context, ArrayList<OServices> arrServices, String type, Orden fragment) {
+    public ADOrden(Context context, ArrayList<OServices> arrServices, String type, Orden fragment, double total) {
         this.context = context;
         this.arrServices = arrServices;
         this.type = type;
         this.fragment = fragment;
+        this.total = total;
     }
 
     @Override
     public int getCount() {
-        return arrServices.size();
+        Log.e("total" ," { "  + total);
+        if (total < 100) {
+            return arrServices.size() + 1;
+
+        }else{
+
+            return arrServices.size();
+        }
     }
 
     @Override
@@ -81,26 +91,29 @@ public class ADOrden extends BaseAdapter {
                     .into(imgConcepto);
             txtTitle.setText(arrServices.get(position).getTitle());
 
-            double total = 0;
+
             if (arrServices.get(position).getType().equalsIgnoreCase("0")) {
                 //Nuevo
-                total = Double.parseDouble(arrServices.get(position).getTime_new()) * 2.23;
                 txtDesc.setText(arrServices.get(position).getDesc() + "\nInstalación nueva");
+                btnPrice.setText(Helper.formatDecimal(Double.parseDouble(arrServices.get(position).getTime_new()) * 2.23));
             } else {
                 //Reinstalación
-                total = Double.parseDouble(arrServices.get(position).getTime_pre()) * 2.23;
                 txtDesc.setText(arrServices.get(position).getDesc() + "\nReinstalación");
+                btnPrice.setText(Helper.formatDecimal(Double.parseDouble(arrServices.get(position).getTime_pre()) * 2.23));
             }
 
-            btnPrice.setText(Helper.formatDecimal(total));
+
             btnDelete.setEnabled(true);
         } else {
-//            btnDelete.setBackgroundResource(R.drawable.ic_place);
-//            btnDelete.setEnabled(false);
-//            txtTitle.setText("Tarifa de trayecto");
-//            imgConcepto.setImageResource(R.drawable.ruta);
-//            txtDesc.setText("Cargos por trayecto");
-//            btnPrice.setText("$ 35,00");
+            if (total < 100) {
+                btnDelete.setBackgroundResource(R.drawable.ic_place);
+                btnDelete.setEnabled(false);
+                txtTitle.setText("Tarifa de trayecto");
+                imgConcepto.setImageResource(R.drawable.ruta);
+                txtDesc.setText("Cargos por trayecto");
+                btnPrice.setText("$ 40.00");
+
+            }
         }
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +142,7 @@ public class ADOrden extends BaseAdapter {
                                     notifyDataSetChanged();
                                     if (totalbadge == 0){
                                         Toast.makeText(context, "No hay más elementos", Toast.LENGTH_SHORT).show();
-
+                                        ((MainActivity) context).Cerrar();
                                     }
                                 }
                             }

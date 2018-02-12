@@ -89,6 +89,7 @@ public class ADListOrden extends BaseAdapter {
         rtBar = (RatingBar) itemView.findViewById(R.id.rtBar);
         rtBar.setEnabled(true);
         lyOptions.setVisibility(View.GONE);
+        lyRate.setVisibility(View.GONE);
         Log.e("Rate",list.get(position).getRate());
         if (!list.get(position).getRate().equalsIgnoreCase("") && !list.get(position).getRate().equalsIgnoreCase("0")) {
             rtBar.setRating(Float.parseFloat(list.get(position).getRate()));
@@ -171,6 +172,7 @@ public class ADListOrden extends BaseAdapter {
                 //PAGAR
                 if (list.get(position).getReference().equalsIgnoreCase("0")){
                     //tarjeta
+                    Helper.WriteLog(context, "Pago de la orden: " + list.get(position).getId_order());
                     ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user(), position, "4");
                 }else{
                     //oxxo
@@ -249,7 +251,7 @@ public class ADListOrden extends BaseAdapter {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return Double.valueOf(twoDForm.format(d));
     }
-    public void ConektaOrder(String id_sale, String id_user,final int position,final String status) {
+    public void ConektaOrder(final String id_sale, String id_user,final int position,final String status) {
         AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("id_sale", id_sale)
@@ -259,9 +261,50 @@ public class ADListOrden extends BaseAdapter {
             @Override
             public void onResponse(String response) {
                 Log.e("Order desc", response);
+                GetEstusPago(id_sale,position,status);
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
+
+    public void ConektaOrderOxxo(String id_sale, String id_user) {
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrderOxxo")
+                .addBodyParameter("id_user", id_user)
+                .addBodyParameter("id_sale", id_sale)
+                .setPriority(Priority.IMMEDIATE)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("Order reference", response);
+
+
+            }
+
+            @Override
+            public void onError(ANError anError) {
+
+            }
+        });
+    }
+    public void GetEstusPago(final String id_sale, final int position, final String status){
+        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetEstatusPago")
+                .addBodyParameter("id_sale", id_sale)
+                .setPriority(Priority.MEDIUM)
+                .build().getAsString(new StringRequestListener() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("e pago",response);
                 if (response.contains("paid")){
                     Helper.InitOrder(list.get(position).getId_order(), status);
-                    Helper.SendNotification(list.get(position).getId_specialist(), "Orden confirmada", "Solicitud de servicio confirmada", "0");
+                    if (status.equalsIgnoreCase("6")){
+                        Helper.SendNotification(list.get(position).getId_specialist(), "Orden: " + id_sale + " cancelada", "Solicitud de servicio cancelada por el usuario", "0");
+                    }else{
+                        Helper.SendNotification(list.get(position).getId_specialist(), "Orden: " + id_sale + " confirmada", "Solicitud de servicio confirmada", "0");
+                    }
                     list.get(position).setStatus_so(status);
                     notifyDataSetChanged();
                 }else{
@@ -271,12 +314,12 @@ public class ADListOrden extends BaseAdapter {
                     TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
                     TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
                     txtTitle.setText("Error");
-                    txtMsj.setText("Lamentamos esto, tu tarjeta actual no tiene fondos suficientes. Intenta agregando un nuevo metodo, o añade fondos a tu tarjeta. Gracias.");
+                    txtMsj.setText("Lamentamos esto, tu tarjeta actual no tiene fondos suficientes. Intenta agregando una nueva tarjeta o bien intenta de nuevo.");
 
                     Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
                     btnAceptar.setText("Agregar nueva tarjeta");
                     Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
-                    btnCancelar.setText("Despúes");
+                    btnCancelar.setText("Intentar de nuevo");
 
                     // if button is clicked, close the custom dialog
                     btnAceptar.setOnClickListener(new View.OnClickListener() {
@@ -313,26 +356,6 @@ public class ADListOrden extends BaseAdapter {
                     });
                     dialog.show();
                 }
-            }
-
-            @Override
-            public void onError(ANError anError) {
-
-            }
-        });
-    }
-
-    public void ConektaOrderOxxo(String id_sale, String id_user) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrderOxxo")
-                .addBodyParameter("id_user", id_user)
-                .addBodyParameter("id_sale", id_sale)
-                .setPriority(Priority.IMMEDIATE)
-                .build().getAsString(new StringRequestListener() {
-            @Override
-            public void onResponse(String response) {
-                Log.e("Order reference", response);
-
-
             }
 
             @Override

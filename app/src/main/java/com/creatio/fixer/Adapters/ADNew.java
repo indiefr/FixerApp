@@ -299,7 +299,7 @@ public class ADNew extends BaseSwipeAdapter {
             public void onResponse(String response) {
                     Log.e("Data",response);
                 if (status.contains("1")){
-                    Helper.WriteLog(context, "Se actualizó el la solicitud a estatus: " + status);
+                    Helper.WriteLog(context, "Especialista actualizó  la solicitud a estatus: " + status);
                     Helper.ShowAlert(context, "¡Gracias por usar nuestro servicio!", "Haz actualizado la solicitud", 0);
                     Helper.SendNotification(id_user,"Solicitud aceptada por ","El técnico ha recibido tu solicitud y ha sido aceptada","1");
                 }
