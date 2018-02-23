@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,7 +33,6 @@ import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivityPlo;
 import com.creatio.fixer.Objects.OMySpecialist;
 import com.creatio.fixer.Objects.OOrders;
-import com.creatio.fixer.Objects.OSpecialist;
 import com.creatio.fixer.OrdenTrabajo;
 import com.creatio.fixer.R;
 import com.daimajia.swipe.SwipeLayout;
@@ -55,11 +53,12 @@ import java.util.Date;
  */
 
 
-public class ADNew extends BaseSwipeAdapter {
+public class ADHistory extends BaseSwipeAdapter {
     Context context;
     ArrayList<OOrders> list;
     String specialist = "";
-    public ADNew(Context context, ArrayList<OOrders> list) {
+
+    public ADHistory(Context context, ArrayList<OOrders> list) {
         this.context = context;
         this.list = list;
     }
@@ -83,7 +82,7 @@ public class ADNew extends BaseSwipeAdapter {
     @Override
     public View generateView(final int position, final ViewGroup parent) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View itemView = inflater.inflate(R.layout.list_new, parent, false);
+        final View itemView = inflater.inflate(R.layout.list_history, parent, false);
         final LinearLayout ly_services = (LinearLayout) itemView.findViewById(R.id.ly_services);
         Button btnDeclinar = (Button) itemView.findViewById(R.id.btnDeclinar);
         Button btnProgramar = (Button) itemView.findViewById(R.id.btnProgramar);
@@ -98,6 +97,7 @@ public class ADNew extends BaseSwipeAdapter {
         txtName.setText("Cliente: " + list.get(position).getName());
         final SwipeLayout swipeLayout = (SwipeLayout) itemView.findViewById(R.id.item);
         swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
+
         //swipeLayout.addDrag(SwipeLayout.DragEdge.Right, itemView.findViewById(R.id.bottom_wrapper));
         //swipeLayout.addDrag(SwipeLayout.DragEdge.Left, itemView.findViewById(R.id.bottom_wrapper2));
         final LinearLayout row = (LinearLayout) itemView.findViewById(R.id.row);
@@ -137,9 +137,7 @@ public class ADNew extends BaseSwipeAdapter {
         expandable.setDuration(500);
         ImageButton btnExpand = (ImageButton) itemView.findViewById(R.id.btnExpand);
         ObjectAnimator.ofFloat(btnExpand, "rotation", 0, 180).start();
-        if (list.get(position).getStatus_sc().equalsIgnoreCase("1")) {
-            btnExpand.setVisibility(View.GONE);
-        }
+
         btnExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,18 +166,24 @@ public class ADNew extends BaseSwipeAdapter {
         btnDeclinar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UpdateCalendary(list.get(position).getId_calendary(), "2", list.get(position).getId_user());
-                //Pasar a otro usuario...
-                Snackbar.make(v, "Declinaste una reparación de tu agenda", Snackbar.LENGTH_LONG)
-                        //.setActionTextColor(Color.CYAN)
-                        .setActionTextColor(context.getResources().getColor(R.color.colorPrimary))
-                        .setAction("Deshacer", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                UpdateCalendary(list.get(position).getId_calendary(), "0", list.get(position).getId_user());
-                            }
-                        })
-                        .show();
+                //Cancelar orden
+                AndroidNetworking.post("http://api.fixerplomeria.com/v1/CancelService")
+                        .setPriority(Priority.HIGH)
+                        .addBodyParameter("id_calendary", list.get(position).getId_calendary())
+                        .build().getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("cancel", response);
+                        ((MainActivityPlo) context).LeerHistorial();
+                        Helper.ShowAlert(context, "Orden cancelada", "La orden de servicio se ha cancelado.", 0);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e("cancel", anError.toString());
+
+                    }
+                });
             }
         });
         btnProgramar.setOnClickListener(new View.OnClickListener() {
@@ -219,7 +223,7 @@ public class ADNew extends BaseSwipeAdapter {
                                     String last_name = object.optString("last_name");
                                     String email = object.optString("email");
 
-                                    listspe.add(new OMySpecialist(id_specialist, name, last_name, name + " " + last_name,"",email,""));
+                                    listspe.add(new OMySpecialist(id_specialist, name, last_name, name + " " + last_name, "", email, ""));
                                 }
                             } catch (JSONException e) {
                                 Log.e("error ", e.toString());
@@ -232,7 +236,6 @@ public class ADNew extends BaseSwipeAdapter {
                             Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
                             Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
                             final AutoCompleteTextView actv;
-
 
                             Spinner spinner = (Spinner) dialog.findViewById(R.id.spinner);
                             ADMySpeSelect adapter = new ADMySpeSelect(context, listspe);
@@ -339,6 +342,64 @@ public class ADNew extends BaseSwipeAdapter {
         SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE, d MMMM");
         String newFormat2 = formatter2.format(testDate);
         txtFechaDet.setText(newFormat2 + " - " + list.get(position).getHour_date() + " hrs.");
+
+        TextView txtStatus = (TextView) itemView.findViewById(R.id.txtStatus);
+        btnDeclinar.setVisibility(View.VISIBLE);
+        btnProgramar.setVisibility(View.VISIBLE);
+        switch (list.get(position).getStatus_so()) {
+            case "3":
+                //Solicitar autorizacion
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.red));
+                btnDeclinar.setVisibility(View.GONE);
+                btnProgramar.setVisibility(View.GONE);
+                txtName.append("\n" + "En espera de autorización");
+                break;
+            case "1":
+                //Iniciada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.blue));
+                btnDeclinar.setVisibility(View.GONE);
+                btnProgramar.setVisibility(View.GONE);
+                txtName.append("\n" + "Orden iniciada");
+                break;
+            case "6":
+                //Orden canclada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.black));
+                txtName.append("\n" + "Cancelada");
+                btnDeclinar.setVisibility(View.GONE);
+                btnProgramar.setVisibility(View.GONE);
+                break;
+            case "5":
+                //Orden creada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.fondo_card));
+                txtName.append("\n" + "Nueva");
+                break;
+            case "2":
+                //Finalizada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.black));
+                btnDeclinar.setVisibility(View.GONE);
+                btnProgramar.setVisibility(View.GONE);
+                txtName.append("\n" + "Finalizada");
+                break;
+            case "4":
+                //Autorizada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+                btnDeclinar.setVisibility(View.GONE);
+                btnProgramar.setVisibility(View.GONE);
+                txtName.append("\n" + "Orden pagada");
+                break;
+            case "0":
+                //Agendada
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+                btnProgramar.setVisibility(View.GONE);
+                txtName.append("\n" + "Orden agendada");
+                break;
+            default:
+                txtStatus.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+                btnDeclinar.setVisibility(View.GONE);
+                btnProgramar.setVisibility(View.GONE);
+                txtName.append("\n" + "En espera");
+                break;
+        }
         return itemView;
     }
 

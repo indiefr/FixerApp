@@ -463,6 +463,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                 String email = object.optString("email");
                                 String profile_image = object.optString("profile_img");
                                 String status = object.optString("status");
+
                                 String client_id_conekta = object.optString("client_id_conekta");
 
                                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
@@ -475,6 +476,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                 editor.putString("profile_image", profile_image);
                                 editor.putString("status", status);
                                 editor.putBoolean("login", true);
+
                                 if (client_id_conekta.equalsIgnoreCase("0")) {
                                     editor.putBoolean("conekta", false);
                                     Log.e("conekta id  false", client_id_conekta);
@@ -497,6 +499,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                 String status = object.optString("status");
                                 String phone = object.optString("phone");
                                 String age = object.optString("age");
+                                String is_contratist = object.optString("is_contratist");
                                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(Login.this);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("id_user", id_specialist);
@@ -509,6 +512,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                 editor.putString("profile_image", profile_image);
                                 editor.putString("status", status);
                                 editor.putBoolean("login_spe", true);
+                                editor.putString("is_contratist", is_contratist);
                                 editor.apply();
                                 Helper.WriteLog(Login.this, "Especialista ha iniciado sesión .");
                                 finish();

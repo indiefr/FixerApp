@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Rating;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -43,8 +42,8 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
-import com.bumptech.glide.Glide;
 import com.creatio.fixer.Adapters.ADEvent;
+import com.creatio.fixer.Adapters.ADHistory;
 import com.creatio.fixer.Adapters.ADNew;
 import com.creatio.fixer.Objects.OCalendar;
 import com.creatio.fixer.Objects.OOrders;
@@ -128,6 +127,14 @@ public class MainActivityPlo extends AppCompatActivity
         nav_Menu.findItem(R.id.nav_account).setVisible(false);
         nav_Menu.findItem(R.id.nav_iniciar).setVisible(false);
         nav_Menu.findItem(R.id.nav_ordenes).setVisible(false);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivityPlo.this);
+        if (pref.getString("is_contratist", "0").equalsIgnoreCase("1")) {
+            nav_Menu.findItem(R.id.nav_add).setVisible(true);
+            nav_Menu.findItem(R.id.nav_myspe).setVisible(true);
+        } else {
+            nav_Menu.findItem(R.id.nav_add).setVisible(false);
+            nav_Menu.findItem(R.id.nav_myspe).setVisible(false);
+        }
         View hView = navigationView.getHeaderView(0);
         txtNameH = (TextView) hView.findViewById(R.id.txtNameUser);
         image_profile = (CircleImageView) hView.findViewById(R.id.image_profile);
@@ -179,7 +186,10 @@ public class MainActivityPlo extends AppCompatActivity
         spec.setContent(R.id.tab2);
 
         spec.setIndicator("Próximas");
-        tabHost.addTab(spec);
+        if (!pref.getString("is_contratist", "0").equalsIgnoreCase("1")) {
+            tabHost.addTab(spec);
+        }
+
         /*@Configuration */
 
         //-------------------------Tab 3
@@ -203,7 +213,6 @@ public class MainActivityPlo extends AppCompatActivity
             }
         });
         //------------------------------------------------
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         int items = pref.getInt("badge", 0);
         String image = pref.getString("profile_image", "");
         String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
@@ -346,6 +355,12 @@ public class MainActivityPlo extends AppCompatActivity
                 tabHost.setVisibility(View.INVISIBLE);
                 this.setTitle("Marcar disponible");
             }
+        } else if (id == R.id.nav_add) {
+            Intent intent =  new Intent(MainActivityPlo.this,RegisterEspecialist.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_myspe) {
+            Intent intent = new Intent(MainActivityPlo.this, MySpecialists.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -508,7 +523,7 @@ public class MainActivityPlo extends AppCompatActivity
                         String reference = object.optString("reference");
 
 
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference));
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference,""));
 
                     }
                     if (flag) {
@@ -567,11 +582,17 @@ public class MainActivityPlo extends AppCompatActivity
                         String reference = object.optString("reference");
 
 
-                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference));
+                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference,""));
                         list_history.setVisibility(View.VISIBLE);
                         imgNohistory.setVisibility(View.GONE);
-                        ADNew adapter = new ADNew(MainActivityPlo.this, listHistory);
-                        list_history.setAdapter(adapter);
+                        if (pref.getString("is_contratist", "0").equalsIgnoreCase("0")) {
+                            ADNew adapter = new ADNew(MainActivityPlo.this, listHistory);
+                            list_history.setAdapter(adapter);
+                        }else{
+                            ADHistory adapter = new ADHistory(MainActivityPlo.this, listHistory);
+                            list_history.setAdapter(adapter);
+                        }
+
                     }
 
                 } catch (JSONException e) {

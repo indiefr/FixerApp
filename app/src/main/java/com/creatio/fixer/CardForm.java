@@ -83,7 +83,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                 .expirationRequired(true)
                 .postalCodeRequired(false)
                 .cvvRequired(true)
-                .postalCodeRequired(true)
+                .postalCodeRequired(false)
                 .mobileNumberRequired(true)
                 .mobileNumberExplanation("")
                 .actionLabel("ENVIAR")

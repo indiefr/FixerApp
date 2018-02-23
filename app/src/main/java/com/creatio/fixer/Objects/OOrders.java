@@ -24,9 +24,10 @@ public class OOrders {
     String service_date;
     String rate;
     String reference;
+    String hascupon;
 
 
-    public OOrders(String id_order, String create_on, String total, String subtotal, String lat_lng, String init_date, String id_specialist, String name, String id_calendary, String name_user, String last_name_user, String status_sc, String status_so, String id_user, String hour_date, String hour_date_service, String service_date, String rate, String reference) {
+    public OOrders(String id_order, String create_on, String total, String subtotal, String lat_lng, String init_date, String id_specialist, String name, String id_calendary, String name_user, String last_name_user, String status_sc, String status_so, String id_user, String hour_date, String hour_date_service, String service_date, String rate, String reference, String hascupon) {
         this.id_order = id_order;
         this.create_on = create_on;
         this.total = total;
@@ -46,6 +47,15 @@ public class OOrders {
         this.service_date = service_date;
         this.rate = rate;
         this.reference = reference;
+        this.hascupon = hascupon;
+    }
+
+    public String getHascupon() {
+        return hascupon;
+    }
+
+    public void setHascupon(String hascupon) {
+        this.hascupon = hascupon;
     }
 
     public String getReference() {

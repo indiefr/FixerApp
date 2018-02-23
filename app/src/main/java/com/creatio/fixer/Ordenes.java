@@ -107,7 +107,8 @@ public class Ordenes extends AppCompatActivity {
                         String service_date = object.optString("service_date");
                         String rate = object.optString("ratef");
                         String reference = object.optString("reference");
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service, service_date, rate, reference));
+                        String hascupon = object.optString("hascupon");
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service, service_date, rate, reference,hascupon));
 
                     }
                     ADListOrden adapter = new ADListOrden(Ordenes.this, list, "1");

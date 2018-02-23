@@ -4,12 +4,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +31,7 @@ import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.MyAccount;
 import com.creatio.fixer.Objects.OOrders;
+import com.creatio.fixer.Ordenes;
 import com.creatio.fixer.R;
 
 import org.json.JSONArray;
@@ -76,6 +80,7 @@ public class ADListOrden extends BaseAdapter {
         TextView txtNumber, txtFecha, txtEspecialist, txtStatus, txtReference, txtRate;
         final RatingBar rtBar;
         LinearLayout lyOptions = (LinearLayout) itemView.findViewById(R.id.ly_options);
+        Button btnCupon = (Button) itemView.findViewById(R.id.btnCupon);
         LinearLayout lyRate = (LinearLayout) itemView.findViewById(R.id.lyRate);
         btnPagar = (Button) itemView.findViewById(R.id.btnPagar);
         btnCancelar = (Button) itemView.findViewById(R.id.btnCancelar);
@@ -90,6 +95,7 @@ public class ADListOrden extends BaseAdapter {
         rtBar.setEnabled(true);
         lyOptions.setVisibility(View.GONE);
         lyRate.setVisibility(View.GONE);
+        btnCupon.setVisibility(View.GONE);
         Log.e("Rate",list.get(position).getRate());
         if (!list.get(position).getRate().equalsIgnoreCase("") && !list.get(position).getRate().equalsIgnoreCase("0")) {
             rtBar.setRating(Float.parseFloat(list.get(position).getRate()));
@@ -126,13 +132,76 @@ public class ADListOrden extends BaseAdapter {
         txtEspecialist.setText("Especialista: " + list.get(position).getName());
         String total = list.get(position).getTotal();
         btnPrice.setText(Helper.formatDecimal(Double.parseDouble(total)));
+        if (!list.get(position).getHascupon().equalsIgnoreCase("0")){
+            txtEspecialist.setText("Especialista: " + list.get(position).getName() + "\n" + "Se aplicó cupón");
+            btnCupon.setVisibility(View.GONE);
+        }else{
+            btnCupon.setVisibility(View.VISIBLE);
+        }
         if (list.get(position).getName().equalsIgnoreCase(null)) {
             txtEspecialist.setText("Especialista: En espera");
         }
+        btnCupon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alerta = new AlertDialog.Builder(context);
+                alerta.setTitle("Nombre de cupón");
+                LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                View dialogViewc = li.inflate(R.layout.dialog_email, null);
+                final EditText edtNamec = (EditText) dialogViewc.findViewById(R.id.edtNombre);
+                edtNamec.setVisibility(View.GONE);
+                final EditText edtTelefonoc = (EditText) dialogViewc.findViewById(R.id.edtTelefono);
+                edtTelefonoc.setVisibility(View.GONE);
+                final EditText edtMsjc = (EditText) dialogViewc.findViewById(R.id.edtMsj);
+
+                edtMsjc.setHint("Cupón");
+                edtMsjc.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                alerta.setView(dialogViewc);
+                alerta.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                alerta.setPositiveButton("Aplicar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ApplyCupon")
+                                .addBodyParameter("id_user", pref.getString("id_user","0"))
+                                .addBodyParameter("id_order", list.get(position).getId_order())
+                                .addBodyParameter("name", edtMsjc.getText().toString())
+
+                                .build().getAsString(new StringRequestListener() {
+                            @Override
+                            public void onResponse(String response) {
+                                if (response.contains("Aplicado")) {
+                                    Helper.ShowAlert(context, "Felicidades", "Se ha aplicado el cupón: " + edtMsjc.getText().toString(), 0);
+                                    ((Ordenes)context).ReadOrders();
+                                }else{
+                                    Helper.ShowAlert(context, "Oh Oh", "Cupón no válido. Ya ingresaste el cupón anteriormente o no éxiste.", 0);
+                                }
+
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+
+                            }
+                        });
+                    }
+                });
+                alerta.show();
+            }
+        });
         switch (list.get(position).getStatus_so()) {
             case "3":
                 //Solicitar autorizacion
                 lyOptions.setVisibility(View.VISIBLE);
+                if (list.get(position).getHascupon().equalsIgnoreCase("0")) {
+                    btnCupon.setVisibility(View.VISIBLE);
+                }
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.red));
                 break;
             case "1":

@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_disponibilidad).setVisible(false);
         nav_Menu.findItem(R.id.nav_iniciar).setVisible(false);
+        nav_Menu.findItem(R.id.nav_add).setVisible(false);
+        nav_Menu.findItem(R.id.nav_myspe).setVisible(false);
         View hView = navigationView.getHeaderView(0);
         txtName = (TextView) hView.findViewById(R.id.txtNameUser);
         image_profile = (CircleImageView) hView.findViewById(R.id.image_profile);

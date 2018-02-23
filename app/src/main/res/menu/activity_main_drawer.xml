@@ -19,6 +19,14 @@
             android:icon="@drawable/ic_disp"
             android:title="Marcar no disponible" />
         <item
+            android:id="@+id/nav_add"
+            android:icon="@drawable/ic_assignment"
+            android:title="Agregar especialista" />
+        <item
+            android:id="@+id/nav_myspe"
+            android:icon="@drawable/ic_assignment"
+            android:title="Mis especialistas" />
+        <item
             android:id="@+id/nav_close"
             android:icon="@drawable/ic_close_session"
             android:title="Cerrar sesión" />
