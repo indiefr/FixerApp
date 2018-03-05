@@ -26,6 +26,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.bumptech.glide.Glide;
+import com.creatio.fixer.Helper;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.OrdenTrabajo;
 import com.creatio.fixer.Pieces;
@@ -104,6 +105,11 @@ public class ADOrdenTrabajo extends BaseAdapter {
                 .error(R.drawable.tuberia_dummy)
                 .into(imgConcepto);
         txtTitle.setText(arrServices.get(position).getTitle());
+        if (statusGral.equalsIgnoreCase("0")){
+            btnEdit.setVisibility(View.VISIBLE);
+        }else{
+            btnEdit.setVisibility(View.GONE);
+        }
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -111,9 +117,11 @@ public class ADOrdenTrabajo extends BaseAdapter {
                 id_service_old = arrServices.get(v.getId()).getId_service();
                 type_old = arrServices.get(v.getId()).getType();
                 final PopupMenu popup = new PopupMenu(context, v);
+
                 popup.getMenuInflater().inflate(R.menu.popup,
                         popup.getMenu());
                 popup.show();
+
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -126,26 +134,30 @@ public class ADOrdenTrabajo extends BaseAdapter {
                                 break;
                             }
                             case R.id.delete: {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                                alert.setTitle("¿Estás seguro de eliminar?");
-                                alert.setMessage("Se eliminará el servicio: " + arrServices.get(v.getId()).getTitle() + " id: " + id_service_old);
-                                alert.setPositiveButton("SI", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Toast.makeText(context, "Se ha eliminado el servicio" + " : " + arrServices.get(v.getId()).getTitle(), Toast.LENGTH_LONG).show();
-                                        arrServices.remove((int) v.getId());
-                                        UpdateServices("delete", id_service_old);
-                                        notifyDataSetChanged();
-                                    }
-                                });
-                                alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                    }
-                                });
-                                alert.show();
+                                if (arrServices.size() == 1) {
+                                    Helper.ShowAlert(context, "No puedes dejar vacia la orden", "No se permite eliminar todos los servicios de la orden.", 0);
+                                } else {
+                                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
+                                    alert.setTitle("¿Estás seguro de eliminar?");
+                                    alert.setMessage("Se eliminará el servicio: " + arrServices.get(position).getTitle() + " id: " + id_service_old);
+                                    alert.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            Toast.makeText(context, "Se ha eliminado el servicio" + " : " + arrServices.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                                            arrServices.remove(position);
+                                            UpdateServices("delete", id_service_old);
+                                            notifyDataSetChanged();
+                                        }
+                                    });
+                                    alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    });
+                                    alert.show();
+                                }
                                 break;
                             }
                             case R.id.pieces: {
@@ -191,7 +203,11 @@ public class ADOrdenTrabajo extends BaseAdapter {
     public void LoadCatServ(String t) {
         final ArrayList<OServices> list = new ArrayList<>();
         list.clear();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/LoadCatServ")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "LoadCatServ")
                 .addBodyParameter("type", t)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -237,7 +253,11 @@ public class ADOrdenTrabajo extends BaseAdapter {
                         actv2.requestFocus();
                         final ArrayList<OServices> list2 = new ArrayList<>();
                         list2.clear();
-                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ChildrenServices")
+                        String url = "http://api.fixerplomeria.com/v1/";
+                        if (Helper.debug) {
+                            url = "http://apitest.fixerplomeria.com/v1/";
+                        }
+                        AndroidNetworking.post(url + "ChildrenServices")
                                 .setPriority(Priority.MEDIUM)
                                 .addBodyParameter("type", "1")
                                 .addBodyParameter("id_service", services.getId_service())
@@ -311,7 +331,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 type_new = "0";
-                                UpdateServices("edit","");
+                                UpdateServices("edit", "");
                                 ((OrdenTrabajo) context).LeerServicios();
                             }
                         });
@@ -320,7 +340,7 @@ public class ADOrdenTrabajo extends BaseAdapter {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 type_new = "1";
-                                UpdateServices("edit","");
+                                UpdateServices("edit", "");
                                 ((OrdenTrabajo) context).LeerServicios();
                             }
                         });
@@ -347,20 +367,28 @@ public class ADOrdenTrabajo extends BaseAdapter {
 
     public void UpdateServices(String type, String id_service) {
         if (type.equalsIgnoreCase("delete")) {
-            services = services.replace(id_service_old + "|" + type_old, "");
+            services = services.replace(id_service_old + "|" + type_old , "");
         } else {
             services = services.replace(id_service_old + "|" + type_old, id_service + "|" + type_new);
         }
 
 
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/DeletePiecesFromService")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "DeletePiecesFromService")
                 .setPriority(Priority.MEDIUM)
                 .addBodyParameter("id_service", id_service)
                 .addBodyParameter("id_sale", id_sale)
                 .build().getAsString(new StringRequestListener() {
             @Override
             public void onResponse(String response) {
-                AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateServices")
+                String url = "http://api.fixerplomeria.com/v1/";
+                if (Helper.debug) {
+                    url = "http://apitest.fixerplomeria.com/v1/";
+                }
+                AndroidNetworking.post(url + "UpdateServices")
                         .setPriority(Priority.MEDIUM)
                         .addBodyParameter("services", services)
                         .addBodyParameter("id_sale", id_sale)

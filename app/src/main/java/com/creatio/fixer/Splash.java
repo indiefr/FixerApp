@@ -26,7 +26,7 @@ public class Splash extends AppCompatActivity {
         LinearLayout ly_gral = (LinearLayout) findViewById(R.id.ly_gral);
         ImageView img = (ImageView) findViewById(R.id.img);
         DisplayMetrics metrics = this.getResources().getDisplayMetrics();
-        int mid = (metrics.heightPixels - img.getHeight())/3;
+        int mid = (metrics.heightPixels - img.getHeight()) / 3;
         ObjectAnimator animation = ObjectAnimator.ofFloat(img, "y", mid);
         animation.setDuration(500);
         animation.start();
@@ -40,21 +40,22 @@ public class Splash extends AppCompatActivity {
                 Intent intent = new Intent(Splash.this, Login.class);
                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(Splash.this);
                 Boolean login = pref.getBoolean("login", false);
-                if (login) {
-                    intent = new Intent(Splash.this, MainActivity.class);
-
-                } else {
-                    intent = new Intent(Splash.this, Login.class);
-                    startActivity(intent);
-                }
                 Boolean login_spe = pref.getBoolean("login_spe", false);
                 if (login_spe) {
                     intent = new Intent(Splash.this, MainActivityPlo.class);
-                    startActivity(intent);
+
+                }else if (login) {
+                    intent = new Intent(Splash.this, MainActivity.class);
+
                 } else {
-                    intent = new Intent(Splash.this, Login.class);
-                    startActivity(intent);
+                    intent = new Intent(Splash.this, MainActivity.class);
+
+
                 }
+//                 else {
+//                    intent = new Intent(Splash.this, Login.class);
+//                    startActivity(intent);
+//                }
                 String refreshedToken = FirebaseInstanceId.getInstance().getToken();
                 startActivity(intent);
                 finish();

@@ -45,7 +45,7 @@ public class ADMySpeSelect extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View itemView = inflater.inflate(R.layout.list_myspe, parent, false);
-        TextView txtPass,txtEmail,txtName,txtOrders;
+        TextView txtPass, txtEmail, txtName, txtOrders;
         txtName = itemView.findViewById(R.id.txtName);
         txtPass = itemView.findViewById(R.id.txtPass);
         txtEmail = itemView.findViewById(R.id.txtEmail);

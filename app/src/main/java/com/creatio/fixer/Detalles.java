@@ -1,6 +1,5 @@
 package com.creatio.fixer;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -170,7 +168,11 @@ public class Detalles extends Fragment {
 
     public void ListarServicios(String id_service) {
         final ArrayList<OServices> services = new ArrayList<>();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ChildrenServices")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ChildrenServices")
                 .addBodyParameter("id_service", id_service)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {

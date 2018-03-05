@@ -2,6 +2,7 @@ package com.creatio.fixer;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
@@ -9,14 +10,10 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
@@ -41,6 +38,7 @@ import java.util.regex.Pattern;
 
 public class Helper {
     public static boolean debug = false;
+
     public static void ShowAlert(Context context, String title, String msj, int type) {
         // custom dialog
         final Dialog dialog = new Dialog(context);
@@ -61,6 +59,38 @@ public class Helper {
         btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+    public static void ShowAlertLogin(final Context context) {
+        // custom dialog
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.alert_fixer);
+        // set the custom dialog components - text, image and button
+        TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
+        TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
+        txtTitle.setText("Debes iniciar sesión");
+        txtMsj.setText("Para poder agendar y contratar servicios debes ser usuario registrado.");
+
+
+        Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
+        Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
+
+        // if button is clicked, close the custom dialog
+        btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context,Login.class);
+                context.startActivity(intent);
                 dialog.dismiss();
             }
         });
@@ -130,7 +160,11 @@ public class Helper {
     public static void WriteLog(final Context context, String msj) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/WriteLog")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "WriteLog")
                 .addBodyParameter("msj", msj)
                 .addBodyParameter("id_user", id_user)
                 .setPriority(Priority.MEDIUM)
@@ -159,7 +193,11 @@ public class Helper {
     }
 
     public static void SendNotification(String id_user, String title, String msj, String type) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/SendAndroid")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "SendAndroid")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("msj", msj)
                 .addBodyParameter("title", title)
@@ -184,7 +222,11 @@ public class Helper {
     }
 
     public void Network() {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/Services")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "Services")
                 .addBodyParameter("email", "")
                 .addBodyParameter("pass", "")
                 .setPriority(Priority.MEDIUM)
@@ -244,7 +286,11 @@ public class Helper {
     }
 
     public static void InitOrder(String id_sale, String status) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/InitOrder")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "InitOrder")
                 .addBodyParameter("id_sale", id_sale)
                 .addBodyParameter("status", status)
                 .setPriority(Priority.MEDIUM)
@@ -263,8 +309,13 @@ public class Helper {
         });
     }
 
-    public static void UpdateDateService(String id_sale,String hour_date_service, String service_date) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateDateService")
+    public static void UpdateDateService(String id_sale, String hour_date_service, String service_date) {
+
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateDateService")
                 .addBodyParameter("id_sale", id_sale)
                 .addBodyParameter("service_date", service_date)
                 .addBodyParameter("hour_date_service", hour_date_service)
@@ -285,49 +336,59 @@ public class Helper {
     }
 
     public static void OpenAlertBottom(final Context context, final String type, final String msj, final ArrayList<String> list) {
-        final View contentView = View.inflate(context, R.layout.snack_repair, null);
-        final BottomSheetDialog dialog = new BottomSheetDialog(context);
-        dialog.setContentView(contentView);
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent())
-                .getLayoutParams();
-        CoordinatorLayout.Behavior behavior = params.getBehavior();
-        ((View) contentView.getParent()).setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-        Button btnReparalo = (Button) contentView.findViewById(R.id.btnReparalo);
-        TextView txtMsj = (TextView) contentView.findViewById(R.id.txtMsj);
-        txtMsj.setText(msj);
-        if (type.equalsIgnoreCase("0")) {
-            btnReparalo.setText("Seleccionar ubicación");
-        }
-
-        btnReparalo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                if (type.equalsIgnoreCase("1")) {
-                    ((MainActivity) context).AbrirOrden();
-                } else {
-                    ((MainActivity) context).OpenPlace(list.get(0), list.get(1), Integer.parseInt(list.get(2)));
-                }
-            }
-        });
-        dialog.show();
-        new CountDownTimer(2000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean login = pref.getBoolean("login", false);
+        if (login) {
+            final View contentView = View.inflate(context, R.layout.snack_repair, null);
+            final BottomSheetDialog dialog = new BottomSheetDialog(context);
+            dialog.setContentView(contentView);
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent())
+                    .getLayoutParams();
+            CoordinatorLayout.Behavior behavior = params.getBehavior();
+            ((View) contentView.getParent()).setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
+            Button btnReparalo = (Button) contentView.findViewById(R.id.btnReparalo);
+            TextView txtMsj = (TextView) contentView.findViewById(R.id.txtMsj);
+            txtMsj.setText(msj);
+            if (type.equalsIgnoreCase("0")) {
+                btnReparalo.setText("Seleccionar ubicación");
             }
 
-            public void onFinish() {
-                if (type.equalsIgnoreCase("1")) {
+            btnReparalo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     dialog.dismiss();
+                    if (type.equalsIgnoreCase("1")) {
+                        ((MainActivity) context).AbrirOrden();
+                    } else {
+                        ((MainActivity) context).OpenPlace(list.get(0), list.get(1), Integer.parseInt(list.get(2)));
+                    }
+                }
+            });
+            dialog.show();
+            new CountDownTimer(2000, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+
                 }
 
-            }
-        }.start();
+                public void onFinish() {
+                    if (type.equalsIgnoreCase("1")) {
+                        dialog.dismiss();
+                    }
+
+                }
+            }.start();
+        }else{
+            ShowAlertLogin(context);
+        }
     }
 
     public static void UpdateOrder(String id_sale, String id_services) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateOrder")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateOrder")
                 .addBodyParameter("id_sale", id_sale)
                 .addBodyParameter("id_services", id_services)
                 .setPriority(Priority.MEDIUM)

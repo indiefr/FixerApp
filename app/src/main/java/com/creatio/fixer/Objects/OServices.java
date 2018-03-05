@@ -5,10 +5,10 @@ package com.creatio.fixer.Objects;
  */
 
 public class OServices {
-    String id_service, image, title, desc, time_pre, time_new,type,pieces;
+    String id_service, image, title, desc, time_pre, time_new, type, pieces;
 
 
-    public OServices(String id_service, String image, String title, String desc, String time_pre, String time_new, String type,String pieces) {
+    public OServices(String id_service, String image, String title, String desc, String time_pre, String time_new, String type, String pieces) {
         this.id_service = id_service;
         this.image = image;
         this.title = title;
@@ -82,6 +82,7 @@ public class OServices {
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
     @Override
     public String toString() {
         return title;

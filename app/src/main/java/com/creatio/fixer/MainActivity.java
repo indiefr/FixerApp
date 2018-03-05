@@ -121,6 +121,14 @@ public class MainActivity extends AppCompatActivity
         nav_Menu.findItem(R.id.nav_iniciar).setVisible(false);
         nav_Menu.findItem(R.id.nav_add).setVisible(false);
         nav_Menu.findItem(R.id.nav_myspe).setVisible(false);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        Boolean login = pref.getBoolean("login", false);
+        if (!login){
+            nav_Menu.findItem(R.id.nav_account).setVisible(false);
+            nav_Menu.findItem(R.id.nav_ordenes).setVisible(false);
+            nav_Menu.findItem(R.id.nav_close).setVisible(false);
+            nav_Menu.findItem(R.id.nav_iniciar).setVisible(true);
+        }
         View hView = navigationView.getHeaderView(0);
         txtName = (TextView) hView.findViewById(R.id.txtNameUser);
         image_profile = (CircleImageView) hView.findViewById(R.id.image_profile);
@@ -170,13 +178,12 @@ public class MainActivity extends AppCompatActivity
 
         //-------------------
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         int items = pref.getInt("badge", 0);
         String image = pref.getString("profile_image", "");
         image = image.replace("\"", "");
         image = image.replace('\\', '/');
         image = image.replace("//", "/");
-        String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "Sin registro");
+        String name = pref.getString("name", "Sin registro") + " " + pref.getString("last_name", "");
         btnBadge.setText("" + items);
         txtName.setText(name);
 
@@ -318,31 +325,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void AbrirOrden() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        int items = pref.getInt("badge", 0);
-        if (items == 0) {
-            Helper.ShowAlert(MainActivity.this, "No hay elementos en la orden", "Te invitamos a seleccionar al menos un servicio para poder ver la orden", 0);
-            return;
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        Boolean login = pref.getBoolean("login", false);
+        if (login) {
+            int items = pref.getInt("badge", 0);
+            if (items == 0) {
+                Helper.ShowAlert(MainActivity.this, "No hay elementos en la orden", "Te invitamos a seleccionar al menos un servicio para poder ver la orden", 0);
+                return;
 
+            }
+            Orden hello = new Orden();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentTransaction = fragmentManager.beginTransaction();
+            if (fragmentManager != null) {
+                fragmentTransaction.attach(hello);
+            }
+            fragmentTransaction.add(R.id.fragment_container, hello, "Orden");
+            setTitle("Orden");
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            FrameLayout fr = (FrameLayout) findViewById(R.id.fragment_container);
+            Animation bottomUp = AnimationUtils.loadAnimation(MainActivity.this,
+                    R.anim.bottom_up);
+            fr.startAnimation(bottomUp);
+            fr.setVisibility(View.VISIBLE);
+        }else{
+            Helper.ShowAlertLogin(MainActivity.this);
         }
-        Orden hello = new Orden();
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        if (fragmentManager != null) {
-            fragmentTransaction.attach(hello);
-        }
-        fragmentTransaction.add(R.id.fragment_container, hello, "Orden");
-        setTitle("Orden");
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-        FrameLayout fr = (FrameLayout) findViewById(R.id.fragment_container);
-        Animation bottomUp = AnimationUtils.loadAnimation(MainActivity.this,
-                R.anim.bottom_up);
-        fr.startAnimation(bottomUp);
-        fr.setVisibility(View.VISIBLE);
     }
 
     public void AbrirCalendar(String total) {
+
 
         Calendario hello = new Calendario();
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -456,7 +469,11 @@ public class MainActivity extends AppCompatActivity
         // --- [Header elements] ---
         dialog.show();
         servicesGral = new ArrayList<>();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/Services")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "Services")
                 .setPriority(Priority.IMMEDIATE)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
@@ -631,7 +648,11 @@ public class MainActivity extends AppCompatActivity
 
     public void ListarServicios(String id_service, final boolean flagAfter) {
         final ArrayList<OServices> services = new ArrayList<>();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ChildrenServices")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ChildrenServices")
                 .addBodyParameter("id_service", id_service)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -655,7 +676,7 @@ public class MainActivity extends AppCompatActivity
                     list_services.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Detalles(services.get(position - 1).getId_service(), services.get(position - 1).getTitle(), services.get(position - 1).getDesc(),services.get(position - 1).getImage());
+                            Detalles(services.get(position - 1).getId_service(), services.get(position - 1).getTitle(), services.get(position - 1).getDesc(), services.get(position - 1).getImage());
                         }
                     });
 
@@ -676,24 +697,32 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-    public void UpdateToken(){
+
+    public void UpdateToken() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        Boolean login = pref.getBoolean("login", false);
         FirebaseApp.initializeApp(this);
         String refreshToken = FirebaseInstanceId.getInstance().getToken();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateToken")
-                .addBodyParameter("id_user", pref.getString("id_user", ""))
-                .addBodyParameter("token", refreshToken)
-                .build().getAsString(new StringRequestListener() {
-            @Override
-            public void onResponse(String response) {
-                Log.e("TAG RATE", response);
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        if (login) {
+            AndroidNetworking.post(url + "UpdateToken")
+                    .addBodyParameter("id_user", pref.getString("id_user", ""))
+                    .addBodyParameter("token", refreshToken)
+                    .build().getAsString(new StringRequestListener() {
+                @Override
+                public void onResponse(String response) {
+                    Log.e("TAG RATE", response);
 
-            }
+                }
 
-            @Override
-            public void onError(ANError anError) {
+                @Override
+                public void onError(ANError anError) {
 
-            }
-        });
+                }
+            });
+        }
     }
 }

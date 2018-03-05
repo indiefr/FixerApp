@@ -1,13 +1,11 @@
 package com.creatio.fixer.Objects;
 
-import org.json.JSONArray;
-
 /**
  * Created by Layge on 19/07/2017.
  */
 
 public class OSpecialist {
-    String id_specialis,name,last_name,title;
+    String id_specialis, name, last_name, title;
 
     public OSpecialist(String id_specialis, String name, String last_name, String title) {
         this.id_specialis = id_specialis;

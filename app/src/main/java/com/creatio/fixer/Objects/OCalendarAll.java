@@ -1,13 +1,11 @@
 package com.creatio.fixer.Objects;
 
-import org.json.JSONArray;
-
 /**
  * Created by Layge on 19/07/2017.
  */
 
 public class OCalendarAll {
-    String id_specialis,init_date,finish_date,commits,status;
+    String id_specialis, init_date, finish_date, commits, status;
 
     public OCalendarAll(String id_specialis, String init_date, String finish_date, String commits, String status) {
         this.id_specialis = id_specialis;

@@ -7,9 +7,10 @@ import org.json.JSONArray;
  */
 
 public class OCalendar {
-    String id_specialis,name,last_name,age,description,phone,status,extra;
+    String id_specialis, name, last_name, age, description, phone, status, extra;
     JSONArray objCalendar;
-    public OCalendar(String id_specialis, String name, String last_name, String age, String description, String phone, String status, String extra,JSONArray objCalendar) {
+
+    public OCalendar(String id_specialis, String name, String last_name, String age, String description, String phone, String status, String extra, JSONArray objCalendar) {
         this.id_specialis = id_specialis;
         this.name = name;
         this.last_name = last_name;

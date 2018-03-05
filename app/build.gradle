@@ -1,22 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        Creatio {
-            keyAlias 'creatio'
-            keyPassword 'creatio'
-            storeFile file('C:/Program Files/Java/jdk1.8.0_112/bin/creatio.keystore')
-            storePassword 'creatio'
-        }
-    }
+//    signingConfigs {
+//        Creatio {
+//            keyAlias 'creatio'
+//            keyPassword 'creatio'
+//            storeFile file('C:/Program Files/Java/jdk1.8.0_112/bin/creatio.keystore')
+//            storePassword 'creatio'
+//        }
+//    }
     compileSdkVersion 27
     buildToolsVersion "27.0.1"
     defaultConfig {
         applicationId "com.creatio.fixer"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 21
-        versionName '1.5.0'
+        versionCode 25
+        versionName '1.5.4'
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

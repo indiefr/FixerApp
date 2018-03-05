@@ -5,7 +5,7 @@ package com.creatio.fixer.Objects;
  */
 
 public class OMySpecialist {
-    String id_specialis,name,last_name,desc,age,email,password;
+    String id_specialis, name, last_name, desc, age, email, password;
 
     public OMySpecialist(String id_specialis, String name, String last_name, String desc, String age, String email, String password) {
         this.id_specialis = id_specialis;

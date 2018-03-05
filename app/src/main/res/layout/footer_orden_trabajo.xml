@@ -7,6 +7,33 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <LinearLayout
+        android:id="@+id/lyAgregar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/btnAgregar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.15"
+            app:srcCompat="@drawable/ic_mas" />
+
+        <TextView
+            android:id="@+id/textView29"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="0.8"
+            android:fontFamily="sans-serif-medium"
+            android:text="Añadir una nueva reparación"
+            android:textColor="#333" />
+
+    </LinearLayout>
+
     <CheckBox
         android:id="@+id/chAhora"
         android:layout_width="match_parent"
@@ -38,11 +65,12 @@
 
             <Button
                 android:id="@+id/edtFecha"
+                style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
-                android:background="@drawable/button_white"
                 android:gravity="left|center_vertical"
+                android:textAllCaps="false"
                 android:text="Fecha" />
 
             <Spinner
@@ -51,33 +79,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.3" />
         </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lyAgregar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/btnAgregar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            app:srcCompat="@drawable/ic_mas" />
-
-        <TextView
-            android:id="@+id/textView29"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_weight="0.9"
-            android:fontFamily="sans-serif-medium"
-            android:text="Añadir una nueva reparación"
-            android:textColor="#333" />
 
     </LinearLayout>
 

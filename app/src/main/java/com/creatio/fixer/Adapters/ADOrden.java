@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.creatio.fixer.CardForm;
 import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.Objects.OServices;
@@ -50,11 +47,11 @@ public class ADOrden extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.e("total" ," { "  + total);
+        Log.e("total", " { " + total);
         if (total < 100) {
             return arrServices.size() + 1;
 
-        }else{
+        } else {
 
             return arrServices.size();
         }
@@ -119,7 +116,8 @@ public class ADOrden extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                alert.setMessage("¿Estás seguro de eliminar este servicio?");
+
+                alert.setMessage("¿Estás seguro de eliminar el servicio " + arrServices.get(position).getTitle() +" id: " + arrServices.get(position).getId_service() +"?");
                 alert.setTitle("Atención");
                 alert.setPositiveButton("SI", new DialogInterface.OnClickListener() {
                     @Override
@@ -131,7 +129,7 @@ public class ADOrden extends BaseAdapter {
                         final Map<String, ?> allEntries = pref.getAll();
                         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
                             if (entry.getKey().contains("id_service")) {
-                                if (entry.getKey().contains(id_service)){
+                                if (entry.getKey().equalsIgnoreCase("id_service"+id_service)) {
                                     edit.remove(entry.getKey());
                                     int items = pref.getInt("badge", 0);
                                     edit.putInt("badge", items - 1);
@@ -140,7 +138,7 @@ public class ADOrden extends BaseAdapter {
                                     arrServices.remove(position);
                                     fragment.GetOrden();
                                     notifyDataSetChanged();
-                                    if (totalbadge == 0){
+                                    if (totalbadge == 0) {
                                         Toast.makeText(context, "No hay más elementos", Toast.LENGTH_SHORT).show();
                                         ((MainActivity) context).Cerrar();
                                     }

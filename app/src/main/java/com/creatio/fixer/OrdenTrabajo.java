@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -238,7 +239,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                         + service_date
                         + " a las " + hour_date_service, "1");
                 Helper.InitOrder(id_sale, "3");
-                Helper.WriteLog(OrdenTrabajo.this,"Se pide autorización para la orden  " + id_sale);
+                Helper.WriteLog(OrdenTrabajo.this, "Se pide autorización para la orden  " + id_sale);
                 Helper.UpdateDateService(id_sale, hour_date_service, service_date);
 
             }
@@ -382,7 +383,11 @@ public class OrdenTrabajo extends AppCompatActivity {
 
     public void GetCalendar(final String todaySend) {
         listCalendar = new ArrayList<>();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetCalendar")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetCalendar")
                 .addBodyParameter("date", todaySend)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -435,13 +440,17 @@ public class OrdenTrabajo extends AppCompatActivity {
 
     public void AbrirAlert(String t) {
         final ArrayList<OServices> list = new ArrayList<>();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/LoadCatServ")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "LoadCatServ")
                 .addBodyParameter("type", t)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.e("Ej","Primer leer");
+                Log.e("Ej", "Primer leer");
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -480,7 +489,11 @@ public class OrdenTrabajo extends AppCompatActivity {
                         txtServicio.setVisibility(View.VISIBLE);
                         actv2.requestFocus();
                         final ArrayList<OServices> list2 = new ArrayList<>();
-                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ChildrenServices")
+                        String url = "http://api.fixerplomeria.com/v1/";
+                        if (Helper.debug) {
+                            url = "http://apitest.fixerplomeria.com/v1/";
+                        }
+                        AndroidNetworking.post(url + "ChildrenServices")
                                 .setPriority(Priority.MEDIUM)
                                 .addBodyParameter("type", "1")
                                 .addBodyParameter("id_service", services.getId_service())
@@ -591,14 +604,18 @@ public class OrdenTrabajo extends AppCompatActivity {
     public void UpdateServices() {
 
         services = services + "," + id_service + "|" + type_new;
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateServices")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateServices")
                 .setPriority(Priority.MEDIUM)
                 .addBodyParameter("services", services)
                 .addBodyParameter("id_sale", id_sale)
                 .build().getAsString(new StringRequestListener() {
             @Override
             public void onResponse(String response) {
-                Log.e("Ej","Primer update");
+                Log.e("Ej", "Primer update");
                 LeerServicios();
             }
 
@@ -616,10 +633,18 @@ public class OrdenTrabajo extends AppCompatActivity {
     }
 
     public void LeerServicios() {
+        final ProgressDialog progressDialog =  new ProgressDialog(OrdenTrabajo.this);
+        progressDialog.setMessage("Actualizando...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         arrServices = new ArrayList<>();
         arrServices.clear();
         services = "";
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetServicesOrder")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetServicesOrder")
                 .addBodyParameter("id_sale", id_sale)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONObject(new JSONObjectRequestListener() {
@@ -698,7 +723,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                         txtEstatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star, 0, 0, 0);
                     }
                     if (status.equalsIgnoreCase("6")) {
-                        //finalizada
+                        //cancelada
                         btnIniciar.setBackgroundResource(R.drawable.flat_primary);
                         btnIniciar.setText("Cancelada");
                         btnIniciar.setEnabled(false);
@@ -730,6 +755,7 @@ public class OrdenTrabajo extends AppCompatActivity {
                         txtEstatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_searching, 0, 0, 0);
                     }
                     if (status.equalsIgnoreCase("0")) {
+                        //Para pedir autorizacion
                         btnIniciar.setBackgroundResource(R.drawable.flat_black);
                         btnIniciar.setText("Iniciar");
                         btnIniciar.setEnabled(false);
@@ -739,19 +765,25 @@ public class OrdenTrabajo extends AppCompatActivity {
                         btnAutorizar.setVisibility(View.VISIBLE);
                     }
                     if (status.equalsIgnoreCase("4")) {
+
                         myFooter.setVisibility(View.GONE);
                         txtEstatus.setText("Orden autorizada");
                         lyEstatus.setBackgroundResource(R.drawable.bg_green);
                         txtEstatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
                     }
+                    status_gral = status;
                     adapterList = new ADOrdenTrabajo(OrdenTrabajo.this, arrServices, type, id_sale, services, status_gral);
                     list_orden.setAdapter(adapterList);
                     if (!type.equalsIgnoreCase("1")) {
                         ly_espera.setVisibility(View.GONE);
                         btnEvidence.setVisibility(View.GONE);
                     }
+                    progressDialog.dismiss();
+
                 } catch (JSONException e) {
                     Log.e("Orden de trabajo error", e.toString());
+                    progressDialog.dismiss();
+
                 }
 
             }
@@ -760,23 +792,30 @@ public class OrdenTrabajo extends AppCompatActivity {
             public void onError(ANError error) {
                 // handle error
                 Log.e("Orden de trabajo error", error.toString());
+                progressDialog.dismiss();
+
             }
         });
 
 
     }
-    public void GetEstusPago(){
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetEstatusPago")
+
+    public void GetEstusPago() {
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetEstatusPago")
                 .addBodyParameter("id_sale", id_sale)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsString(new StringRequestListener() {
             @Override
             public void onResponse(String response) {
-                Log.e("e pago",response);
-                if (response.contains("paid")){
+                Log.e("e pago", response);
+                if (response.contains("paid")) {
                     txtPago.setText("Pagado");
                     txtPago.setBackgroundResource(R.drawable.bg_green);
-                }else{
+                } else {
                     txtPago.setText("Pendiente de pago");
                     txtPago.setBackgroundResource(R.drawable.bg_red);
                 }

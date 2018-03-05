@@ -59,7 +59,11 @@ public class MyAccount extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         final String m_Text = input.getText().toString();
-                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateName")
+                        String url = "http://api.fixerplomeria.com/v1/";
+                        if (Helper.debug) {
+                            url = "http://apitest.fixerplomeria.com/v1/";
+                        }
+                        AndroidNetworking.post(url + "UpdateName")
                                 .addBodyParameter("id_user", pref.getString("id_user", ""))
                                 .addBodyParameter("name", m_Text)
                                 .build().getAsString(new StringRequestListener() {
@@ -116,7 +120,11 @@ public class MyAccount extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         final String m_Text = input.getText().toString();
-                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdatePhone")
+                        String url = "http://api.fixerplomeria.com/v1/";
+                        if (Helper.debug) {
+                            url = "http://apitest.fixerplomeria.com/v1/";
+                        }
+                        AndroidNetworking.post(url + "UpdatePhone")
                                 .addBodyParameter("id_user", pref.getString("id_user", ""))
                                 .addBodyParameter("phone", m_Text)
                                 .build().getAsString(new StringRequestListener() {
@@ -194,13 +202,17 @@ public class MyAccount extends AppCompatActivity {
         lblTel.setText(pref.getString("phone", "Sin teléfono registrado"));
         lblEmail.setText(pref.getString("email", "Empty"));
 
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetCards")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetCards")
                 .addBodyParameter("id_user", pref.getString("id_user", "0"))
                 .setPriority(Priority.IMMEDIATE)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.e("desc",""+ response.toString());
+                Log.e("desc", "" + response.toString());
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject obj = response.getJSONObject(i);
@@ -210,9 +222,9 @@ public class MyAccount extends AppCompatActivity {
                         View child = getLayoutInflater().inflate(R.layout.child, null);
                         lblCard = (TextView) child.findViewById(R.id.lblCard);
                         TextView lblDefault = (TextView) child.findViewById(R.id.lblDefault);
-                        if (defaul.equalsIgnoreCase("true")){
+                        if (defaul.equalsIgnoreCase("true")) {
                             lblDefault.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             lblDefault.setVisibility(View.INVISIBLE);
                         }
                         lblCard.setOnClickListener(new View.OnClickListener() {

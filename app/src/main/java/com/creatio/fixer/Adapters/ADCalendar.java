@@ -86,7 +86,9 @@ public class ADCalendar extends BaseAdapter {
 
         return itemView;
     }
+
     int c = 0;
+
     public void GenerateButton(final String status) {
 
         for (int i = 0; i < list.size(); i++) {
@@ -106,14 +108,14 @@ public class ADCalendar extends BaseAdapter {
                 btn.setText("Libre");
                 btn.setId(i);
                 Calendar rightNow = Calendar.getInstance();
-                SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","MX"));
+                SimpleDateFormat sdfSend = new SimpleDateFormat("yyyy-MM-dd", new Locale("es", "MX"));
                 String today = sdfSend.format(new Date());
                 int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
-                if (currentHour + 2 >  btn.getId() && today.equalsIgnoreCase(todaySend)){
+                if (currentHour + 2 > btn.getId() && today.equalsIgnoreCase(todaySend)) {
                     btn.setEnabled(false);
                     btn.setBackgroundResource(R.drawable.bg_disabled);
                     btn.setText("Deshabilitado");
-                }else{
+                } else {
                     btn.setEnabled(true);
                     btn.setBackgroundResource(R.drawable.bg_green);
                 }

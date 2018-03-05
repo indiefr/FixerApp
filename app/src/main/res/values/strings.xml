@@ -5,8 +5,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="facebook_app_id">1078181558993176</string>
-    <string name="fb_login_protocol_scheme">fb1078181558993176</string>
+    <string name="facebook_app_id">148837932448860</string>
+    <string name="fb_login_protocol_scheme">fb148837932448860</string>
     <string name="title_activity_detalle">Detalle</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>

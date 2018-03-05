@@ -46,7 +46,7 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
     private GoogleApiClient mGoogleApiClient;
     EditText edtEmail, edtPass, edtLast, edtName, edtPhone;
     ScrollView layout;
-    Button btnLogin,btnYa;
+    Button btnLogin, btnYa;
     String refreshedToken = "sin token";
 
     @Override
@@ -71,7 +71,7 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
         btnYa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Register.this,Login.class);
+                Intent intent = new Intent(Register.this, Login.class);
                 startActivity(intent);
                 finish();
             }
@@ -135,7 +135,11 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
                 }
 
 
-                AndroidNetworking.post("http://api.fixerplomeria.com/v1/Register")
+                String url = "http://api.fixerplomeria.com/v1/";
+                if (Helper.debug) {
+                    url = "http://apitest.fixerplomeria.com/v1/";
+                }
+                AndroidNetworking.post(url + "Register")
                         .addBodyParameter("email", email)
                         .addBodyParameter("pass", pass)
                         .addBodyParameter("name", name)
@@ -149,8 +153,8 @@ public class Register extends AppCompatActivity implements GoogleApiClient.OnCon
                     public void onResponse(JSONArray response) {
 
                         try {
-                            if (response.getString(0).equalsIgnoreCase("No user")){
-                                Helper.ShowAlert(Register.this,"Atención","El correo ya existe en nuestro servicio, intenta con otro.",0);
+                            if (response.getString(0).equalsIgnoreCase("No user")) {
+                                Helper.ShowAlert(Register.this, "Atención", "El correo ya existe en nuestro servicio, intenta con otro.", 0);
                             }
                             for (int i = 0; i < response.length(); i++) {
 

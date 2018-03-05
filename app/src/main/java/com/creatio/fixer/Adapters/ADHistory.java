@@ -167,7 +167,11 @@ public class ADHistory extends BaseSwipeAdapter {
             @Override
             public void onClick(View v) {
                 //Cancelar orden
-                AndroidNetworking.post("http://api.fixerplomeria.com/v1/CancelService")
+                String url = "http://api.fixerplomeria.com/v1/";
+                if (Helper.debug) {
+                    url = "http://apitest.fixerplomeria.com/v1/";
+                }
+                AndroidNetworking.post(url + "CancelService")
                         .setPriority(Priority.HIGH)
                         .addBodyParameter("id_calendary", list.get(position).getId_calendary())
                         .build().getAsString(new StringRequestListener() {
@@ -208,7 +212,12 @@ public class ADHistory extends BaseSwipeAdapter {
                 } else {
                     final ArrayList<OMySpecialist> listspe = new ArrayList<>();
                     listspe.clear();
-                    AndroidNetworking.post("http://api.fixerplomeria.com/v1/LoadMySpecialists")
+
+                    String url = "http://api.fixerplomeria.com/v1/";
+                    if (Helper.debug) {
+                        url = "http://apitest.fixerplomeria.com/v1/";
+                    }
+                    AndroidNetworking.post(url + "LoadMySpecialists")
                             .addBodyParameter("id_user", pref.getString("id_user", "0"))
                             .setPriority(Priority.MEDIUM)
                             .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -261,12 +270,16 @@ public class ADHistory extends BaseSwipeAdapter {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int j) {
 
-                                            if (specialist.equalsIgnoreCase("nada")){
-                                                Helper.ShowAlert(context,"Atención", "Debes de seleccionar un especialista",0);
+                                            if (specialist.equalsIgnoreCase("nada")) {
+                                                Helper.ShowAlert(context, "Atención", "Debes de seleccionar un especialista", 0);
                                                 return;
                                             }
                                             final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-                                            AndroidNetworking.post("http://api.fixerplomeria.com/v1/AsingToSpecialist")
+                                            String url = "http://api.fixerplomeria.com/v1/";
+                                            if (Helper.debug) {
+                                                url = "http://apitest.fixerplomeria.com/v1/";
+                                            }
+                                            AndroidNetworking.post(url + "AsingToSpecialist")
                                                     .addBodyParameter("id_specialist", specialist)
                                                     .addBodyParameter("id_calendary", list.get(position).getId_calendary())
                                                     .setPriority(Priority.MEDIUM)
@@ -426,7 +439,11 @@ public class ADHistory extends BaseSwipeAdapter {
 
     private void LeerServicios(final LinearLayout ly_services, String id_order) {
         ly_services.removeAllViews();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetServicesOrder")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetServicesOrder")
                 .addBodyParameter("id_sale", id_order)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONObject(new JSONObjectRequestListener() {
@@ -473,7 +490,11 @@ public class ADHistory extends BaseSwipeAdapter {
     }
 
     private void UpdateCalendary(final String id_calendary, final String status, final String id_user) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateCalendary")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateCalendary")
                 .addBodyParameter("id_calendary", id_calendary)
                 .addBodyParameter("status", status)
                 .setPriority(Priority.MEDIUM)

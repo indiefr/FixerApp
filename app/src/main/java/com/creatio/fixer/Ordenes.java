@@ -32,6 +32,7 @@ public class Ordenes extends AppCompatActivity {
     private ListView list_orders;
     private SwipeRefreshLayout swipe;
     private FloatingActionButton floatingActionButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +78,12 @@ public class Ordenes extends AppCompatActivity {
         final ArrayList<OOrders> list = new ArrayList<>();
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadOrders")
+
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ReadOrders")
                 .addBodyParameter("id_user", id_user)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -108,7 +114,7 @@ public class Ordenes extends AppCompatActivity {
                         String rate = object.optString("ratef");
                         String reference = object.optString("reference");
                         String hascupon = object.optString("hascupon");
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service, service_date, rate, reference,hascupon));
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, hour_date_service, service_date, rate, reference, hascupon));
 
                     }
                     ADListOrden adapter = new ADListOrden(Ordenes.this, list, "1");

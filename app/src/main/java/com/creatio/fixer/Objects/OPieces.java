@@ -5,7 +5,7 @@ package com.creatio.fixer.Objects;
  */
 
 public class OPieces {
-    String id_piece,name,description,id_store, status, price, name_store, image, code;
+    String id_piece, name, description, id_store, status, price, name_store, image, code;
 
     public OPieces(String id_piece, String name, String description, String id_store, String status, String price, String name_store, String image, String code) {
         this.id_piece = id_piece;

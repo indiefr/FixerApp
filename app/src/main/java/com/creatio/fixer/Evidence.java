@@ -33,7 +33,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Evidence extends AppCompatActivity {
@@ -50,6 +49,7 @@ public class Evidence extends AppCompatActivity {
     private Uri outputFileUri;
     private File newfile;
     private String type = "0";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +88,7 @@ public class Evidence extends AppCompatActivity {
                 try {
                     type = "0";
                     camera.takePicture();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -99,7 +99,7 @@ public class Evidence extends AppCompatActivity {
                 try {
                     type = "1";
                     camera.takePicture();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -113,18 +113,19 @@ public class Evidence extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        if(requestCode == Camera.REQUEST_TAKE_PHOTO){
+        if (requestCode == Camera.REQUEST_TAKE_PHOTO) {
             Bitmap bitmap = camera.getCameraBitmap();
 
-            if(bitmap != null) {
-                Uri selectedImage = getImageUri(Evidence.this,bitmap);
+            if (bitmap != null) {
+                Uri selectedImage = getImageUri(Evidence.this, bitmap);
                 outputFileUri = selectedImage;
-                UploadImage(outputFileUri,type);
-            }else{
-                Toast.makeText(this.getApplicationContext(),"Picture not taken!",Toast.LENGTH_SHORT).show();
+                UploadImage(outputFileUri, type);
+            } else {
+                Toast.makeText(this.getApplicationContext(), "Picture not taken!", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -152,7 +153,11 @@ public class Evidence extends AppCompatActivity {
     public void UploadImage(Uri uri, final String type) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.upload("http://api.fixerplomeria.com/v1/UploadEvidence")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.upload(url + "UploadEvidence")
                 .addMultipartFile("file", new File(camera.getCameraBitmapPath()))
                 .addMultipartParameter("id_specialist", id_user)
                 .addMultipartParameter("type", type)
@@ -186,7 +191,11 @@ public class Evidence extends AppCompatActivity {
         list2 = new ArrayList<>();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetEvidences")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetEvidences")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("id_sale", id_sale)
                 .addBodyParameter("type", type)
@@ -196,13 +205,13 @@ public class Evidence extends AppCompatActivity {
             public void onResponse(JSONArray response) {
 
                 try {
-                    for (int i = 0; i < response.length(); i++){
+                    for (int i = 0; i < response.length(); i++) {
                         if (type.equalsIgnoreCase("0")) {
                             JSONObject obj = response.getJSONObject(i);
-                            list.add(new OEvidence(obj.optString("id_evidence"),obj.optString("name"),obj.optString("create_on")));
+                            list.add(new OEvidence(obj.optString("id_evidence"), obj.optString("name"), obj.optString("create_on")));
                         } else {
                             JSONObject obj = response.getJSONObject(i);
-                            list2.add(new OEvidence(obj.optString("id_evidence"),obj.optString("name"),obj.optString("create_on")));
+                            list2.add(new OEvidence(obj.optString("id_evidence"), obj.optString("name"), obj.optString("create_on")));
                         }
 
                     }
@@ -217,7 +226,6 @@ public class Evidence extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
 
 
             }

@@ -2,7 +2,6 @@ package com.creatio.fixer;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -33,13 +31,14 @@ import java.util.Map;
 
 public class Orden extends Fragment {
     public ListView list_orden;
-    public TextView txtAlgoMas,txtTotal,txtNombre,txtTotalTime;
+    public TextView txtAlgoMas, txtTotal, txtNombre, txtTotalTime;
     ArrayList<OServices> arrServices = new ArrayList<>();
     ProgressDialog dialog;
     String ids = "", types = "";
     double total;
     int tiempo = 0;
     SharedPreferences sharedPref;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,7 +54,7 @@ public class Orden extends Fragment {
         txtTotalTime = (TextView) myHeader.findViewById(R.id.txtTotalTime);
         txtNombre = (TextView) myHeader.findViewById(R.id.txtNombre);
         //-----------------
-        txtNombre.setText(sharedPref.getString("name","No user") + " " + sharedPref.getString("last_name","No user"));
+        txtNombre.setText(sharedPref.getString("name", "No user") + " " + sharedPref.getString("last_name", "No user"));
         Button btnContinuar = (Button) myFooter.findViewById(R.id.btnContinuar);
         btnContinuar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +110,7 @@ public class Orden extends Fragment {
 
             }
         }
-        ids = ids.replaceFirst(".$","");
+        ids = ids.replaceFirst(".$", "");
         GetDataService(ids);
 
     }
@@ -121,13 +120,16 @@ public class Orden extends Fragment {
         arrServices.clear();
         tiempo = 0;
         total = 0;//Se le suma la tarifa de trayecto
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetDataService")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetDataService")
                 .addBodyParameter("id_service", id_service)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-                Log.d("Orden",response.toString());
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -140,17 +142,17 @@ public class Orden extends Fragment {
                         String type = object.optString("type");
 
                         double price = 0.0;
-                        if (type.equalsIgnoreCase("0")){
+                        if (type.equalsIgnoreCase("0")) {
                             price = Float.parseFloat(time_new) * 2.23;
                             total += price;
                             tiempo += Integer.parseInt(time_new);
-                        }else{
+                        } else {
                             price = Float.parseFloat(time_pre) * 2.23;
                             total += price;
                             tiempo += Integer.parseInt(time_pre);
                         }
 
-                        arrServices.add(new OServices(id_service, image, name, description, time_pre, time_new,type,""));
+                        arrServices.add(new OServices(id_service, image, name, description, time_pre, time_new, type, ""));
 
                     }
                     dialog.dismiss();
@@ -159,7 +161,7 @@ public class Orden extends Fragment {
                         total = total + 40.0;
                     }
                     total = total * 1.16;
-                    Log.e("total",total + "");
+                    Log.e("total", total + "");
                     String totali = Helper.formatDecimal(total);
                     txtTotal.setText(totali);
                     txtTotalTime.setText("" + formatHoursAndMinutes(tiempo));
@@ -179,6 +181,7 @@ public class Orden extends Fragment {
         });
 
     }
+
     public static String formatHoursAndMinutes(int totalMinutes) {
         String minutes = Integer.toString(totalMinutes % 60);
         minutes = minutes.length() == 1 ? "0" + minutes : minutes;

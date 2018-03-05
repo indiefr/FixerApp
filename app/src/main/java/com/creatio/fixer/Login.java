@@ -28,7 +28,6 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
-import com.androidnetworking.interfaces.StringRequestListener;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -119,11 +118,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         AppEventsLogger.activateApp(this);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean login = pref.getBoolean("login", false);
-        if (login) {
-            finish();
-            Intent intent = new Intent(Login.this, MainActivity.class);
-            startActivity(intent);
-        }
+//        if (login) {
+//            finish();
+//            Intent intent = new Intent(Login.this, MainActivity.class);
+//            startActivity(intent);
+//        }
         Boolean login_spe = pref.getBoolean("login_spe", false);
         if (login_spe) {
             finish();
@@ -400,7 +399,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
     public void Login(final String email, final String pass, String name, final String media, final String id, final String image) {
         final ProgressDialog dialog = ProgressDialog.show(Login.this, null, "Iniciando sesión");
         // --- [Header elements] ---
-        if ((name.length() < 9 || name.matches("\\d+(?:\\.\\d+)?")) && type == "user" ) {
+        if ((name.length() < 9 || name.matches("\\d+(?:\\.\\d+)?")) && type == "user") {
             //Pedir nombre
             final Dialog dialogname = new Dialog(Login.this);
             dialogname.setContentView(R.layout.alert_fixer_name);
@@ -432,7 +431,11 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
             dialogname.show();
         } else {
             dialog.show();
-            AndroidNetworking.post("http://api.fixerplomeria.com/v1/Login")
+            String url = "http://api.fixerplomeria.com/v1/";
+            if (Helper.debug) {
+                url = "http://apitest.fixerplomeria.com/v1/";
+            }
+            AndroidNetworking.post(url + "Login")
                     .addBodyParameter("type", type)
                     .addBodyParameter("email", email)
                     .addBodyParameter("pass", pass)

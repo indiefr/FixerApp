@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,7 +33,6 @@ import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivityPlo;
 import com.creatio.fixer.Objects.OMySpecialist;
 import com.creatio.fixer.Objects.OOrders;
-import com.creatio.fixer.Objects.OSpecialist;
 import com.creatio.fixer.OrdenTrabajo;
 import com.creatio.fixer.R;
 import com.daimajia.swipe.SwipeLayout;
@@ -59,6 +57,7 @@ public class ADNew extends BaseSwipeAdapter {
     Context context;
     ArrayList<OOrders> list;
     String specialist = "";
+
     public ADNew(Context context, ArrayList<OOrders> list) {
         this.context = context;
         this.list = list;
@@ -204,7 +203,12 @@ public class ADNew extends BaseSwipeAdapter {
                 } else {
                     final ArrayList<OMySpecialist> listspe = new ArrayList<>();
                     listspe.clear();
-                    AndroidNetworking.post("http://api.fixerplomeria.com/v1/LoadMySpecialists")
+
+                    String url = "http://api.fixerplomeria.com/v1/";
+                    if (Helper.debug) {
+                        url = "http://apitest.fixerplomeria.com/v1/";
+                    }
+                    AndroidNetworking.post(url + "LoadMySpecialists")
                             .addBodyParameter("id_user", pref.getString("id_user", "0"))
                             .setPriority(Priority.MEDIUM)
                             .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -219,7 +223,7 @@ public class ADNew extends BaseSwipeAdapter {
                                     String last_name = object.optString("last_name");
                                     String email = object.optString("email");
 
-                                    listspe.add(new OMySpecialist(id_specialist, name, last_name, name + " " + last_name,"",email,""));
+                                    listspe.add(new OMySpecialist(id_specialist, name, last_name, name + " " + last_name, "", email, ""));
                                 }
                             } catch (JSONException e) {
                                 Log.e("error ", e.toString());
@@ -258,12 +262,16 @@ public class ADNew extends BaseSwipeAdapter {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int j) {
 
-                                            if (specialist.equalsIgnoreCase("nada")){
-                                                Helper.ShowAlert(context,"Atención", "Debes de seleccionar un especialista",0);
+                                            if (specialist.equalsIgnoreCase("nada")) {
+                                                Helper.ShowAlert(context, "Atención", "Debes de seleccionar un especialista", 0);
                                                 return;
                                             }
                                             final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-                                            AndroidNetworking.post("http://api.fixerplomeria.com/v1/AsingToSpecialist")
+                                            String url = "http://api.fixerplomeria.com/v1/";
+                                            if (Helper.debug) {
+                                                url = "http://apitest.fixerplomeria.com/v1/";
+                                            }
+                                            AndroidNetworking.post(url + "AsingToSpecialist")
                                                     .addBodyParameter("id_specialist", specialist)
                                                     .addBodyParameter("id_calendary", list.get(position).getId_calendary())
                                                     .setPriority(Priority.MEDIUM)
@@ -365,7 +373,12 @@ public class ADNew extends BaseSwipeAdapter {
 
     private void LeerServicios(final LinearLayout ly_services, String id_order) {
         ly_services.removeAllViews();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetServicesOrder")
+
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetServicesOrder")
                 .addBodyParameter("id_sale", id_order)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONObject(new JSONObjectRequestListener() {
@@ -412,7 +425,11 @@ public class ADNew extends BaseSwipeAdapter {
     }
 
     private void UpdateCalendary(final String id_calendary, final String status, final String id_user) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateCalendary")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateCalendary")
                 .addBodyParameter("id_calendary", id_calendary)
                 .addBodyParameter("status", status)
                 .setPriority(Priority.MEDIUM)

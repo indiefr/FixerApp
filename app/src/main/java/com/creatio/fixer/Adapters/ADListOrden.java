@@ -1,6 +1,7 @@
 package com.creatio.fixer.Adapters;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,19 +24,12 @@ import android.widget.TextView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 import com.creatio.fixer.CardForm;
 import com.creatio.fixer.Helper;
-import com.creatio.fixer.MainActivity;
-import com.creatio.fixer.MyAccount;
 import com.creatio.fixer.Objects.OOrders;
 import com.creatio.fixer.Ordenes;
 import com.creatio.fixer.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -48,7 +41,7 @@ import java.util.ArrayList;
 public class ADListOrden extends BaseAdapter {
     Context context;
     ArrayList<OOrders> list;
-    String type,iscancel;
+    String type, iscancel;
 
     public ADListOrden(Context context, ArrayList<OOrders> list, String type) {
         this.context = context;
@@ -75,7 +68,7 @@ public class ADListOrden extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View itemView = inflater.inflate(R.layout.list_order_list, parent, false);
-        Button btnPrice, btnPagar,btnCancelar;
+        Button btnPrice, btnPagar, btnCancelar;
         ImageView imgType = (ImageView) itemView.findViewById(R.id.imgType);
         TextView txtNumber, txtFecha, txtEspecialist, txtStatus, txtReference, txtRate;
         final RatingBar rtBar;
@@ -96,7 +89,7 @@ public class ADListOrden extends BaseAdapter {
         lyOptions.setVisibility(View.GONE);
         lyRate.setVisibility(View.GONE);
         btnCupon.setVisibility(View.GONE);
-        Log.e("Rate",list.get(position).getRate());
+        Log.e("Rate", list.get(position).getRate());
         if (!list.get(position).getRate().equalsIgnoreCase("") && !list.get(position).getRate().equalsIgnoreCase("0")) {
             rtBar.setRating(Float.parseFloat(list.get(position).getRate()));
             txtRate.setText("" + roundTwoDecimals(Double.parseDouble(list.get(position).getRate()) * 2));
@@ -110,12 +103,12 @@ public class ADListOrden extends BaseAdapter {
             //txtReference.setText(list.get(position).getReference());
             s = new StringBuilder(list.get(position).getReference());
 
-            for(int i = 4; i < s.length(); i += 5){
+            for (int i = 4; i < s.length(); i += 5) {
                 s.insert(i, " ");
             }
             txtReference.setText("Referencia oxxo: " + s.toString());
 
-        }else{
+        } else {
 //            imgType.setVisibility(View.GONE);
             imgType.setImageResource(R.drawable.ic_1600);
             txtReference.setVisibility(View.GONE);
@@ -132,12 +125,7 @@ public class ADListOrden extends BaseAdapter {
         txtEspecialist.setText("Especialista: " + list.get(position).getName());
         String total = list.get(position).getTotal();
         btnPrice.setText(Helper.formatDecimal(Double.parseDouble(total)));
-        if (!list.get(position).getHascupon().equalsIgnoreCase("0")){
-            txtEspecialist.setText("Especialista: " + list.get(position).getName() + "\n" + "Se aplicó cupón");
-            btnCupon.setVisibility(View.GONE);
-        }else{
-            btnCupon.setVisibility(View.VISIBLE);
-        }
+
         if (list.get(position).getName().equalsIgnoreCase(null)) {
             txtEspecialist.setText("Especialista: En espera");
         }
@@ -168,8 +156,13 @@ public class ADListOrden extends BaseAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ApplyCupon")
-                                .addBodyParameter("id_user", pref.getString("id_user","0"))
+
+                        String url = "http://api.fixerplomeria.com/v1/";
+                        if (Helper.debug) {
+                            url = "http://apitest.fixerplomeria.com/v1/";
+                        }
+                        AndroidNetworking.post(url + "ApplyCupon")
+                                .addBodyParameter("id_user", pref.getString("id_user", "0"))
                                 .addBodyParameter("id_order", list.get(position).getId_order())
                                 .addBodyParameter("name", edtMsjc.getText().toString())
 
@@ -178,8 +171,8 @@ public class ADListOrden extends BaseAdapter {
                             public void onResponse(String response) {
                                 if (response.contains("Aplicado")) {
                                     Helper.ShowAlert(context, "Felicidades", "Se ha aplicado el cupón: " + edtMsjc.getText().toString(), 0);
-                                    ((Ordenes)context).ReadOrders();
-                                }else{
+                                    ((Ordenes) context).ReadOrders();
+                                } else {
                                     Helper.ShowAlert(context, "Oh Oh", "Cupón no válido. Ya ingresaste el cupón anteriormente o no éxiste.", 0);
                                 }
 
@@ -195,11 +188,16 @@ public class ADListOrden extends BaseAdapter {
                 alerta.show();
             }
         });
+        if (!list.get(position).getHascupon().equalsIgnoreCase("0")) {
+            txtEspecialist.setText("Especialista: " + list.get(position).getName() + "\n" + "Se aplicó cupón");
+        }
         switch (list.get(position).getStatus_so()) {
             case "3":
                 //Solicitar autorizacion
                 lyOptions.setVisibility(View.VISIBLE);
-                if (list.get(position).getHascupon().equalsIgnoreCase("0")) {
+                if (!list.get(position).getHascupon().equalsIgnoreCase("0")) {
+                    btnCupon.setVisibility(View.GONE);
+                } else {
                     btnCupon.setVisibility(View.VISIBLE);
                 }
                 txtStatus.setBackgroundColor(context.getResources().getColor(R.color.red));
@@ -239,13 +237,13 @@ public class ADListOrden extends BaseAdapter {
             public void onClick(View v) {
                 iscancel = "no";
                 //PAGAR
-                if (list.get(position).getReference().equalsIgnoreCase("0")){
+                if (list.get(position).getReference().equalsIgnoreCase("0")) {
                     //tarjeta
-                    Helper.WriteLog(context, "Pago de la orden: " + list.get(position).getId_order());
+
                     ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user(), position, "4");
-                }else{
+                } else {
                     //oxxo
-                   // ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
+                    // ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
                 }
 
 
@@ -256,10 +254,10 @@ public class ADListOrden extends BaseAdapter {
             public void onClick(View view) {
                 iscancel = "si";
                 //PAGAR
-                if (list.get(position).getReference().equalsIgnoreCase("0")){
+                if (list.get(position).getReference().equalsIgnoreCase("0")) {
                     //tarjeta
-                    ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user(),position, "6");
-                }else{
+                    ConektaOrder(list.get(position).getId_order(), list.get(position).getId_user(), position, "6");
+                } else {
                     //oxxo
                     //ConektaOrderOxxo(list.get(position).getId_order(), list.get(position).getId_user());
                 }
@@ -281,7 +279,11 @@ public class ADListOrden extends BaseAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String m_Text = input.getText().toString();
-                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/RateSpecialist")
+                        String url = "http://api.fixerplomeria.com/v1/";
+                        if (Helper.debug) {
+                            url = "http://apitest.fixerplomeria.com/v1/";
+                        }
+                        AndroidNetworking.post(url + "RateSpecialist")
                                 .addBodyParameter("id_specialist", list.get(position).getId_specialist())
                                 .addBodyParameter("id_order", list.get(position).getId_order())
                                 .addBodyParameter("rate", String.valueOf(rating))
@@ -315,13 +317,22 @@ public class ADListOrden extends BaseAdapter {
         });
         return itemView;
     }
-    double roundTwoDecimals(double d)
-    {
+
+    double roundTwoDecimals(double d) {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return Double.valueOf(twoDForm.format(d));
     }
-    public void ConektaOrder(final String id_sale, String id_user,final int position,final String status) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrder")
+
+    public void ConektaOrder(final String id_sale, String id_user, final int position, final String status) {
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setMessage("Generando cargo");
+        dialog.setCancelable(false);
+        dialog.show();
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ConektaOrder")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("id_sale", id_sale)
                 .addBodyParameter("cancel", iscancel)
@@ -330,18 +341,25 @@ public class ADListOrden extends BaseAdapter {
             @Override
             public void onResponse(String response) {
                 Log.e("Order desc", response);
-                GetEstusPago(id_sale,position,status);
+                dialog.dismiss();
+                GetEstusPago(id_sale, position, status);
             }
 
             @Override
             public void onError(ANError anError) {
-
+                Log.e("Order desc", anError.toString());
+                dialog.dismiss();
             }
         });
     }
 
     public void ConektaOrderOxxo(String id_sale, String id_user) {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaOrderOxxo")
+
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ConektaOrderOxxo")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("id_sale", id_sale)
                 .setPriority(Priority.IMMEDIATE)
@@ -359,24 +377,35 @@ public class ADListOrden extends BaseAdapter {
             }
         });
     }
-    public void GetEstusPago(final String id_sale, final int position, final String status){
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetEstatusPago")
+
+    public void GetEstusPago(final String id_sale, final int position, final String status) {
+        final ProgressDialog dialogs = new ProgressDialog(context);
+        dialogs.setMessage("Cargando información");
+        dialogs.setCancelable(false);
+        dialogs.show();
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetEstatusPago")
                 .addBodyParameter("id_sale", id_sale)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsString(new StringRequestListener() {
             @Override
             public void onResponse(String response) {
-                Log.e("e pago",response);
-                if (response.contains("paid")){
+                Log.e("e pago", response);
+                dialogs.dismiss();
+                if (response.contains("paid")) {
+                    Helper.WriteLog(context, "Pago de la orden: " + list.get(position).getId_order());
                     Helper.InitOrder(list.get(position).getId_order(), status);
-                    if (status.equalsIgnoreCase("6")){
+                    if (status.equalsIgnoreCase("6")) {
                         Helper.SendNotification(list.get(position).getId_specialist(), "Orden: " + id_sale + " cancelada", "Solicitud de servicio cancelada por el usuario", "0");
-                    }else{
+                    } else {
                         Helper.SendNotification(list.get(position).getId_specialist(), "Orden: " + id_sale + " confirmada", "Solicitud de servicio confirmada", "0");
                     }
                     list.get(position).setStatus_so(status);
                     notifyDataSetChanged();
-                }else{
+                } else {
                     final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.alert_fixer);
                     // set the custom dialog components - text, image and button

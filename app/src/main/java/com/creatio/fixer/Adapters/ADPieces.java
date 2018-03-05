@@ -15,8 +15,8 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.bumptech.glide.Glide;
+import com.creatio.fixer.Helper;
 import com.creatio.fixer.Objects.OPieces;
-import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.Pieces;
 import com.creatio.fixer.R;
 
@@ -33,12 +33,14 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
     Context context;
     ArrayList<OPieces> list;
     ArrayList<OPieces> filteredData;
-    String id_sale,id_service;
+    String id_sale, id_service;
     private ItemFilter mFilter = new ItemFilter();
+
     @Override
     public Filter getFilter() {
         return mFilter;
     }
+
     private class ItemFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -50,15 +52,15 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
             final ArrayList<OPieces> listf = list;
 
             int count = listf.size();
-            final  ArrayList<OPieces> nlist = new ArrayList<OPieces>(count);
+            final ArrayList<OPieces> nlist = new ArrayList<OPieces>(count);
 
-            String filterableString, secondFilterable ;
+            String filterableString, secondFilterable;
 
             for (int i = 0; i < count; i++) {
                 filterableString = listf.get(i).getName();
                 secondFilterable = listf.get(i).getCode();
                 if (filterableString.toLowerCase().contains(filterString) || secondFilterable.toLowerCase().contains(filterString)) {
-                    nlist.add(new OPieces(listf.get(i).getId_piece(),listf.get(i).getName(),listf.get(i).getDescription(),listf.get(i).getId_store(),listf.get(i).getStatus(),listf.get(i).getPrice(),listf.get(i).getName_store(), listf.get(i
+                    nlist.add(new OPieces(listf.get(i).getId_piece(), listf.get(i).getName(), listf.get(i).getDescription(), listf.get(i).getId_store(), listf.get(i).getStatus(), listf.get(i).getPrice(), listf.get(i).getName_store(), listf.get(i
                     ).getImage(), listf.get(i).getCode()));
                 }
             }
@@ -113,10 +115,14 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
             @Override
             public void onClick(View v) {
 
-                AndroidNetworking.post("http://api.fixerplomeria.com/v1/InsertPieces")
-                        .addBodyParameter("id_sale",id_sale)
-                        .addBodyParameter("id_service",id_service)
-                        .addBodyParameter("id_piece",filteredData.get(position).getId_piece())
+                String url = "http://api.fixerplomeria.com/v1/";
+                if (Helper.debug) {
+                    url = "http://apitest.fixerplomeria.com/v1/";
+                }
+                AndroidNetworking.post(url + "InsertPieces")
+                        .addBodyParameter("id_sale", id_sale)
+                        .addBodyParameter("id_service", id_service)
+                        .addBodyParameter("id_piece", filteredData.get(position).getId_piece())
                         .build().getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -128,7 +134,7 @@ public class ADPieces extends RecyclerView.Adapter<ADPieces.MyViewHolder> implem
 
                     }
                 });
-                ((Pieces)context).Cerrar();
+                ((Pieces) context).Cerrar();
             }
         });
         holder.txtPrice.setText("$ " + filteredData.get(position).getPrice());

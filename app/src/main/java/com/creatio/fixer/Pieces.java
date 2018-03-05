@@ -1,15 +1,14 @@
 package com.creatio.fixer;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -108,7 +107,11 @@ public class Pieces extends AppCompatActivity {
     }
 
     public void ReadPieces() {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadPiecesOrder")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ReadPiecesOrder")
                 .addBodyParameter("id_order", id_sale)
                 .addBodyParameter("id_service", id_service)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -136,7 +139,11 @@ public class Pieces extends AppCompatActivity {
     }
 
     public void PiecesOfservice() {
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/Pieces")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "Pieces")
                 .addBodyParameter("id_service", id_service)
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
@@ -155,7 +162,7 @@ public class Pieces extends AppCompatActivity {
                         String name_store = object.optString("nameStore");
                         String image = object.optString("image");
                         String code = object.optString("code");
-                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store,image, code));
+                        list.add(new OPieces(id_piece, name, description, id_store, status, price, name_store, image, code));
 
 
                     }

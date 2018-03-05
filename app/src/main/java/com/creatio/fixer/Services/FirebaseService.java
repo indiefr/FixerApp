@@ -5,17 +5,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 
-import com.creatio.fixer.Login;
-import com.creatio.fixer.MainActivity;
 import com.creatio.fixer.MainActivityPlo;
 import com.creatio.fixer.Ordenes;
 import com.creatio.fixer.R;
@@ -28,6 +24,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class FirebaseService extends FirebaseMessagingService {
     private static final String TAG = "FCM Service";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 

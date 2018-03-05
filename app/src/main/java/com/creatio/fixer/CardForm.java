@@ -49,6 +49,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     private boolean oxxo = false;
     private boolean updateCard = false;
     String id_specialista = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +92,8 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
 
         // mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnCardTypeChangedListener(this);
-
+        mCardForm.isCardScanningAvailable();
+        mCardForm.scanCard(CardForm.this);
         // Warning: this is for development purposes only and should never be done outside of this example app.
         // Failure to set FLAG_SECURE exposes your app to screenshots allowing other apps to steal card information.
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -101,11 +103,15 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                 final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(CardForm.this);
 
                 if (mCardForm.isValid()) {
+                    final ProgressDialog dialog =  new ProgressDialog(CardForm.this);
+                    dialog.setMessage("Cargando información");
+                    dialog.setCancelable(false);
+                    dialog.show();
                     Activity activity = CardForm.this;
 
-                    if (Helper.debug){
+                    if (Helper.debug) {
                         Conekta.setPublicKey("key_EQr9BgTxJZTfVmmqxCnVAsQ");
-                    }else{
+                    } else {
                         Conekta.setPublicKey("key_azutM8aFLNvqnxVRuU3mNww");
                     }
 
@@ -131,7 +137,12 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                                     Log.e("Dta", data.toString());
                                     if (updateCard) {
                                         Toast.makeText(CardForm.this, "Actualizando tarjeta", Toast.LENGTH_SHORT).show();
-                                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateCard")
+
+                                        String url = "http://api.fixerplomeria.com/v1/";
+                                        if (Helper.debug) {
+                                            url = "http://apitest.fixerplomeria.com/v1/";
+                                        }
+                                        AndroidNetworking.post(url + "UpdateCard")
                                                 .addBodyParameter("id_user", pref.getString("id_user", "0"))
                                                 .addBodyParameter("token", data.getString("id"))
                                                 .addBodyParameter("phone", mCardForm.getMobileNumber())
@@ -140,7 +151,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                                             @Override
                                             public void onResponse(String response) {
                                                 Log.e("Dta desc", response);
-
+                                                dialog.dismiss();
                                             }
 
                                             @Override
@@ -149,7 +160,11 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                                             }
                                         });
                                     } else {
-                                        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ConektaCustumer")
+                                        String url = "http://api.fixerplomeria.com/v1/";
+                                        if (Helper.debug) {
+                                            url = "http://apitest.fixerplomeria.com/v1/";
+                                        }
+                                        AndroidNetworking.post(url + "ConektaCustumer")
                                                 .addBodyParameter("id_user", pref.getString("id_user", "0"))
                                                 .addBodyParameter("token_id", data.getString("id"))
                                                 .addBodyParameter("phone", mCardForm.getMobileNumber())
@@ -162,6 +177,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
                                                     SharedPreferences.Editor editor = pref.edit();
                                                     editor.putBoolean("conekta", true);
                                                     editor.apply();
+                                                    dialog.dismiss();
                                                     SaveOrder();
 
                                                 } else {
@@ -200,6 +216,7 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     public void SaveOrder() {
         final ProgressDialog dialog = new ProgressDialog(CardForm.this);
         dialog.setMessage("Guardando información");
+        dialog.setCancelable(false);
         dialog.show();
         final Map<String, ?> allEntries = pref.getAll();
         String services = "";
@@ -210,23 +227,58 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
         }
         services = services.replaceFirst(".$", "");
         final String id_user = pref.getString("id_user", "0");
-        double total = Float.parseFloat(extras.getString("subtotal")) * 1.16;
+        double total = Float.parseFloat(extras.getString("subtotal"));
+
+        if (id_user.equalsIgnoreCase("0")){
+            dialog.dismiss();
+            final Dialog dialoga = new Dialog(CardForm.this);
+            dialoga.setContentView(R.layout.alert_fixer);
+            // set the custom dialog components - text, image and button
+            TextView txtTitle = (TextView) dialoga.findViewById(R.id.txtTitle);
+            TextView txtMsj = (TextView) dialoga.findViewById(R.id.txtMsj);
+            txtTitle.setText("Debes iniciar sesión");
+            txtMsj.setText("Para poder agendar y contratar servicios debes ser usuario registrado.");
+
+
+            Button btnAceptar = (Button) dialoga.findViewById(R.id.btnAceptar);
+            Button btnCancelar = (Button) dialoga.findViewById(R.id.btnCancelar);
+
+            // if button is clicked, close the custom dialog
+            btnAceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(CardForm.this,Login.class);
+                    startActivity(intent);
+                    dialoga.dismiss();
+                    finish();
+                }
+            });
+            btnCancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialoga.dismiss();
+                    finish();
+                }
+            });
+
+            dialoga.show();
+
+            return;
+        }
         //process Intent......
 
-        if (Helper.debug){
-            //Especialista 1
-            id_specialista = "3";
-        }else{
-            id_specialista = extras.getString("id_specialist");
-        }
         id_specialista = extras.getString("id_specialist");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/SaveOrder")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "SaveOrder")
                 .addBodyParameter("id_specialist", id_specialista)
                 .addBodyParameter("init_date", extras.getString("init_date"))
                 .addBodyParameter("hour_date", String.valueOf(extras.getInt("hour_date")))
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("services", services)
-                .addBodyParameter("subtotal", extras.getString("subtotal"))
+                .addBodyParameter("subtotal", String.valueOf(Float.parseFloat(extras.getString("subtotal"))/1.16))
                 .addBodyParameter("total", String.valueOf(total))
                 .addBodyParameter("lat_lng", extras.getString("latlng"))
                 .setPriority(Priority.MEDIUM)
@@ -414,10 +466,10 @@ public class CardForm extends AppCompatActivity implements OnCardFormSubmitListe
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-//        if (item.getItemId() == R.id.card_io_item) {
-//            mCardForm.scanCard(this);
-//            return true;
-//        }
+        if (item.getItemId() == R.id.card_io_item) {
+            mCardForm.scanCard(this);
+            return true;
+        }
 
         return false;
     }

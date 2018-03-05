@@ -85,10 +85,11 @@ public class MainActivityPlo extends AppCompatActivity
     private ArrayList<OOrders> listHistory = new ArrayList<>();
     private CalendarView calendarView;
     private String fecha_gral;
-    private ImageView background,imgNohistory;
+    private ImageView background, imgNohistory;
     private RatingBar rtBarSpe;
     private TextView txtRate;
     private String refreshToken = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -207,7 +208,7 @@ public class MainActivityPlo extends AppCompatActivity
                 if (tabId.equalsIgnoreCase("Nuevas")) {
                     LeerOrdenes();
                 }
-                if (tabId.equalsIgnoreCase("Historial")){
+                if (tabId.equalsIgnoreCase("Historial")) {
                     LeerHistorial();
                 }
             }
@@ -356,7 +357,7 @@ public class MainActivityPlo extends AppCompatActivity
                 this.setTitle("Marcar disponible");
             }
         } else if (id == R.id.nav_add) {
-            Intent intent =  new Intent(MainActivityPlo.this,RegisterEspecialist.class);
+            Intent intent = new Intent(MainActivityPlo.this, RegisterEspecialist.class);
             startActivity(intent);
         } else if (id == R.id.nav_myspe) {
             Intent intent = new Intent(MainActivityPlo.this, MySpecialists.class);
@@ -371,7 +372,11 @@ public class MainActivityPlo extends AppCompatActivity
     public void UpdateStatus(String status) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateStatus")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateStatus")
                 .addBodyParameter("id_specialist", id_user)
                 .addBodyParameter("status", "1")
                 .setPriority(Priority.MEDIUM)
@@ -449,7 +454,11 @@ public class MainActivityPlo extends AppCompatActivity
         listCalendar = new ArrayList<>();
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadCalendar")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ReadCalendar")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("fecha", fecha_gral)
                 .setPriority(Priority.MEDIUM)
@@ -492,7 +501,11 @@ public class MainActivityPlo extends AppCompatActivity
         list = new ArrayList<>();
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadOrders")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "ReadOrders")
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("type", "specialist")
                 .setPriority(Priority.MEDIUM)
@@ -523,7 +536,7 @@ public class MainActivityPlo extends AppCompatActivity
                         String reference = object.optString("reference");
 
 
-                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference,""));
+                        list.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "", "", reference, ""));
 
                     }
                     if (flag) {
@@ -549,17 +562,25 @@ public class MainActivityPlo extends AppCompatActivity
     }
 
     public void LeerHistorial() {
-        listHistory = new ArrayList<>();
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        listHistory = new ArrayList<>();
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        String url2 = "ReadOrdersHistoryNormal";
+        if (pref.getString("is_contratist", "0").equalsIgnoreCase("1")) {
+            url2 = "ReadOrdersHistory";
+        }
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/ReadOrdersHistory")
+        AndroidNetworking.post(url + url2)
                 .addBodyParameter("id_user", id_user)
                 .addBodyParameter("type", "specialist")
                 .setPriority(Priority.MEDIUM)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
-
+                Log.e("response his", response.toString());
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
@@ -582,13 +603,13 @@ public class MainActivityPlo extends AppCompatActivity
                         String reference = object.optString("reference");
 
 
-                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "","",reference,""));
+                        listHistory.add(new OOrders(id_order, create_on, total, subtotal, lat_lng, init_date, id_specialist, name + " " + last_name, id_calendary, name_user, last_name_user, status_sc, status_so, id_user, hour_date, "", "", "", reference, ""));
                         list_history.setVisibility(View.VISIBLE);
                         imgNohistory.setVisibility(View.GONE);
                         if (pref.getString("is_contratist", "0").equalsIgnoreCase("0")) {
                             ADNew adapter = new ADNew(MainActivityPlo.this, listHistory);
                             list_history.setAdapter(adapter);
-                        }else{
+                        } else {
                             ADHistory adapter = new ADHistory(MainActivityPlo.this, listHistory);
                             list_history.setAdapter(adapter);
                         }
@@ -608,11 +629,16 @@ public class MainActivityPlo extends AppCompatActivity
             }
         });
     }
-    public void GetRate(){
+
+    public void GetRate() {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetRate")
-                .addBodyParameter("id_specialist",id_user )
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetRate")
+                .addBodyParameter("id_specialist", id_user)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
@@ -636,16 +662,21 @@ public class MainActivityPlo extends AppCompatActivity
             }
         });
     }
-    double roundTwoDecimals(double d)
-    {
+
+    double roundTwoDecimals(double d) {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
         return Double.valueOf(twoDForm.format(d));
     }
-    public void GetOrdersCount(){
+
+    public void GetOrdersCount() {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String id_user = pref.getString("id_user", "0");
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/GetOrdersCount")
-                .addBodyParameter("id_specialist",id_user )
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "GetOrdersCount")
+                .addBodyParameter("id_specialist", id_user)
                 .build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
@@ -667,11 +698,16 @@ public class MainActivityPlo extends AppCompatActivity
             }
         });
     }
-    public void UpdateToken(){
+
+    public void UpdateToken() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivityPlo.this);
         FirebaseApp.initializeApp(this);
         refreshToken = FirebaseInstanceId.getInstance().getToken();
-        AndroidNetworking.post("http://api.fixerplomeria.com/v1/UpdateTokenSpecialist")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.post(url + "UpdateTokenSpecialist")
                 .addBodyParameter("id_user", pref.getString("id_user", ""))
                 .addBodyParameter("token", refreshToken)
                 .build().getAsString(new StringRequestListener() {

@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,19 +19,9 @@ import android.widget.Toast;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.StringRequestListener;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.UploadNotificationConfig;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.util.Date;
-import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,7 +43,7 @@ public class ImageProfile extends AppCompatActivity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ImageProfile.this);
         tx.setCharacterDelay(70);
-        tx.animateText("Bienvenido " + sharedPref.getString("name","Sin nombre") +" "+ sharedPref.getString("last_name","Sin nombre"));
+        tx.animateText("Bienvenido " + sharedPref.getString("name", "Sin nombre") + " " + sharedPref.getString("last_name", "Sin nombre"));
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -124,7 +112,11 @@ public class ImageProfile extends AppCompatActivity {
     }
 
     public void UploadImage(Uri uri) {
-        AndroidNetworking.upload("http://api.fixerplomeria.com/v1/UploadImage")
+        String url = "http://api.fixerplomeria.com/v1/";
+        if (Helper.debug) {
+            url = "http://apitest.fixerplomeria.com/v1/";
+        }
+        AndroidNetworking.upload(url + "UploadImage")
                 .addMultipartFile("file", new File(getPath(uri)))
                 .addMultipartParameter("id_user", id_user)
                 .setPriority(Priority.MEDIUM)

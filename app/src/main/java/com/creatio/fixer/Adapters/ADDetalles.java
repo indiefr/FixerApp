@@ -18,7 +18,6 @@ import com.bumptech.glide.Glide;
 import com.creatio.fixer.Detalles;
 import com.creatio.fixer.Helper;
 import com.creatio.fixer.MainActivity;
-import com.creatio.fixer.Objects.OPieces;
 import com.creatio.fixer.Objects.OServices;
 import com.creatio.fixer.R;
 
@@ -35,6 +34,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
     Detalles fragment;
     String type = "0";
     private ADDetalles.ItemFilter mFilter = new ADDetalles.ItemFilter();
+
     public ADDetalles(Context context, ArrayList<OServices> list, ArrayList<OServices> filteredData, Detalles fragment) {
         this.context = context;
         this.list = list;
@@ -66,7 +66,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
         final TextView txtTitle = (TextView) itemView.findViewById(R.id.txtTitle);
         final TextView txtDesc = (TextView) itemView.findViewById(R.id.txtDesc);
         final TextView txtPrice = (TextView) itemView.findViewById(R.id.txtPrice);
-        final ImageView image_profile = (ImageView)itemView.findViewById(R.id.image_profile);
+        final ImageView image_profile = (ImageView) itemView.findViewById(R.id.image_profile);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String service = pref.getString("id_service" + filteredData.get(position).getId_service(), "0");
         btnReparar.setVisibility(View.VISIBLE);
@@ -93,14 +93,14 @@ public class ADDetalles extends BaseAdapter implements Filterable {
                 ImageView profile_image = (ImageView) dialog.findViewById(R.id.image_profile);
                 profile_image.setImageDrawable(image_profile.getDrawable());
 
-                        // if button is clicked, close the custom dialog
-                        btnAceptar.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
+                // if button is clicked, close the custom dialog
+                btnAceptar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
 
-                            }
-                        });
+                    }
+                });
 
                 dialog.show();
             }
@@ -108,41 +108,46 @@ public class ADDetalles extends BaseAdapter implements Filterable {
         btnReparar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.alert_fixer);
-                // set the custom dialog components - text, image and button
-                TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
-                TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
-                txtTitle.setText("Tipo de reparación");
-                txtMsj.setText("Selecciona el tipo de reparación que el especialista va a realizar.");
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+                Boolean login = pref.getBoolean("login", false);
+                if (login) {
+                    final Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.alert_fixer);
+                    // set the custom dialog components - text, image and button
+                    TextView txtTitle = (TextView) dialog.findViewById(R.id.txtTitle);
+                    TextView txtMsj = (TextView) dialog.findViewById(R.id.txtMsj);
+                    txtTitle.setText("Tipo de reparación");
+                    txtMsj.setText("Selecciona el tipo de reparación que el especialista va a realizar.");
 
-                Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
-                btnAceptar.setText("Nueva");
-                Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
-                btnCancelar.setText("Reinstalación");
+                    Button btnAceptar = (Button) dialog.findViewById(R.id.btnAceptar);
+                    btnAceptar.setText("Nueva");
+                    Button btnCancelar = (Button) dialog.findViewById(R.id.btnCancelar);
+                    btnCancelar.setText("Reinstalación");
 
-                // if button is clicked, close the custom dialog
-                btnAceptar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        type = "0";
-                        fragment.Reparar();
-                        ((MainActivity) context).ChangeBadge(filteredData.get(position).getId_service(), type);
-                    }
-                });
-                btnCancelar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        type = "1";
-                        fragment.Reparar();
-                        ((MainActivity) context).ChangeBadge(filteredData.get(position).getId_service(), type);
-                    }
-                });
-                dialog.show();
-                v.setVisibility(View.INVISIBLE);
-
+                    // if button is clicked, close the custom dialog
+                    btnAceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            type = "0";
+                            fragment.Reparar();
+                            ((MainActivity) context).ChangeBadge(filteredData.get(position).getId_service(), type);
+                        }
+                    });
+                    btnCancelar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            type = "1";
+                            fragment.Reparar();
+                            ((MainActivity) context).ChangeBadge(filteredData.get(position).getId_service(), type);
+                        }
+                    });
+                    dialog.show();
+                    v.setVisibility(View.INVISIBLE);
+                }else{
+                    Helper.ShowAlertLogin(context);
+                }
 
             }
         });
@@ -156,6 +161,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
     public Filter getFilter() {
         return mFilter;
     }
+
     private class ItemFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -167,14 +173,14 @@ public class ADDetalles extends BaseAdapter implements Filterable {
             final ArrayList<OServices> listf = list;
 
             int count = listf.size();
-            final  ArrayList<OServices> nlist = new ArrayList<OServices>(count);
+            final ArrayList<OServices> nlist = new ArrayList<OServices>(count);
 
-            String filterableString ;
+            String filterableString;
 
             for (int i = 0; i < count; i++) {
                 filterableString = listf.get(i).getTitle();
                 if (filterableString.toLowerCase().contains(filterString)) {
-                    nlist.add(new OServices(listf.get(i).getId_service(),listf.get(i).getImage(),listf.get(i).getTitle(),listf.get(i).getDesc(),listf.get(i).getTime_pre(),listf.get(i).getTime_new(),listf.get(i).getType(),listf.get(i).getPieces()));
+                    nlist.add(new OServices(listf.get(i).getId_service(), listf.get(i).getImage(), listf.get(i).getTitle(), listf.get(i).getDesc(), listf.get(i).getTime_pre(), listf.get(i).getTime_new(), listf.get(i).getType(), listf.get(i).getPieces()));
                 }
             }
 
@@ -183,6 +189,7 @@ public class ADDetalles extends BaseAdapter implements Filterable {
 
             return results;
         }
+
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
